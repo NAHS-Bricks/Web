@@ -1,5 +1,5 @@
 <%!
-    from helpers.brickserver import get_bricks_filtered, get_features_available
+    from helpers.brickserver import bricks_get_filtered, features_get_available
 %>
                 <p class="panel-tabs">
                     % if session['bricks_filter_feature'] is None or session['bricks_filter_feature'] == 'all':
@@ -7,7 +7,7 @@
                     % else:
                     <a class="select-brick-feature-selector" data-target="all">all</a>
                     % endif
-                    % for feature in get_features_available():
+                    % for feature in features_get_available():
                     % if session['bricks_filter_feature'] == feature:
                     <a class="is-active">${feature}</a>
                     % else:
@@ -15,7 +15,7 @@
                     % endif
                     % endfor
                 </p>
-                % for brick_id, desc in get_bricks_filtered(session['bricks_filter_feature'], session['bricks_filter_string']):
+                % for brick_id, desc in bricks_get_filtered(session['bricks_filter_feature'], session['bricks_filter_string']):
                 <a class="panel-block" href="?brick_id=${brick_id}">
                     <span class="panel-icon">
                         <i class="fas fa-cube" aria-hidden="true"></i>

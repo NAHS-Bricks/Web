@@ -1,6 +1,5 @@
 <%!
-    from helpers.template import convert_html
-    from helpers.brickserver import get_temp_sensor
+    from helpers.template import convert_html, list_of_sensor_ids_to_sensors
 %>
 <!DOCTYPE html>
 <html>
@@ -39,6 +38,11 @@
 										Change description
 									</a>
 								</div>
+                                <div class="navbar-item">
+									<a class="button" href="/clear_cache" aria-label="clears the cache for requests to backend">
+										Clear Cache
+									</a>
+								</div>
 							</div>
 
 							<div class="navbar-end">
@@ -68,10 +72,25 @@
 		<div class="tile is-parent">
 			<div class="tile is-child">
                 % if 'temp' in brick['features']:
-                % for sensor in brick['temp_sensors']:
+                % for sensor in list_of_sensor_ids_to_sensors(brick['temp_sensors']):
 				<div class="container box">
-					<p class="title is-5">${sensor}</p>
-					<p class="subtitle is-1">${get_temp_sensor(sensor)['last_temp']}°C</p>
+					<p class="title is-5">
+                        % if sensor['last_reading'] > sensor['prev_reading']:
+                        <span class="icon is-small has-text-danger">
+                            <i class="fas fa-arrow-up fa-sm"></i>
+                        </span>
+                        % elif sensor['last_reading'] < sensor['prev_reading']:
+                        <span class="icon is-small has-text-info">
+                            <i class="fas fa-arrow-down fa-sm"></i>
+                        </span>
+                        % else:
+                        <span class="icon is-small has-text-success">
+                            <i class="fas fa-arrow-left fa-sm"></i>
+                        </span>
+                        % endif
+                        ${sensor['_id']}
+                    </p>
+					<p class="subtitle is-2">${sensor['last_reading']}°C</p>
 				</div>
                 % endfor
                 % endif

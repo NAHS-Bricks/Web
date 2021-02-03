@@ -3,7 +3,7 @@ import sys
 import json
 from mako.template import Template
 from mako.lookup import TemplateLookup
-from helpers.brickserver import get_brick, brick_exists, brick_delete, set_desc, get_features_available
+from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, features_get_available, clear_request_cache
 
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 5):  # pragma: no cover
@@ -27,7 +27,7 @@ class BrickWeb(object):
             brick_id = cherrypy.session['brick_id']
         brick = None
         if brick_exists(brick_id):
-            brick = get_brick(brick_id)
+            brick = brick_get(brick_id)
             cherrypy.session['brick_id'] = brick['_id']
 
         # init session variables
@@ -42,12 +42,12 @@ class BrickWeb(object):
 
     @cherrypy.expose()
     def set_desc(self, brick_id, desc):
-        set_desc(brick_id, desc)
+        brick_set_desc(brick_id, desc)
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()
     def set_bricks_filter_feature(self, feature):
-        if feature in get_features_available() or feature == 'all':
+        if feature in features_get_available() or feature == 'all':
             cherrypy.session['bricks_filter_feature'] = feature
         return serve_template('/select-brick-changing-content.html', session=cherrypy.session)
 
@@ -60,6 +60,11 @@ class BrickWeb(object):
     def delete_brick(self, brick_id):
         brick_delete(brick_id)
         cherrypy.session.pop('brick_id')
+        raise cherrypy.HTTPRedirect('/')
+
+    @cherrypy.expose()
+    def clear_cache(self):
+        clear_request_cache()
         raise cherrypy.HTTPRedirect('/')
 
 

@@ -1,50 +1,65 @@
 import requests
+import json
+import time
 
 
-bricks = {
-    'aabbccddee11': {
-        '_id': 'aabbccddee11',
-        'desc': 'brick1',
-        'features': ['temp', 'bat', 'sleep'],
-        'temp_sensors': ['sensor1', 'sensor2']
-    },
-    'aabbccddee22': {
-        '_id': 'aabbccddee22',
-        'desc': 'brick2',
-        'features': ['temp'],
-        'temp_sensors': ['sensor3', 'sensor4', 'sensor5']
-    },
-    'aabbccddee33': {
-        '_id': 'aabbccddee33',
-        'desc': 'brick3',
-        'features': ['bat']
+_request_cache = {}
+_request_cache_stats = {'hits': 0, 'misses': 0, 'outdated': 0, 'clears': 0}
+
+
+def clear_request_cache():
+    global _request_cache
+    global _request_cache_stats
+    _request_cache_stats['clears'] += 1
+    _request_cache = {}
+
+
+def _request_cached(payload):
+    global _request_cache
+    global _request_cache_stats
+    session = requests.Session()
+    session.headers = {
+        'content-type': "application/json",
+        'accept': "application/json"
     }
-}
+    if isinstance(payload, dict):
+        payload = json.dumps(payload, separators=(',', ':'), sort_keys=True)
+    elif isinstance(payload, string):
+        payload = payload.replace(' ', '').replace('\n', '')
+    else:
+        raise ValueError('invalid payload')
+
+    if payload in _request_cache:
+        if (time.time() - _request_cache[payload]['time']) < 600:
+            _request_cache_stats['hits'] += 1
+            print(f"Request Cache Stats: {json.dumps(_request_cache_stats)}")
+            return _request_cache[payload]['data']
+        _request_cache_stats['outdated'] += 1
+
+    _request_cache_stats['misses'] += 1
+    r = session.post('http://localhost:8081/admin', data=payload).json()
+    _request_cache[payload] = {'time': time.time(), 'data': r}
+    print(f"Request Cache Misses: {payload}")
+    print(f"Request Cache Stats: {json.dumps(_request_cache_stats)}")
+    return r
 
 
-sensors = {
-    'sensor1': 24,
-    'sensor2': 24.1,
-    'sensor3': 24.2,
-    'sensor4': 24.3,
-    'sensor5': 24.4
-}
+def bricks_get():
+    brick_ids = _request_cached({"command": "get_bricks"})['bricks']
+    for brick_id in brick_ids:
+        brick_get(brick_id)
+    return brick_ids
 
 
-def get_bricks():
-    global bricks
-    return bricks.keys()
-
-
-def get_bricks_filtered(feature=None, f=None):
-    global bricks
+def bricks_get_filtered(feature=None, f=None):
     if feature == 'all':
         feature = None
     if f == "":
         f = None
 
     result = []
-    for brick in bricks.values():
+    for brick_id in bricks_get():
+        brick = brick_get(brick_id)
         if feature is not None and feature not in brick['features']:
             continue
         if f is not None and f not in brick['_id'] and f not in brick['desc']:
@@ -53,36 +68,27 @@ def get_bricks_filtered(feature=None, f=None):
     return result
 
 
-def get_brick(brick_id):
-    global bricks
-    return bricks[brick_id]
+def brick_get(brick_id):
+    return _request_cached({"command": "get_brick", "brick": brick_id})['brick']
 
 
 def brick_exists(brick_id):
-    global bricks
-    return brick_id in bricks
+    return 0 == _request_cached({"command": "get_brick", "brick": brick_id})['s']
 
 
 def brick_delete(brick_id):
-    global bricks
-    bricks.pop(brick_id)
+    _request_cached({"command": "delete_brick", "brick": brick_id})
+    clear_request_cache()
 
 
-def get_temp_sensor(sensor_id):
-    global sensors
-    return {'last_temp': sensors[sensor_id]}
+def temp_sensor_get(sensor_id):
+    return _request_cached({"command": "get_temp_sensor", "temp_sensor": sensor_id})['temp_sensor']
 
 
-def set_desc(brick_id, desc):
-    global bricks
-    bricks[brick_id]['desc'] = desc
+def brick_set_desc(brick_id, desc):
+    _request_cached({'command': 'set', 'brick': brick_id, 'key': 'desc', 'value': desc})
+    clear_request_cache()
 
 
-def get_features_available():
-    global bricks
-    features = []
-    for brick in bricks.values():
-        for feature in brick['features']:
-            if feature not in features:
-                features.append(feature)
-    return features
+def features_get_available():
+    return _request_cached({"command": "get_features"})['features']
