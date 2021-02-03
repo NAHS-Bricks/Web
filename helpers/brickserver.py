@@ -66,3 +66,13 @@ def get_temp_sensor(sensor_id):
 def set_desc(brick_id, desc):
     global bricks
     bricks[brick_id]['desc'] = desc
+
+
+def get_features_available():
+    global bricks
+    features = []
+    for brick in bricks.values():
+        for feature in brick['features']:
+            if feature not in features:
+                features.append(feature)
+    return features

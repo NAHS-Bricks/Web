@@ -3,7 +3,7 @@ import sys
 import json
 from mako.template import Template
 from mako.lookup import TemplateLookup
-from helpers.brickserver import get_brick, set_desc
+from helpers.brickserver import get_brick, set_desc, get_features_available
 
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 5):  # pragma: no cover
@@ -47,11 +47,14 @@ class BrickWeb(object):
 
     @cherrypy.expose()
     def set_bricks_filter_feature(self, feature):
-        pass
+        if feature in get_features_available() or feature == 'all':
+            cherrypy.session['bricks_filter_feature'] = feature
+        return serve_template('/select-brick-changing-content.html', session=cherrypy.session)
 
     @cherrypy.expose()
     def set_bricks_filter_string(self, f_string):
-        pass
+        cherrypy.session['bricks_filter_string'] = f_string
+        return serve_template('/select-brick-changing-content.html', session=cherrypy.session)
 
 
 if __name__ == '__main__':

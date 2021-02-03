@@ -1,6 +1,6 @@
 <%!
     from helpers.template import convert_html
-    from helpers.brickserver import get_temp_sensor, get_bricks_filtered
+    from helpers.brickserver import get_temp_sensor
 %>
 <!DOCTYPE html>
 <html>
@@ -12,6 +12,10 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-divider@0.2.0/dist/css/bulma-divider.min.css">
 	<link rel="stylesheet" href="https://bulma.io/vendor/fontawesome-free-5.15.2-web/css/all.min.css">
 	<script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <style>
+        #select-brick-search-clear { pointer-events: all; cursor:pointer }
+        #select-brick-search-clear:hover {color: #f14668 }
+    </style>
   </head>
   <body>
   <section class="section">
@@ -84,26 +88,23 @@
 				Bricks
 			</p>
 			<div class="panel-block">
-				<p class="control has-icons-left">
-					<input class="input" type="text" placeholder="Search">
-					<span class="icon is-left">
-						<i class="fas fa-search" aria-hidden="true"></i>
-					</span>
-				</p>
+				<p class="control has-icons-left has-icons-right">
+                    % if session['bricks_filter_string'] is not None:
+                    <input class="input" id="select-brick-search" type="text" placeholder="Search" value="${session['bricks_filter_string']}">
+                    % else:
+                    <input class="input" id="select-brick-search" type="text" placeholder="Search">
+                    % endif
+                    <span class="icon is-left">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                    </span>
+                    <span class="icon is-small is-right" id="select-brick-search-clear">
+                        <i class="fas fa-times-circle"></i>
+                    </span>
+                </p>
 			</div>
-			<p class="panel-tabs">
-				<a class="is-active">All</a>
-				<a>Temp</a>
-				<a>Latch</a>
-			</p>
-            % for brick_id, desc in get_bricks_filtered(session['bricks_filter_feature'], session['bricks_filter_string']):
-			<a class="panel-block" href="?brick_id=${brick_id}">
-				<span class="panel-icon">
-					<i class="fas fa-book" aria-hidden="true"></i>
-				</span>
-				${brick_id} (${desc})
-			</a>
-            % endfor
+            <div id="select-brick-changing-content">
+                <%include file="select-brick-changing-content.html" />
+            </div>
 		</div>
     </div>
 	<button class="modal-close is-large" aria-label="close"></button>
@@ -132,20 +133,36 @@
     <button class="modal-close is-large" aria-label="close"></button>
   </div>
   <script>
-         $(".modal-button").click(function() {
+        $(".modal-button").click(function() {
             var target = $(this).data("target");
             $("html").addClass("is-clipped");
             $(target).addClass("is-active");
-         });
+        });
          
-         $(".modal-close").click(function() {
+        $(".modal-close").click(function() {
             $("html").removeClass("is-clipped");
             $(this).parent().removeClass("is-active");
-         });
-		 $(".modal-background").click(function() {
+        });
+         
+		$(".modal-background").click(function() {
             $("html").removeClass("is-clipped");
             $(this).parent().removeClass("is-active");
-         });
+        });
+
+        $("#select-brick-search").keyup(function() {
+            var f_string = $(this).val();
+            $.ajax( {
+                url:'set_bricks_filter_string/?f_string=' + f_string,
+                success:function(data) {
+                    $('#select-brick-changing-content').html(data);
+                }
+            });
+        });
+
+        $("#select-brick-search-clear").click(function() {
+            $("#select-brick-search").val('');
+            $("#select-brick-search").keyup();
+        });
   </script>
   </body>
 </html>
