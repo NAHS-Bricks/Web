@@ -75,17 +75,17 @@
                 % for sensor in list_of_sensor_ids_to_sensors(brick['temp_sensors']):
 				<div class="container box">
 					<p class="title is-5">
-                        % if sensor['last_reading'] > sensor['prev_reading']:
+                        % if sensor['last_reading'] is None or sensor['prev_reading'] is None or sensor['last_reading'] == sensor['prev_reading']:
+                        <span class="icon is-small has-text-success">
+                            <i class="fas fa-arrow-left fa-sm"></i>
+                        </span>
+                        % elif sensor['last_reading'] > sensor['prev_reading']:
                         <span class="icon is-small has-text-danger">
                             <i class="fas fa-arrow-up fa-sm"></i>
                         </span>
-                        % elif sensor['last_reading'] < sensor['prev_reading']:
+                        % else:
                         <span class="icon is-small has-text-info">
                             <i class="fas fa-arrow-down fa-sm"></i>
-                        </span>
-                        % else:
-                        <span class="icon is-small has-text-success">
-                            <i class="fas fa-arrow-left fa-sm"></i>
                         </span>
                         % endif
                         ${sensor['_id']}
