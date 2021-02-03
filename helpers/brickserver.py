@@ -58,6 +58,16 @@ def get_brick(brick_id):
     return bricks[brick_id]
 
 
+def brick_exists(brick_id):
+    global bricks
+    return brick_id in bricks
+
+
+def brick_delete(brick_id):
+    global bricks
+    bricks.pop(brick_id)
+
+
 def get_temp_sensor(sensor_id):
     global sensors
     return {'last_temp': sensors[sensor_id]}

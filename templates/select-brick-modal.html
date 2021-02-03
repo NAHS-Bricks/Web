@@ -1,0 +1,45 @@
+  <div class="modal" id="select-brick-modal">
+	<div class="modal-background"></div>
+	<div class="modal-content">
+		<div class="panel box">
+			<p class="panel-heading">
+				Select Brick
+			</p>
+			<div class="panel-block">
+				<p class="control has-icons-left has-icons-right">
+                    % if session['bricks_filter_string'] is not None:
+                    <input class="input" id="select-brick-search" type="text" placeholder="Search" value="${session['bricks_filter_string']}">
+                    % else:
+                    <input class="input" id="select-brick-search" type="text" placeholder="Search">
+                    % endif
+                    <span class="icon is-left">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                    </span>
+                    <span class="icon is-small is-right" id="select-brick-search-clear">
+                        <i class="fas fa-times-circle"></i>
+                    </span>
+                </p>
+			</div>
+            <div id="select-brick-changing-content">
+                <%include file="select-brick-changing-content.html" />
+            </div>
+		</div>
+    </div>
+	<button class="modal-close is-large" aria-label="close"></button>
+  </div>
+  <script>
+        $("#select-brick-search").keyup(function() {
+            var f_string = $(this).val();
+            $.ajax( {
+                url:'set_bricks_filter_string/?f_string=' + f_string,
+                success:function(data) {
+                    $('#select-brick-changing-content').html(data);
+                }
+            });
+        });
+
+        $("#select-brick-search-clear").click(function() {
+            $("#select-brick-search").val('');
+            $("#select-brick-search").keyup();
+        });
+  </script>
