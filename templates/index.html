@@ -1,0 +1,151 @@
+<%!
+    from helpers.template import convert_html
+    from helpers.brickserver import get_temp_sensor, get_bricks_filtered
+%>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NAHS-BrickWeb</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-divider@0.2.0/dist/css/bulma-divider.min.css">
+	<link rel="stylesheet" href="https://bulma.io/vendor/fontawesome-free-5.15.2-web/css/all.min.css">
+	<script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  </head>
+  <body>
+  <section class="section">
+    <div class="container">
+	  <div class="tile is-ancestor">
+		<div class="tile is-parent">
+			<div class="tile is-child">
+				<div class="container box">
+					<p class="title is-1 has-text-centered">${brick['_id']} (${brick['desc']})</p>
+					<div class="is-divider m-1"></div>
+					<nav class="navbar" role="navigation" aria-label="main navigation">
+						<div class="navbar-menu m-0">
+							<div class="navbar-start">
+								<div class="navbar-item">
+									<a class="button modal-button" data-target="#select-brick-modal">
+										Select Brick
+									</a>
+								</div>
+								<div class="navbar-item">
+									<a class="button modal-button" data-target="#set-brick-desc-modal" aria-label="change description of current brick">
+										Change description
+									</a>
+								</div>
+							</div>
+
+							<div class="navbar-end">
+								<div class="navbar-item">
+									<a class="button is-danger is-outlined" aria-label="delete current brick">
+										Delete
+									</a>
+								</div>
+							</div>
+						</div>
+					</nav>
+
+				</div>
+			</div>
+		</div>
+	  </div>
+      <div class="tile is-ancestor">
+		<div class="tile is-10 is-vertical is-parent">
+			<div class="tile is-child">
+				<div class="content box">
+					<p class="is-family-monospace">
+                        ${convert_html(brick)}
+                    </p>
+				</div>
+			</div>
+		</div>
+		<div class="tile is-parent">
+			<div class="tile is-child">
+                % if 'temp' in brick['features']:
+                % for sensor in brick['temp_sensors']:
+				<div class="container box">
+					<p class="title is-5">${sensor}</p>
+					<p class="subtitle is-1">${get_temp_sensor(sensor)['last_temp']}°C</p>
+				</div>
+                % endfor
+                % endif
+			</div>
+		</div>
+	  </div>
+    </div>
+  </section>
+  <div class="modal" id="select-brick-modal">
+	<div class="modal-background"></div>
+	<div class="modal-content">
+		<div class="panel box">
+			<p class="panel-heading">
+				Bricks
+			</p>
+			<div class="panel-block">
+				<p class="control has-icons-left">
+					<input class="input" type="text" placeholder="Search">
+					<span class="icon is-left">
+						<i class="fas fa-search" aria-hidden="true"></i>
+					</span>
+				</p>
+			</div>
+			<p class="panel-tabs">
+				<a class="is-active">All</a>
+				<a>Temp</a>
+				<a>Latch</a>
+			</p>
+            % for brick_id, desc in get_bricks_filtered(session['bricks_filter_feature'], session['bricks_filter_string']):
+			<a class="panel-block" href="?brick_id=${brick_id}">
+				<span class="panel-icon">
+					<i class="fas fa-book" aria-hidden="true"></i>
+				</span>
+				${brick_id} (${desc})
+			</a>
+            % endfor
+		</div>
+    </div>
+	<button class="modal-close is-large" aria-label="close"></button>
+  </div>
+  <div class="modal" id="set-brick-desc-modal">
+	<div class="modal-background"></div>
+	<div class="modal-content">
+        <article class="message">
+            <div class="message-header">
+                <p>Change Brick's Description</p>
+            </div>
+            <div class="message-body">
+                <form method="post" action="/set_desc?brick_id=${brick['_id']}">
+                    <div class="field has-addons">
+                        <p class="control is-expanded">
+                            <input class="input" type="text" placeholder="Brick Description" value="${brick['desc']}" name="desc">
+                        </p>
+                        <p class="control">
+                            <button class="button is-success">Save</button>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </article>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
+  <script>
+         $(".modal-button").click(function() {
+            var target = $(this).data("target");
+            $("html").addClass("is-clipped");
+            $(target).addClass("is-active");
+         });
+         
+         $(".modal-close").click(function() {
+            $("html").removeClass("is-clipped");
+            $(this).parent().removeClass("is-active");
+         });
+		 $(".modal-background").click(function() {
+            $("html").removeClass("is-clipped");
+            $(this).parent().removeClass("is-active");
+         });
+  </script>
+  </body>
+</html>
