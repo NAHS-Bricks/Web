@@ -1,6 +1,3 @@
-<%!
-    from helpers.template import convert_html, list_of_sensor_ids_to_sensors
-%>
 <!DOCTYPE html>
 <html>
   <head>
@@ -59,47 +56,12 @@
 			</div>
 		</div>
 	  </div>
-      <div class="tile is-ancestor">
-		<div class="tile is-10 is-vertical is-parent">
-			<div class="tile is-child">
-				<div class="content box">
-					<p class="is-family-monospace">
-                        ${convert_html(brick)}
-                    </p>
-				</div>
-			</div>
-		</div>
-		<div class="tile is-parent">
-			<div class="tile is-child">
-                % if 'temp' in brick['features']:
-                % for sensor in list_of_sensor_ids_to_sensors(brick['temp_sensors']):
-				<div class="container box">
-					<p class="title is-5">
-                        % if sensor['last_reading'] is None or sensor['prev_reading'] is None or sensor['last_reading'] == sensor['prev_reading']:
-                        <span class="icon is-small has-text-success">
-                            <i class="fas fa-arrow-left fa-sm"></i>
-                        </span>
-                        % elif sensor['last_reading'] > sensor['prev_reading']:
-                        <span class="icon is-small has-text-danger">
-                            <i class="fas fa-arrow-up fa-sm"></i>
-                        </span>
-                        % else:
-                        <span class="icon is-small has-text-info">
-                            <i class="fas fa-arrow-down fa-sm"></i>
-                        </span>
-                        % endif
-                        ${sensor['_id']}
-                    </p>
-					<p class="subtitle is-2">${sensor['last_reading']}°C</p>
-				</div>
-                % endfor
-                % endif
-			</div>
-		</div>
+      <div class="tile is-ancestor" id="brick-detail">
+<%include file="brick-detail.html" />
 	  </div>
     </div>
   </section>
-  <%include file="select-brick-modal.html" />
+<%include file="select-brick-modal.html" />
   <div class="modal" id="set-brick-desc-modal">
 	<div class="modal-background"></div>
 	<div class="modal-content">

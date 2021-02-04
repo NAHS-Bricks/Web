@@ -1,0 +1,88 @@
+<%!
+    from helpers.template import convert_html, list_of_sensor_ids_to_sensors
+    import time
+%>
+        <div class="tile is-2 is-parent">
+            <div class="tile is-child">
+                % if 'sleep' in brick['features']:
+                <div class="container box">
+					<p class="title is-5">Autoreload in</p>
+					<p class="subtitle is-2" id="autoreload-in">
+                        % if ((brick['last_ts'] + brick['sleep_delay'] + 5) - int(time.time())) >= 0:
+                        ${(brick['last_ts'] + brick['sleep_delay'] + 5) - int(time.time())}s
+                        % else:
+                        disabled
+                        % endif
+                    </p>
+                    <progress class="progress" id="autoreload-progress" value="${(int(time.time()) - brick['last_ts'])}" max="${brick['sleep_delay'] + 5}"></progress>
+				</div>
+                <script>
+                    % if ((brick['last_ts'] + brick['sleep_delay'] + 5) - int(time.time())) >= 0:
+                    var autoreloadIntervalID = setInterval(function() {
+                        var time_left = ${brick['last_ts'] + brick['sleep_delay'] + 5} - Math.floor(new Date / 1000);
+                        $('#autoreload-in').text(time_left + "s");
+                        $('#autoreload-progress').val(Math.floor(new Date / 1000) - ${brick['last_ts']});
+                        if (time_left <= 0) {
+                            clearInterval(autoreloadIntervalID);
+                            $.ajax({url:'clear_cache/?partial=' + "${brick['_id']}"});
+                            % if 'temp' in brick['features']:
+                            % for sensor in brick['temp_sensors']:
+                            $.ajax({url:'clear_cache/?partial=' + "${sensor}"});
+                            % endfor
+                            % endif
+                            $.ajax( {
+                                url:'get_brick_detail/?brick_id=' + "${brick['_id']}",
+                                success:function(data) {
+                                    $('#brick-detail').html(data);
+                                }
+                            });
+                        }
+                    }, 1000);
+                    % endif
+                </script>
+                % endif
+                % if 'bat' in brick['features']:
+                <div class="container box">
+					<p class="title is-5">Battery</p>
+					<p class="subtitle is-2">${brick['bat_last_reading']}V</p>
+				</div>
+                % endif
+            </div>
+        </div>
+		<div class="tile is-8 is-vertical is-parent">
+			<div class="tile is-child">
+				<div class="content box">
+					<p class="is-family-monospace">
+                        ${convert_html(brick)}
+                    </p>
+				</div>
+			</div>
+		</div>
+		<div class="tile is-2 is-parent">
+			<div class="tile is-child">
+                % if 'temp' in brick['features']:
+                % for sensor in list_of_sensor_ids_to_sensors(brick['temp_sensors']):
+				<div class="container box">
+					<p class="title is-5">
+                        % if sensor['last_reading'] is None or sensor['prev_reading'] is None or sensor['last_reading'] == sensor['prev_reading']:
+                        <span class="icon is-small has-text-success">
+                            <i class="fas fa-arrow-left fa-sm"></i>
+                        </span>
+                        % elif sensor['last_reading'] > sensor['prev_reading']:
+                        <span class="icon is-small has-text-danger">
+                            <i class="fas fa-arrow-up fa-sm"></i>
+                        </span>
+                        % else:
+                        <span class="icon is-small has-text-info">
+                            <i class="fas fa-arrow-down fa-sm"></i>
+                        </span>
+                        % endif
+                        ${sensor['_id']}
+                    </p>
+					<p class="subtitle is-2">${sensor['last_reading']}°C</p>
+				</div>
+                % endfor
+                % endif
+			</div>
+		</div>
+

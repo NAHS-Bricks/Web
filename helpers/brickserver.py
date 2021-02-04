@@ -4,14 +4,19 @@ import time
 
 
 _request_cache = {}
-_request_cache_stats = {'hits': 0, 'misses': 0, 'outdated': 0, 'clears': 0}
+_request_cache_stats = {'hits': 0, 'misses': 0, 'outdated': 0, 'clears': 0, 'partial': 0}
 
 
-def clear_request_cache():
+def clear_request_cache(partial=None):
     global _request_cache
     global _request_cache_stats
-    _request_cache_stats['clears'] += 1
-    _request_cache = {}
+    if partial is None:
+        _request_cache_stats['clears'] += 1
+        _request_cache = {}
+    else:
+        _request_cache_stats['partial'] += 1
+        for k in [k for k in _request_cache.keys() if partial in k]:
+            _request_cache.pop(k)
 
 
 def _request_cached(payload):

@@ -63,9 +63,22 @@ class BrickWeb(object):
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()
-    def clear_cache(self):
-        clear_request_cache()
-        raise cherrypy.HTTPRedirect('/')
+    def clear_cache(self, partial=None):
+        clear_request_cache(partial)
+        if partial is None:
+            raise cherrypy.HTTPRedirect('/')
+        else:
+            return ""
+
+    @cherrypy.expose
+    def get_brick_detail(self, brick_id):
+        brick = None
+        if brick_exists(brick_id):
+            brick = brick_get(brick_id)
+            cherrypy.session['brick_id'] = brick['_id']
+        if brick is None:
+            raise cherrypy.HTTPRedirect('/')
+        return serve_template('/brick-detail.html', brick=brick, session=cherrypy.session)
 
 
 if __name__ == '__main__':
