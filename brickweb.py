@@ -4,6 +4,7 @@ import json
 from mako.template import Template
 from mako.lookup import TemplateLookup
 from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, features_get_available, clear_request_cache, temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc
+from helpers.shared import config
 
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 5):  # pragma: no cover
@@ -94,5 +95,5 @@ class BrickWeb(object):
 
 
 if __name__ == '__main__':
-    cherrypy.config.update({'server.socket_host': '0.0.0.0', 'server.socket_port': 8000, 'tools.sessions.on': True})
+    cherrypy.config.update({'server.socket_host': '0.0.0.0', 'server.socket_port': config['server_port'], 'tools.sessions.on': True})
     cherrypy.quickstart(BrickWeb())

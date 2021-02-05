@@ -1,6 +1,7 @@
 import requests
 import json
 import time
+from helpers.shared import config
 
 
 _request_cache = {}
@@ -42,7 +43,8 @@ def _request_cached(payload):
         _request_cache_stats['outdated'] += 1
 
     _request_cache_stats['misses'] += 1
-    r = session.post('http://localhost:8081/admin', data=payload).json()
+    url = 'http://' + config['brickserver']['host'] + ':' + str(config['brickserver']['port']) + '/admin'
+    r = session.post(url, data=payload).json()
     _request_cache[payload] = {'time': time.time(), 'data': r}
     print(f"Request Cache Misses: {payload}")
     print(f"Request Cache Stats: {json.dumps(_request_cache_stats)}")
@@ -79,13 +81,15 @@ def bricks_get_filtered(feature=None, f=None):
         feature = None
     if f == "":
         f = None
+    elif f is not None:
+        f = f.lower()
 
     result = []
     for brick_id in bricks_get():
         brick = brick_get(brick_id)
         if feature is not None and feature not in brick['features']:
             continue
-        if f is not None and f not in brick['_id'] and f not in brick['desc']:
+        if f is not None and f not in brick['_id'].lower() and f not in brick['desc'].lower():
             continue
         result.append((brick['_id'], brick['desc']))
     return result
