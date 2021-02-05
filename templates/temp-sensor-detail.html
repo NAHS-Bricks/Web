@@ -1,0 +1,79 @@
+<%!
+    from helpers.template import convert_html
+%>
+        <article class="message">
+            <div class="message-header">
+                <p>Temp Sensor Detail</p>
+            </div>
+            <div class="message-body">
+                <div class="field">
+                    <label class="label">ID</label>
+                    <div class="box">
+                        ${sensor['_id']}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Description</label>
+                    <div class="box" id="temp-sensor-desc-display">
+                        ${sensor['desc']}
+                        <span class="icon edit-pencil-icon" id="temp-sensor-desc-edit-button">
+                            <i class="fas fa-edit fa-sm"></i>
+                        </span>
+                    </div>
+                    <form method="post" action="/set_desc?sensor_id=${sensor['_id']}" id="temp-sensor-desc-edit" style="display: none;">
+                        <div class="field has-addons">
+                            <p class="control is-expanded">
+                                <input class="input" type="text" placeholder="Sensor Description" value="${sensor['desc']}" name="desc">
+                            </p>
+                            <p class="control">
+                                <button class="button is-success">Save</button>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+                <div class="field">
+                    <label class="label">Temperature Correction Value</label>
+                    <div class="box">
+                        ${sensor['corr']}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Current Temperature</label>
+                    <div class="box">
+                        ${sensor['last_reading']}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Previous Temperature</label>
+                    <div class="box">
+                        ${sensor['prev_reading']}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">RAW Data</label>
+                    <button class="button is-dark" id="temp-sensor-raw-show">show</button>
+                    <button class="button is-dark" id="temp-sensor-raw-hide" style="display: none;">hide</button>
+                    <div class="box" id="temp-sensor-raw-data" style="display: none;">
+                        <p class="is-family-monospace">
+                            ${convert_html(sensor)}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <script>
+            $("#temp-sensor-raw-show").click(function() {
+                $("#temp-sensor-raw-show").hide();
+                $("#temp-sensor-raw-hide").show();
+                $("#temp-sensor-raw-data").show();
+            });
+            $("#temp-sensor-raw-hide").click(function() {
+                $("#temp-sensor-raw-show").show();
+                $("#temp-sensor-raw-hide").hide();
+                $("#temp-sensor-raw-data").hide();
+            });
+            $("#temp-sensor-desc-edit-button").click(function() {
+                $("#temp-sensor-desc-display").hide();
+                $("#temp-sensor-desc-edit").show();
+            });
+        </script>

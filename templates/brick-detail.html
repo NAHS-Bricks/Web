@@ -6,15 +6,17 @@
             <div class="tile is-child">
                 % if 'sleep' in brick['features']:
                 <div class="container box">
-					<p class="title is-5">Autoreload in</p>
-					<p class="subtitle is-2" id="autoreload-in">
+					<p class="subtitle is-5">Autoreload</p>
+					<p class="title is-2" id="autoreload-in">
                         % if ((brick['last_ts'] + brick['sleep_delay'] + 5) - int(time.time())) >= 0:
                         ${(brick['last_ts'] + brick['sleep_delay'] + 5) - int(time.time())}s
                         % else:
                         disabled
                         % endif
                     </p>
-                    <progress class="progress" id="autoreload-progress" value="${(int(time.time()) - brick['last_ts'])}" max="${brick['sleep_delay'] + 5}"></progress>
+                    <p class="subtitle is-5">
+                        <progress class="progress" id="autoreload-progress" value="${(int(time.time()) - brick['last_ts'])}" max="${brick['sleep_delay'] + 5}"></progress>
+                    </p>
 				</div>
                 <script>
                     % if ((brick['last_ts'] + brick['sleep_delay'] + 5) - int(time.time())) >= 0:
@@ -43,8 +45,43 @@
                 % endif
                 % if 'bat' in brick['features']:
                 <div class="container box">
-					<p class="title is-5">Battery</p>
-					<p class="subtitle is-2">${brick['bat_last_reading']}V</p>
+					<p class="subtitle is-5">Battery</p>
+					<p class="title is-2">
+                        ${round(brick['bat_last_reading'], 2)}V
+                        % if brick['bat_charging']:
+                        <span class="icon has-text-warning">
+                            <i class="fas fa-bolt fa-sm"></i>
+                        </span>
+                        % elif brick['bat_charging_standby']:
+                        <span class="icon has-text-success">
+                            <i class="fas fa-bolt fa-sm"></i>
+                        </span>
+                        % elif brick['bat_last_reading'] <= 3.2:
+                        <span class="icon is-large has-text-danger">
+                            <i class="fas fa-battery-empty fa-sm"></i>
+                        </span>
+                        % elif brick['bat_last_reading'] < 3.5:
+                        <span class="icon is-large has-text-warning">
+                            <i class="fas fa-battery-quarter fa-sm"></i>
+                        </span>
+                        % elif brick['bat_last_reading'] < 3.7:
+                        <span class="icon is-large has-text-success">
+                            <i class="fas fa-battery-half fa-sm"></i>
+                        </span>
+                        % elif brick['bat_last_reading'] < 4.0:
+                        <span class="icon is-large has-text-success">
+                            <i class="fas fa-battery-three-quarters fa-sm"></i>
+                        </span>
+                        % elif brick['bat_last_reading'] <= 4.3:
+                        <span class="icon is-large has-text-success">
+                            <i class="fas fa-battery-full fa-sm"></i>
+                        </span>
+                        % else:
+                        <span class="icon has-text-danger">
+                            <i class="fas fa-bolt fa-sm"></i>
+                        </span>
+                        % endif
+                    </p>
 				</div>
                 % endif
             </div>
@@ -62,8 +99,11 @@
 			<div class="tile is-child">
                 % if 'temp' in brick['features']:
                 % for sensor in list_of_sensor_ids_to_sensors(brick['temp_sensors']):
-				<div class="container box">
-					<p class="title is-5">
+				<a class="container box temp_sensor" data-target="${sensor['_id']}">
+					<p class="subtitle is-5">
+                        ${sensor['_id']}
+                    </p>
+					<p class="title is-2">
                         % if sensor['last_reading'] is None or sensor['prev_reading'] is None or sensor['last_reading'] == sensor['prev_reading']:
                         <span class="icon is-small has-text-success">
                             <i class="fas fa-arrow-left fa-sm"></i>
@@ -77,12 +117,27 @@
                             <i class="fas fa-arrow-down fa-sm"></i>
                         </span>
                         % endif
-                        ${sensor['_id']}
+                        ${round(sensor['last_reading'], 1)}°C
                     </p>
-					<p class="subtitle is-2">${sensor['last_reading']}°C</p>
-				</div>
+                    <p class="subtitle is-6">
+                        ${sensor['desc']}
+                    </p>
+				</a>
                 % endfor
                 % endif
 			</div>
 		</div>
+        <script>
+            $(".temp_sensor").click(function() {
+                var target = $(this).data("target");
+                $("html").addClass("is-clipped");
+                $("#temp-sensor-detail-modal").addClass("is-active");
+                $.ajax( {
+                    url:'get_temp_sensor_detail/?sensor_id=' + target,
+                    success:function(data) {
+                        $("#temp-sensor-detail-modal > .modal-content").html(data);
+                    }
+                });
+            });
+      </script>
 

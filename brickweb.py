@@ -3,7 +3,7 @@ import sys
 import json
 from mako.template import Template
 from mako.lookup import TemplateLookup
-from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, features_get_available, clear_request_cache
+from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, features_get_available, clear_request_cache, temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc
 
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 5):  # pragma: no cover
@@ -41,8 +41,11 @@ class BrickWeb(object):
             return serve_template('/index.html', brick=brick, session=cherrypy.session)
 
     @cherrypy.expose()
-    def set_desc(self, brick_id, desc):
-        brick_set_desc(brick_id, desc)
+    def set_desc(self, desc, brick_id=None, sensor_id=None):
+        if brick_id is not None:
+            brick_set_desc(brick_id, desc)
+        if sensor_id is not None:
+            temp_sensor_set_desc(sensor_id, desc)
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()
@@ -79,6 +82,15 @@ class BrickWeb(object):
         if brick is None:
             raise cherrypy.HTTPRedirect('/')
         return serve_template('/brick-detail.html', brick=brick, session=cherrypy.session)
+
+    @cherrypy.expose
+    def get_temp_sensor_detail(self, sensor_id):
+        sensor = None
+        if temp_sensor_exists(sensor_id):
+            sensor = temp_sensor_get(sensor_id)
+        if sensor is None:
+            raise cherrypy.HTTPRedirect('/')
+        return serve_template('/temp-sensor-detail.html', sensor=sensor)
 
 
 if __name__ == '__main__':

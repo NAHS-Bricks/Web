@@ -49,6 +49,24 @@ def _request_cached(payload):
     return r
 
 
+def brick_get(brick_id):
+    return _request_cached({"command": "get_brick", "brick": brick_id})['brick']
+
+
+def brick_exists(brick_id):
+    return 0 == _request_cached({"command": "get_brick", "brick": brick_id})['s']
+
+
+def brick_set_desc(brick_id, desc):
+    _request_cached({'command': 'set', 'brick': brick_id, 'key': 'desc', 'value': desc})
+    clear_request_cache(brick_id)
+
+
+def brick_delete(brick_id):
+    _request_cached({"command": "delete_brick", "brick": brick_id})
+    clear_request_cache()
+
+
 def bricks_get():
     brick_ids = _request_cached({"command": "get_bricks"})['bricks']
     for brick_id in brick_ids:
@@ -73,26 +91,17 @@ def bricks_get_filtered(feature=None, f=None):
     return result
 
 
-def brick_get(brick_id):
-    return _request_cached({"command": "get_brick", "brick": brick_id})['brick']
-
-
-def brick_exists(brick_id):
-    return 0 == _request_cached({"command": "get_brick", "brick": brick_id})['s']
-
-
-def brick_delete(brick_id):
-    _request_cached({"command": "delete_brick", "brick": brick_id})
-    clear_request_cache()
-
-
 def temp_sensor_get(sensor_id):
     return _request_cached({"command": "get_temp_sensor", "temp_sensor": sensor_id})['temp_sensor']
 
 
-def brick_set_desc(brick_id, desc):
-    _request_cached({'command': 'set', 'brick': brick_id, 'key': 'desc', 'value': desc})
-    clear_request_cache()
+def temp_sensor_exists(sensor_id):
+    return 0 == _request_cached({"command": "get_temp_sensor", "temp_sensor": sensor_id})['s']
+
+
+def temp_sensor_set_desc(sensor_id, desc):
+    _request_cached({'command': 'set', 'temp_sensor': sensor_id, 'key': 'desc', 'value': desc})
+    clear_request_cache(sensor_id)
 
 
 def features_get_available():
