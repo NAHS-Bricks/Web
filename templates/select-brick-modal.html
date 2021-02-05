@@ -4,6 +4,9 @@
 		<div class="panel box">
 			<p class="panel-heading">
 				Select Brick
+                <span class="icon is-small cache-reload-icon" id="select-brick-trigger-reload">
+                    <i class="fas fa-sync-alt fa-sm"></i>
+                </span>
 			</p>
 			<div class="panel-block">
 				<p class="control has-icons-left has-icons-right">
@@ -21,7 +24,7 @@
                 </p>
 			</div>
             <div id="select-brick-changing-content">
-                <%include file="select-brick-changing-content.html" />
+<%include file="select-brick-changing-content.html" />
             </div>
 		</div>
     </div>
@@ -41,5 +44,10 @@
         $("#select-brick-search-clear").click(function() {
             $("#select-brick-search").val('');
             $("#select-brick-search").keyup();
+        });
+
+        $("#select-brick-trigger-reload").click(function() {
+            $.ajax({url:'clear_cache/?partial=get_bricks'});
+            $("#select-brick-search-clear").click();
         });
   </script>

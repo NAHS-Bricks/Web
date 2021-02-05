@@ -1,22 +1,4 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>NAHS-BrickWeb</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-divider@0.2.0/dist/css/bulma-divider.min.css">
-	<link rel="stylesheet" href="/static/fontawesome/css/fontawesome.min.css">
-    <link rel="stylesheet" href="/static/fontawesome/css/solid.min.css">
-	<script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <style>
-        #select-brick-search-clear { pointer-events: all; cursor:pointer }
-        #select-brick-search-clear:hover {color: #f14668 }
-        .edit-pencil-icon { pointer-events: all; cursor:pointer }
-        .edit-pencil-icon:hover {color: #3298dc }
-    </style>
-  </head>
-  <body>
+<%include file="header.html" />
   <section class="section">
     <div class="container">
 	  <div class="tile is-ancestor">
@@ -25,36 +7,30 @@
 				<div class="container box">
 					<p class="title is-1 has-text-centered">${brick['_id']} (${brick['desc']})</p>
 					<div class="is-divider m-1"></div>
-					<nav class="navbar" role="navigation" aria-label="main navigation">
-						<div class="navbar-menu m-0">
-							<div class="navbar-start">
-								<div class="navbar-item">
-									<a class="button modal-button" data-target="#select-brick-modal">
-										Select Brick
-									</a>
-								</div>
-								<div class="navbar-item">
-									<a class="button modal-button" data-target="#set-brick-desc-modal" aria-label="change description of current brick">
-										Change description
-									</a>
-								</div>
+                    <nav class="navbar" role="navigation" aria-label="main navigation">
+                        <div class="navbar-menu m-0">
+                            <div class="navbar-start">
                                 <div class="navbar-item">
-									<a class="button" href="/clear_cache" aria-label="clears the cache for requests to backend">
-										Clear Cache
-									</a>
-								</div>
-							</div>
+                                    <a class="button modal-button" data-target="#select-brick-modal">
+                                        Select Brick
+                                    </a>
+                                </div>
+                            </div>
 
-							<div class="navbar-end">
-								<div class="navbar-item">
-									<a class="button modal-button is-danger is-outlined" data-target="#delete-brick-modal" aria-label="delete current brick">
-										Delete
-									</a>
-								</div>
-							</div>
-						</div>
-					</nav>
-
+                            <div class="navbar-end">
+                                <div class="navbar-item">
+                                    <a class="button modal-button" data-target="#set-brick-desc-modal" aria-label="change description of current brick">
+                                        Change description
+                                    </a>
+                                </div>
+                                <div class="navbar-item">
+                                    <a class="button modal-button is-danger is-outlined" data-target="#delete-brick-modal" aria-label="delete current brick">
+                                        Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
 				</div>
 			</div>
 		</div>
