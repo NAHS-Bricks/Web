@@ -1,4 +1,5 @@
 import cherrypy
+import os
 import sys
 import json
 from mako.template import Template
@@ -95,5 +96,15 @@ class BrickWeb(object):
 
 
 if __name__ == '__main__':
-    cherrypy.config.update({'server.socket_host': '0.0.0.0', 'server.socket_port': config['server_port'], 'tools.sessions.on': True})
-    cherrypy.quickstart(BrickWeb())
+    conf = {
+        '/': {
+            'tools.sessions.on': True,
+            'tools.staticdir.root': os.path.abspath(os.getcwd())
+        },
+        '/static': {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': './static'
+        }
+    }
+    cherrypy.config.update({'server.socket_host': '0.0.0.0', 'server.socket_port': config['server_port']})
+    cherrypy.quickstart(BrickWeb(), '/', conf)
