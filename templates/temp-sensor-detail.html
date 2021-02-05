@@ -1,9 +1,17 @@
 <%!
-    from helpers.template import convert_html
+    from helpers.template import convert_html, grafana_url_temp_sensor
+    from helpers.shared import config
 %>
         <article class="message">
             <div class="message-header">
-                <p>Temp Sensor Detail</p>
+                <p>
+                    Temp Sensor Detail
+                    % if config['grafana']['enabled']:
+                    <span class="icon is-small grafana-link-icon" id="temp-sensor-detail-grafana" title="Open corresponding Chart in Grafana">
+                        <i class="fas fa-chart-line fa-sm"></i>
+                    </span>
+                    % endif
+                </p>
             </div>
             <div class="message-body">
                 <div class="field">
@@ -67,13 +75,19 @@
                 $("#temp-sensor-raw-hide").show();
                 $("#temp-sensor-raw-data").show();
             });
+            
             $("#temp-sensor-raw-hide").click(function() {
                 $("#temp-sensor-raw-show").show();
                 $("#temp-sensor-raw-hide").hide();
                 $("#temp-sensor-raw-data").hide();
             });
+            
             $("#temp-sensor-desc-edit-button").click(function() {
                 $("#temp-sensor-desc-display").hide();
                 $("#temp-sensor-desc-edit").show();
+            });
+
+            $("#temp-sensor-detail-grafana").click(function() {
+                window.open("${grafana_url_temp_sensor(sensor['_id'])}", 'grafana');
             });
         </script>

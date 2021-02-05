@@ -1,5 +1,6 @@
 <%!
-    from helpers.template import convert_html, list_of_sensor_ids_to_sensors
+    from helpers.template import convert_html, list_of_sensor_ids_to_sensors, grafana_url_bat_level
+    from helpers.shared import config
     import time
 %>
         <div class="tile is-2 is-parent">
@@ -8,7 +9,7 @@
                 <div class="container box">
 					<p class="subtitle is-5">
                         Autoreload
-                        <span class="icon is-small cache-reload-icon" id="brick-detail-trigger-reload">
+                        <span class="icon is-small cache-reload-icon" id="brick-detail-trigger-reload" title="reload Brick-Detail from Server">
                             <i class="fas fa-sync-alt fa-sm"></i>
                         </span>
                     </p>
@@ -55,44 +56,56 @@
                 % endif
                 % if 'bat' in brick['features']:
                 <div class="container box">
-					<p class="subtitle is-5">Battery</p>
+					<p class="subtitle is-5">
+                        Battery
+                        % if config['grafana']['enabled']:
+                        <span class="icon is-small grafana-link-icon" id="brick-detail-bat-level-grafana" title="Open corresponding Chart in Grafana">
+                            <i class="fas fa-chart-line fa-sm"></i>
+                        </span>
+                        % endif
+                    </p>
 					<p class="title is-2">
                         ${round(brick['bat_last_reading'], 2)}V
                         % if brick['bat_charging']:
-                        <span class="icon has-text-warning">
+                        <span class="icon has-text-warning" title="charging">
                             <i class="fas fa-bolt fa-sm"></i>
                         </span>
                         % elif brick['bat_charging_standby']:
-                        <span class="icon has-text-success">
+                        <span class="icon has-text-success" title="charging finished">
                             <i class="fas fa-bolt fa-sm"></i>
                         </span>
                         % elif brick['bat_last_reading'] <= 3.2:
-                        <span class="icon is-large has-text-danger">
+                        <span class="icon is-large has-text-danger" title="battery-empty">
                             <i class="fas fa-battery-empty fa-sm"></i>
                         </span>
                         % elif brick['bat_last_reading'] < 3.5:
-                        <span class="icon is-large has-text-warning">
+                        <span class="icon is-large has-text-warning" title="battery-quarter">
                             <i class="fas fa-battery-quarter fa-sm"></i>
                         </span>
                         % elif brick['bat_last_reading'] < 3.7:
-                        <span class="icon is-large has-text-success">
+                        <span class="icon is-large has-text-success" title="battery-half">
                             <i class="fas fa-battery-half fa-sm"></i>
                         </span>
                         % elif brick['bat_last_reading'] < 4.0:
-                        <span class="icon is-large has-text-success">
+                        <span class="icon is-large has-text-success" title="battery-three-quarters">
                             <i class="fas fa-battery-three-quarters fa-sm"></i>
                         </span>
                         % elif brick['bat_last_reading'] <= 4.3:
-                        <span class="icon is-large has-text-success">
+                        <span class="icon is-large has-text-success" title="battery-full">
                             <i class="fas fa-battery-full fa-sm"></i>
                         </span>
                         % else:
-                        <span class="icon has-text-danger">
+                        <span class="icon has-text-danger" title="wall power">
                             <i class="fas fa-bolt fa-sm"></i>
                         </span>
                         % endif
                     </p>
 				</div>
+                <script>
+                    $("#brick-detail-bat-level-grafana").click(function() {
+                        window.open("${grafana_url_bat_level(brick['_id'])}", 'grafana');
+                    });
+                </script>
                 % endif
             </div>
         </div>

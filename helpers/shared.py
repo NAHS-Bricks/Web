@@ -7,6 +7,12 @@ config = {
     'brickserver': {
         'host': 'localhost',
         'port': 8081
+    },
+    'grafana': {
+        'enabled': False,
+        'host': '',
+        'port': 3000,
+        'datasource': 'InfluxDB'
     }
 }
 if os.path.isfile('config.json'):
