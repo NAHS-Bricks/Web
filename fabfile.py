@@ -104,6 +104,7 @@ def deploy(c):
     c.run('uname -a')
     systemctl_stop(c, 'cron')
     systemctl_stop(c, 'brickweb')
+    install_apt_package(c, 'rsync')
     install_apt_package(c, 'python3')
     install_apt_package(c, 'virtualenv')
     create_directorys(c, [project_dir])
