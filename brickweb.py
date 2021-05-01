@@ -4,7 +4,7 @@ import sys
 import json
 from mako.template import Template
 from mako.lookup import TemplateLookup
-from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, features_get_available, clear_request_cache, temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc
+from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, features_get_available, clear_request_cache, temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc, latch_exists, latch_get, latch_set_desc, latch_set_states_desc
 from helpers.shared import config
 
 
@@ -43,11 +43,13 @@ class BrickWeb(object):
             return serve_template('/index.html', brick=brick, session=cherrypy.session)
 
     @cherrypy.expose()
-    def set_desc(self, desc, brick_id=None, sensor_id=None):
+    def set_desc(self, desc, brick_id=None, sensor_id=None, latch_id=None):
         if brick_id is not None:
             brick_set_desc(brick_id, desc)
         if sensor_id is not None:
             temp_sensor_set_desc(sensor_id, desc)
+        if latch_id is not None:
+            latch_set_desc(latch_id, desc)
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()
@@ -93,6 +95,21 @@ class BrickWeb(object):
         if sensor is None:
             raise cherrypy.HTTPRedirect('/')
         return serve_template('/temp-sensor-detail.html', sensor=sensor)
+
+    @cherrypy.expose
+    def get_latch_detail(self, latch_id):
+        latch = None
+        brick_id, lid = latch_id.split('_')
+        if latch_exists(brick_id, lid):
+            latch = latch_get(brick_id, lid)
+        if latch is None:
+            raise cherrypy.HTTPRedirect('/')
+        return serve_template('/latch-detail.html', latch=latch)
+
+    @cherrypy.expose()
+    def set_states_desc(self, desc, latch_id, state):
+        latch_set_states_desc(latch_id, state, desc)
+        raise cherrypy.HTTPRedirect('/')
 
 
 if __name__ == '__main__':

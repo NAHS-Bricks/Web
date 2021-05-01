@@ -1,0 +1,150 @@
+<%!
+    from helpers.template import convert_html, grafana_url_latch
+    from helpers.shared import config
+%>
+        <article class="message">
+            <div class="message-header">
+                <p>
+                    Latch Detail
+                    % if config['grafana']['enabled']:
+                    <span class="icon is-small grafana-link-icon" id="latch-detail-grafana" title="Open corresponding Chart in Grafana">
+                        <i class="fas fa-chart-line fa-sm"></i>
+                    </span>
+                    % endif
+                </p>
+            </div>
+            <div class="message-body">
+                <div class="field">
+                    <label class="label">ID</label>
+                    <div class="box">
+                        ${latch['_id']}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Description</label>
+                    <div class="box" id="latch-desc-display">
+                        ${(latch['desc'] if latch['desc'] is not None else '')}
+                        <span class="icon edit-pencil-icon" id="latch-desc-edit-button">
+                            <i class="fas fa-edit fa-sm"></i>
+                        </span>
+                    </div>
+                    <form method="post" action="/set_desc?latch_id=${latch['_id']}" id="latch-desc-edit" style="display: none;">
+                        <div class="field has-addons">
+                            <p class="control is-expanded">
+                                <input class="input" type="text" placeholder="Latch Description" value="${(latch['desc'] if latch['desc'] is not None else '')}" name="desc">
+                            </p>
+                            <p class="control">
+                                <button class="button is-success">Save</button>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+                <div class="field">
+                    <label class="label">Current State</label>
+                    <div class="box">
+                        ${latch['states_desc'][latch['last_state']]}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Previous State</label>
+                    <div class="box">
+                        ${latch['states_desc'][latch['prev_state']]}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">States Descriptions</label>
+                    <button class="button is-dark" id="latch-states-desc-show">show</button>
+                    <button class="button is-dark" id="latch-states-desc-hide" style="display: none;">hide</button>
+                    <div id="latch-states-desc-data" style="display: none;">
+                        % for i in range(0, 6):
+                        <label class="label">State ${i}:</label>
+                        <div class="box" id="latch-states-desc-${i}-display">
+                            ${latch['states_desc'][i]}
+                            <span class="icon edit-pencil-icon" id="latch-states-desc-${i}-edit-button">
+                                <i class="fas fa-edit fa-sm"></i>
+                            </span>
+                        </div>
+                        <form method="post" action="/set_states_desc?latch_id=${latch['_id']}&state=${i}" id="latch-states-desc-${i}-edit" style="display: none;">
+                            <div class="field has-addons">
+                                <p class="control is-expanded">
+                                    <input class="input" type="text" placeholder="State Description" value="${latch['states_desc'][i]}" name="desc">
+                                </p>
+                                <p class="control">
+                                    <button class="button is-success">Save</button>
+                                </p>
+                            </div>
+                        </form>
+                        % endfor
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">RAW Data</label>
+                    <button class="button is-dark" id="latch-raw-show">show</button>
+                    <button class="button is-dark" id="latch-raw-hide" style="display: none;">hide</button>
+                    <div class="box" id="latch-raw-data" style="display: none;">
+                        <p class="is-family-monospace">
+                            ${convert_html(latch)}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <script>
+            $("#latch-raw-show").click(function() {
+                $("#latch-raw-show").hide();
+                $("#latch-raw-hide").show();
+                $("#latch-raw-data").show();
+            });
+
+            $("#latch-raw-hide").click(function() {
+                $("#latch-raw-show").show();
+                $("#latch-raw-hide").hide();
+                $("#latch-raw-data").hide();
+            });
+
+            $("#latch-desc-edit-button").click(function() {
+                $("#latch-desc-display").hide();
+                $("#latch-desc-edit").show();
+            });
+
+            $("#latch-states-desc-show").click(function() {
+                $("#latch-states-desc-show").hide();
+                $("#latch-states-desc-hide").show();
+                $("#latch-states-desc-data").show();
+            });
+
+            $("#latch-states-desc-hide").click(function() {
+                $("#latch-states-desc-show").show();
+                $("#latch-states-desc-hide").hide();
+                $("#latch-states-desc-data").hide();
+            });
+
+            $("#latch-states-desc-0-edit-button").click(function() {
+                $("#latch-states-desc-0-display").hide();
+                $("#latch-states-desc-0-edit").show();
+            });
+            $("#latch-states-desc-1-edit-button").click(function() {
+                $("#latch-states-desc-1-display").hide();
+                $("#latch-states-desc-1-edit").show();
+            });
+            $("#latch-states-desc-2-edit-button").click(function() {
+                $("#latch-states-desc-2-display").hide();
+                $("#latch-states-desc-2-edit").show();
+            });
+            $("#latch-states-desc-3-edit-button").click(function() {
+                $("#latch-states-desc-3-display").hide();
+                $("#latch-states-desc-3-edit").show();
+            });
+            $("#latch-states-desc-4-edit-button").click(function() {
+                $("#latch-states-desc-4-display").hide();
+                $("#latch-states-desc-4-edit").show();
+            });
+            $("#latch-states-desc-5-edit-button").click(function() {
+                $("#latch-states-desc-5-display").hide();
+                $("#latch-states-desc-5-edit").show();
+            });
+
+            $("#latch-detail-grafana").click(function() {
+                window.open("${grafana_url_latch(latch['_id'])}", 'grafana');
+            });
+        </script>

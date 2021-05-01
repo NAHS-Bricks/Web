@@ -108,5 +108,25 @@ def temp_sensor_set_desc(sensor_id, desc):
     clear_request_cache(sensor_id)
 
 
+def latch_get(brick_id, latch_id):
+    lid = str(brick_id) + '_' + str(int(latch_id))
+    return _request_cached({"command": "get_latch", "latch": lid})['latch']
+
+
+def latch_exists(brick_id, latch_id):
+    lid = str(brick_id) + '_' + str(int(latch_id))
+    return 0 == _request_cached({"command": "get_latch", "latch": lid})['s']
+
+
+def latch_set_desc(latch_id, desc):
+    _request_cached({'command': 'set', 'latch': latch_id, 'key': 'desc', 'value': desc})
+    clear_request_cache(latch_id)
+
+
+def latch_set_states_desc(latch_id, state, desc):
+    _request_cached({'command': 'set', 'latch': latch_id, 'state': int(state), 'key': 'state_desc', 'value': desc})
+    clear_request_cache(latch_id)
+
+
 def features_get_available():
     return _request_cached({"command": "get_features"})['features']

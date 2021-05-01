@@ -91,7 +91,7 @@
     </div>
     <button class="modal-close is-large" aria-label="close"></button>
   </div>
-  <div class="modal" id="temp-sensor-detail-modal">
+  <div class="modal" id="sensor-detail-modal">
 	<div class="modal-background"></div>
 	<div class="modal-content">
     </div>
@@ -103,12 +103,12 @@
             $("html").addClass("is-clipped");
             $(target).addClass("is-active");
         });
-         
+
         $(".modal-close").click(function() {
             $("html").removeClass("is-clipped");
             $(this).parent().removeClass("is-active");
         });
-         
+
 		$(".modal-background").click(function() {
             $("html").removeClass("is-clipped");
             $(this).parent().removeClass("is-active");
