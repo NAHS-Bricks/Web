@@ -4,7 +4,7 @@ import sys
 import json
 from mako.template import Template
 from mako.lookup import TemplateLookup
-from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, features_get_available, clear_request_cache, temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc, latch_exists, latch_get, latch_set_desc, latch_set_states_desc
+from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, features_get_available, clear_request_cache, temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc, latch_exists, latch_get, latch_set_desc, latch_set_states_desc, latch_add_trigger, latch_del_trigger
 from helpers.shared import config
 
 
@@ -109,6 +109,15 @@ class BrickWeb(object):
     @cherrypy.expose()
     def set_states_desc(self, desc, latch_id, state):
         latch_set_states_desc(latch_id, state, desc)
+        raise cherrypy.HTTPRedirect('/')
+
+    @cherrypy.expose()
+    def set_latch_triggers(self, latch_id, triggers):
+        for t in range(0, 4):
+            if str(t) in triggers:
+                latch_add_trigger(latch_id, t)
+            else:
+                latch_del_trigger(latch_id, t)
         raise cherrypy.HTTPRedirect('/')
 
 

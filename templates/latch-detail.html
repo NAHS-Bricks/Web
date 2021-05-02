@@ -1,6 +1,7 @@
 <%!
     from helpers.template import convert_html, grafana_url_latch
     from helpers.shared import config
+    from datetime import datetime
 %>
         <article class="message">
             <div class="message-header">
@@ -42,13 +43,43 @@
                 <div class="field">
                     <label class="label">Current State</label>
                     <div class="box">
-                        ${latch['states_desc'][latch['last_state']]}
+                        ${latch['states_desc'][latch['last_state']]} <span class="has-text-grey-light">(at ${str(datetime.fromtimestamp(int(latch['last_ts'])).time())})</span>
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">Previous State</label>
                     <div class="box">
-                        ${latch['states_desc'][latch['prev_state']]}
+                        ${latch['states_desc'][latch['prev_state']]} <span class="has-text-grey-light">(at ${str(datetime.fromtimestamp(int(latch['prev_ts'])).time())})</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">
+                        Triggers
+                        <span class="icon edit-pencil-icon" id="latch-triggers-edit-button">
+                            <i class="fas fa-edit fa-sm"></i>
+                        </span>
+                    </label>
+                    <div class="box" id="latch-triggers-display">
+                        % for t in latch['triggers']:
+                        ${latch['states_desc'][t+2]}<br />
+                        % endfor
+                    </div>
+                    <div class="box" id="latch-triggers-edit" style="display: none;">
+                        <form method="post" action="/set_latch_triggers?latch_id=${latch['_id']}">
+                            <div class="field">
+                                <fieldset>
+                                    % for i in range(0, 4):
+                                    <p class="control is-expanded">
+                                        <input type="checkbox" name="triggers" value="${i}" ${('checked' if i in latch['triggers'] else '')}>
+                                        ${latch['states_desc'][i+2]}
+                                    </p>
+                                    % endfor
+                                </fieldset>
+                                <p class="control">
+                                    <button class="button is-success">Save</button>
+                                </p>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div class="field">
@@ -142,6 +173,12 @@
             $("#latch-states-desc-5-edit-button").click(function() {
                 $("#latch-states-desc-5-display").hide();
                 $("#latch-states-desc-5-edit").show();
+            });
+
+            $("#latch-triggers-edit-button").click(function() {
+                $("#latch-triggers-display").hide();
+                $("#latch-triggers-edit").show();
+                $("#latch-triggers-edit-button").hide();
             });
 
             $("#latch-detail-grafana").click(function() {

@@ -128,5 +128,15 @@ def latch_set_states_desc(latch_id, state, desc):
     clear_request_cache(latch_id)
 
 
+def latch_add_trigger(latch_id, trigger_id):
+    _request_cached({'command': 'set', 'latch': latch_id, 'key': 'add_trigger', 'value': int(trigger_id)})
+    clear_request_cache(latch_id)
+
+
+def latch_del_trigger(latch_id, trigger_id):
+    _request_cached({'command': 'set', 'latch': latch_id, 'key': 'del_trigger', 'value': int(trigger_id)})
+    clear_request_cache(latch_id)
+
+
 def features_get_available():
     return _request_cached({"command": "get_features"})['features']
