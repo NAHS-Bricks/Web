@@ -36,6 +36,17 @@ def systemctl_start(c, service):
         c.run(f"systemctl start {service}", hide=True)
 
 
+def systemctl_start_docker(c):
+    if not c.run(f"systemctl is-enabled docker", warn=True, hide=True).ok:
+        print(f"Enable Service docker")
+        c.run(f"systemctl enable docker", hide=True)
+    if c.run(f"systemctl is-active docker", warn=True, hide=True).ok:
+        print(f"Service docker allready running")
+    else:
+        print(f"Start Service docker")
+        c.run(f"systemctl start docker", hide=True)
+
+
 def systemctl_install_service(c, local_file, remote_file, replace_macros):
     print(f"Installing Service {remote_file}")
     c.put(os.path.join('install', local_file), remote=os.path.join('/etc/systemd/system', remote_file))
@@ -129,7 +140,7 @@ def grafana(c):
     c.run(f"chmod 777 {storagedir_grafana}")
     systemctl_install_service(c, 'docker.service', 'docker.grafana.service', [('__storage__', storagedir_grafana + ':/var/lib/grafana'), ('__port__', '3000:3000'), ('__image__', grafana_image)])
     c.run("systemctl daemon-reload")
-    systemctl_start(c, 'docker')
+    systemctl_start_docker(c)
     docker_pull(c, grafana_image)
-    docker_prune(c)
     systemctl_start(c, 'docker.grafana.service')
+    docker_prune(c)
