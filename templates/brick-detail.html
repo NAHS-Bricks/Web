@@ -1,5 +1,5 @@
 <%!
-    from helpers.template import convert_html, list_of_sensor_ids_to_sensors, grafana_url_bat_level, list_of_latches_of_brick
+    from helpers.template import convert_html, list_of_sensor_ids_to_sensors, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str
     from helpers.shared import config
     import time
     from datetime import datetime
@@ -110,21 +110,39 @@
                 % endif
             </div>
         </div>
-		<div class="tile is-8 is-vertical is-parent">
+		<div class="tile is-3 is-parent">
             <div class="tile is-child">
+
                 <div class="content box">
-                    <p>
-                        <b>last_ts:</b> ${str(datetime.fromtimestamp(int(brick['last_ts'])))}
+                    <p class="title is-6">
+                        last_ts
                     </p>
-                    % if 'bat' in brick['features']:
                     <p>
-                        <b>bat_last_ts:</b> ${str(datetime.fromtimestamp(int(brick['bat_last_ts'])))}
+                        ${datetime.fromtimestamp(int(brick['last_ts'])).strftime('%d.%m.%Y %H:%M:%S')}<br />
+                        <span class="has-text-grey-light">(${time_ago_str(brick['last_ts'])} ago)</span>
                     </p>
-                    % endif
                 </div>
+
+                % if 'bat' in brick['features']:
+                <div class="content box">
+                    <p class="title is-6">
+                        bat_last_ts
+                    </p>
+                    <p>
+                        ${datetime.fromtimestamp(int(brick['bat_last_ts'])).strftime('%d.%m.%Y %H:%M:%S')}<br />
+                        <span class="has-text-grey-light">(${time_ago_str(brick['bat_last_ts'])} ago)</span>
+                    </p>
+                </div>
+                % endif
+
             </div>
+        </div>
+        <div class="tile is-5 is-parent">
 			<div class="tile is-child">
 				<div class="content box">
+                    <p class="title is-6">
+                        RAW Data
+                    </p>
 					<p class="is-family-monospace">
                         ${convert_html(brick)}
                     </p>
