@@ -5,7 +5,7 @@
 		<div class="tile is-parent">
 			<div class="tile is-child">
 				<div class="container box">
-					<p class="title is-1 has-text-centered">${brick['_id']} (${brick['desc']})</p>
+					<p class="title is-1 has-text-centered">${brick['_id']} (${brick['desc'] if brick['desc'] is not None else ''})</p>
 					<div class="is-divider m-1"></div>
                     <nav class="navbar" role="navigation" aria-label="main navigation">
                         <div class="navbar-menu m-0">
@@ -52,7 +52,7 @@
                 <form method="post" action="/set_desc?brick_id=${brick['_id']}">
                     <div class="field has-addons">
                         <p class="control is-expanded">
-                            <input class="input" type="text" placeholder="Brick Description" value="${brick['desc']}" name="desc">
+                            <input class="input" type="text" placeholder="Brick Description" value="${brick['desc'] if brick['desc'] is not None else ''}" name="desc">
                         </p>
                         <p class="control">
                             <button class="button is-success">Save</button>

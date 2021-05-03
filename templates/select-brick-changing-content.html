@@ -20,7 +20,7 @@
                     <span class="panel-icon">
                         <i class="fas fa-cube" aria-hidden="true"></i>
                     </span>
-                    ${brick_id} (${desc})
+                    ${brick_id} (${desc if desc is not None else ''})
                 </a>
                 % endfor
                 <script>

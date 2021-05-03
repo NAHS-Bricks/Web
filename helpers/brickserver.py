@@ -89,7 +89,7 @@ def bricks_get_filtered(feature=None, f=None):
         brick = brick_get(brick_id)
         if feature is not None and feature not in brick['features']:
             continue
-        if f is not None and f not in brick['_id'].lower() and f not in brick['desc'].lower():
+        if f is not None and f not in brick['_id'].lower() and (brick['desc'] is None or f not in brick['desc'].lower()):
             continue
         result.append((brick['_id'], brick['desc']))
     return result

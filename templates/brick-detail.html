@@ -2,6 +2,7 @@
     from helpers.template import convert_html, list_of_sensor_ids_to_sensors, grafana_url_bat_level, list_of_latches_of_brick
     from helpers.shared import config
     import time
+    from datetime import datetime
 %>
         <div class="tile is-2 is-parent">
             <div class="tile is-child">
@@ -110,6 +111,18 @@
             </div>
         </div>
 		<div class="tile is-8 is-vertical is-parent">
+            <div class="tile is-child">
+                <div class="content box">
+                    <p>
+                        <b>last_ts:</b> ${str(datetime.fromtimestamp(int(brick['last_ts'])))}
+                    </p>
+                    % if 'bat' in brick['features']:
+                    <p>
+                        <b>bat_last_ts:</b> ${str(datetime.fromtimestamp(int(brick['bat_last_ts'])))}
+                    </p>
+                    % endif
+                </div>
+            </div>
 			<div class="tile is-child">
 				<div class="content box">
 					<p class="is-family-monospace">
