@@ -3,6 +3,7 @@
     from helpers.shared import config
     import time
     from datetime import datetime
+    import os
 %>
         <div class="tile is-2 is-parent">
             <div class="tile is-child">
@@ -135,6 +136,14 @@
                 </div>
                 % endif
 
+                % if os.path.isfile('static/images/bricktype/' + str(brick['type']) + '.jpg'):
+                <div class="content box">
+                    <a class="modal-button" data-target="#bricktype-image-modal">
+                        <img src="/static/images/bricktype/${brick['type']}.jpg" />
+                    </a>
+                </div>
+                % endif
+
             </div>
         </div>
         <div class="tile is-5 is-parent">
@@ -197,6 +206,13 @@
                 % endif
 			</div>
 		</div>
+        <div class="modal" id="bricktype-image-modal">
+            <div class="modal-background"></div>
+            <div class="modal-content">
+                <img src="/static/images/bricktype/${brick['type']}.jpg" />
+            </div>
+            <button class="modal-close is-large" aria-label="close"></button>
+          </div>
         <script>
             $(".temp_sensor").click(function() {
                 var target = $(this).data("target");
