@@ -8,7 +8,14 @@
 					<p class="title is-1 has-text-centered">${brick['_id']} (${brick['desc'] if brick['desc'] is not None else ''})</p>
 					<div class="is-divider m-1"></div>
                     <nav class="navbar" role="navigation" aria-label="main navigation">
-                        <div class="navbar-menu m-0">
+                        <div class="navbar-brand">
+                            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+                                <span aria-hidden="true"></span>
+                                <span aria-hidden="true"></span>
+                                <span aria-hidden="true"></span>
+                            </a>
+                        </div>
+                        <div class="navbar-menu m-0" id="main-menu">
                             <div class="navbar-start">
                                 <div class="navbar-item">
                                     <a class="button modal-button" data-target="#select-brick-modal">
@@ -118,6 +125,18 @@
 		$(".modal-background").click(function() {
             $("html").removeClass("is-clipped");
             $(this).parent().removeClass("is-active");
+        });
+
+        $(".navbar-burger").click(function() {
+            if($("#main-menu").hasClass("is-active")) {
+                $("#main-menu").removeClass("is-active");
+            } else {
+                $("#main-menu").addClass("is-active");
+            }
+        });
+
+        $(".navbar-item").click(function() {
+            $("#main-menu").removeClass("is-active");
         });
   </script>
   </body>
