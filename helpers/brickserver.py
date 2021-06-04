@@ -95,6 +95,27 @@ def bricks_get_filtered(feature=None, f=None):
     return result
 
 
+def bricks_get_sorted_by_bat_runtime_prediction():
+    result = []
+    for brick_id in bricks_get():
+        brick = brick_get(brick_id)
+        brp = (brick['bat_runtime_prediction'] if 'bat_runtime_prediction' in brick else None)
+        result.append([brick_id, brick['desc'], brp])
+
+    for i in range(0, len(result) - 1):
+        for j in range(i + 1, len(result)):
+            swap = False
+            if result[i][2] is None and result[j][2] is not None:
+                swap = True
+            elif result[i][2] is not None and result[j][2] is not None and result[j][2] < result[i][2]:
+                swap = True
+            if swap:
+                t = result[i]
+                result[i] = result[j]
+                result[j] = t
+    return result
+
+
 def temp_sensor_get(sensor_id):
     return _request_cached({"command": "get_temp_sensor", "temp_sensor": sensor_id})['temp_sensor']
 

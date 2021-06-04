@@ -1,0 +1,37 @@
+<%!
+    from helpers.brickserver import bricks_get_sorted_by_bat_runtime_prediction
+%>
+  <div class="modal" id="runtime-overview-modal">
+	<div class="modal-background"></div>
+	<div class="modal-content">
+		<div class="panel box">
+			<p class="panel-heading">
+				Runtime Prediction
+			</p>
+            <div>
+                % for brick_id, desc, brp in bricks_get_sorted_by_bat_runtime_prediction():
+                <a class="panel-block" href="index?brick_id=${brick_id}">
+                    % if brp is None:
+                    <span class="panel-icon has-text-info">
+                    % elif int(brp) <= 3:
+                    <span class="panel-icon has-text-danger">
+                    % elif int(brp) <= 14:
+                    <span class="panel-icon has-text-warning">
+                    % else:
+                    <span class="panel-icon has-text-success">
+                    % endif
+                        <i class="fas fa-cube" aria-hidden="true"></i>
+                    </span>
+                    ${brick_id} (${desc if desc is not None else ''}) ->
+                    % if brp is not None:
+                    ${int(brp)} days
+                    % else:
+                    unkonwn
+                    % endif
+                </a>
+                % endfor
+            </div>
+		</div>
+    </div>
+	<button class="modal-close is-large" aria-label="close"></button>
+  </div>

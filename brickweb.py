@@ -43,6 +43,10 @@ class BrickWeb(object):
             return serve_template('/index.html', brick=brick, session=cherrypy.session)
 
     @cherrypy.expose()
+    def runtime_overview(self):
+        return serve_template('/runtime-overview.html', session=cherrypy.session)
+
+    @cherrypy.expose()
     def set_desc(self, desc, brick_id=None, sensor_id=None, latch_id=None):
         if brick_id is not None:
             brick_set_desc(brick_id, desc)
