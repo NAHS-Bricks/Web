@@ -75,15 +75,15 @@
                         <span class="icon has-text-success" title="charging finished">
                             <i class="fas fa-bolt fa-sm"></i>
                         </span>
-                        % elif brick['bat_last_reading'] <= 3.2:
+                        % elif brick['bat_last_reading'] <= 3.4:
                         <span class="icon is-large has-text-danger" title="battery-empty">
                             <i class="fas fa-battery-empty fa-sm"></i>
                         </span>
-                        % elif brick['bat_last_reading'] < 3.5:
+                        % elif brick['bat_last_reading'] < 3.58:
                         <span class="icon is-large has-text-warning" title="battery-quarter">
                             <i class="fas fa-battery-quarter fa-sm"></i>
                         </span>
-                        % elif brick['bat_last_reading'] < 3.7:
+                        % elif brick['bat_last_reading'] < 3.74:
                         <span class="icon is-large has-text-success" title="battery-half">
                             <i class="fas fa-battery-half fa-sm"></i>
                         </span>
