@@ -36,8 +36,11 @@ def grafana_url_latch(latch_id):
 
 
 def time_ago_str(fromtime_ts):
-    seconds = (datetime.now() - datetime.fromtimestamp(fromtime_ts)).seconds
+    seconds = int((datetime.now() - datetime.fromtimestamp(fromtime_ts)).total_seconds())
     result = ''
+    if seconds > (60 * 60 * 24):
+        result += str(int(seconds / (60 * 60 * 24))) + 'd '
+        seconds %= (60 * 60 * 24)
     if seconds > (60 * 60):
         result += str(int(seconds / (60 * 60))) + 'h '
         seconds %= (60 * 60)
