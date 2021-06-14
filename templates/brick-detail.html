@@ -114,6 +114,7 @@
 		<div class="tile is-3 is-parent">
             <div class="tile is-child">
 
+                % if 'last_ts' in brick and brick['last_ts']:
                 <div class="content box">
                     <p class="title is-6">
                         last_ts
@@ -123,8 +124,9 @@
                         <span class="has-text-grey-light">(${time_ago_str(brick['last_ts'])} ago)</span>
                     </p>
                 </div>
+                % endif
 
-                % if 'bat' in brick['features']:
+                % if 'bat' in brick['features'] and 'bat_last_ts' in brick and brick['bat_last_ts']:
                 <div class="content box">
                     <p class="title is-6">
                         bat_last_ts
@@ -132,6 +134,18 @@
                     <p>
                         ${datetime.fromtimestamp(int(brick['bat_last_ts'])).strftime('%d.%m.%Y %H:%M:%S')}<br />
                         <span class="has-text-grey-light">(${time_ago_str(brick['bat_last_ts'])} ago)</span>
+                    </p>
+                </div>
+                % endif
+
+                 % if 'bat' in brick['features'] and 'bat_init_ts' in brick and brick['bat_init_ts']:
+                <div class="content box">
+                    <p class="title is-6">
+                        bat_init_ts
+                    </p>
+                    <p>
+                        ${datetime.fromtimestamp(int(brick['bat_init_ts'])).strftime('%d.%m.%Y %H:%M:%S')}<br />
+                        <span class="has-text-grey-light">(${time_ago_str(brick['bat_init_ts'])} ago)</span>
                     </p>
                 </div>
                 % endif
