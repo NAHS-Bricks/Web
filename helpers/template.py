@@ -1,5 +1,5 @@
 import json
-from helpers.brickserver import temp_sensor_get, latch_get
+from helpers.brickserver import temp_sensor_get, latch_get, serverversion_get
 from helpers.shared import config
 from datetime import datetime, timedelta
 
@@ -49,3 +49,21 @@ def time_ago_str(fromtime_ts):
         seconds %= 60
     result += str(seconds) + 's'
     return result
+
+
+def server_is(version):
+    """
+    executes version <= server
+    this means: true is returned if server is at least at the version specified in version
+    up to three dots are valid: major.minor.patch.fix
+    """
+    version = version.split('.')
+    while len(version) < 4:
+        version.append('0')
+    server = serverversion_get().split('.')
+    while len(server) < 4:
+        server.append('0')
+    for i in range(4):
+        if int(server[i]) < int(version[i]):
+            return False
+    return True

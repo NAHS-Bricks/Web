@@ -51,6 +51,14 @@ def _request_cached(payload):
     return r
 
 
+def serverversion_get():
+    r = _request_cached({"command": "get_version"})
+    if r['s'] == 0:
+        return r['version']
+    else:
+        return '0.0.0'
+
+
 def brick_get(brick_id):
     return _request_cached({"command": "get_brick", "brick": brick_id})['brick']
 
@@ -161,3 +169,11 @@ def latch_del_trigger(latch_id, trigger_id):
 
 def features_get_available():
     return _request_cached({"command": "get_features"})['features']
+
+
+def count_get(item):
+    r = _request_cached({'command': 'get_count', 'item': item})
+    if r['s'] == 0:
+        return int(r['count'])
+    else:
+        return 0

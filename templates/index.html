@@ -18,6 +18,11 @@
                         <div class="navbar-menu m-0" id="main-menu">
                             <div class="navbar-start">
                                 <div class="navbar-item">
+                                    <a class="button server-info">
+                                        Server Info
+                                    </a>
+                                </div>
+                                <div class="navbar-item">
                                     <a class="button modal-button" data-target="#select-brick-modal">
                                         Select Brick
                                     </a>
@@ -137,6 +142,17 @@
 
         $(".navbar-item").click(function() {
             $("#main-menu").removeClass("is-active");
+        });
+
+        $(".server-info").click(function() {
+            $("html").addClass("is-clipped");
+            $("#sensor-detail-modal").addClass("is-active");
+            $.ajax( {
+                url:'get_server_info',
+                success:function(data) {
+                    $("#sensor-detail-modal > .modal-content").html(data);
+                }
+            });
         });
   </script>
   </body>

@@ -92,6 +92,10 @@ class BrickWeb(object):
         return serve_template('/brick-detail.html', brick=brick, session=cherrypy.session)
 
     @cherrypy.expose
+    def get_server_info(self):
+        return serve_template('/server-info.html')
+
+    @cherrypy.expose
     def get_temp_sensor_detail(self, sensor_id):
         sensor = None
         if temp_sensor_exists(sensor_id):

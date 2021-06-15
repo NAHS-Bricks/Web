@@ -1,0 +1,56 @@
+<%!
+    from helpers.brickserver import serverversion_get, count_get
+    from helpers.shared import config
+    from helpers.template import server_is
+%>
+        <article class="message">
+            <div class="message-header">
+                <p>
+                    Server Info
+                </p>
+            </div>
+            <div class="message-body">
+                <div class="field">
+                    <label class="label">Server Address:</label>
+                    <div class="box">
+                        ${config['brickserver']['host']}:${config['brickserver']['port']}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Version:</label>
+                    <div class="box">
+                        % if serverversion_get() == '0.0.0':
+                        &lt; 0.5.0
+                        % else:
+                        ${serverversion_get()}
+                        % endif
+                    </div>
+                </div>
+                % if server_is('0.5.0'):
+                <div class="field">
+                    <label class="label">Bricks count:</label>
+                    <div class="box">
+                        ${str(count_get('bricks'))}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Temp Sensors count:</label>
+                    <div class="box">
+                        ${str(count_get('temp_sensors'))}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Latches count:</label>
+                    <div class="box">
+                        ${str(count_get('latches'))}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Signals count:</label>
+                    <div class="box">
+                        ${str(count_get('signals'))}
+                    </div>
+                </div>
+                % endif
+            </div>
+        </article>
