@@ -1,5 +1,5 @@
 import json
-from helpers.brickserver import temp_sensor_get, latch_get, serverversion_get
+from helpers.brickserver import temp_sensor_get, latch_get, serverversion_get, signal_get
 from helpers.shared import config
 from datetime import datetime, timedelta
 
@@ -14,6 +14,10 @@ def list_of_sensor_ids_to_sensors(sensor_ids):
 
 def list_of_latches_of_brick(brick):
     return [latch_get(brick['_id'], i) for i in range(0, brick['latch_count'])]
+
+
+def list_of_signals_of_brick(brick):
+    return [signal_get(brick['_id'], i) for i in range(0, brick['signal_count'])]
 
 
 def grafana_url_bat_level(brick_id):

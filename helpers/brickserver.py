@@ -167,6 +167,31 @@ def latch_del_trigger(latch_id, trigger_id):
     clear_request_cache(latch_id)
 
 
+def signal_get(brick_id, signal_id):
+    sid = brick_id + '_' + str(signal_id)
+    return _request_cached({"command": "get_signal", "signal": sid})['signal']
+
+
+def signal_exists(brick_id, signal_id):
+    sid = brick_id + '_' + str(signal_id)
+    return 0 == _request_cached({"command": "get_signal", "signal": sid})['s']
+
+
+def signal_set_desc(signal_id, desc):
+    _request_cached({'command': 'set', 'signal': signal_id, 'key': 'desc', 'value': desc})
+    clear_request_cache(signal_id)
+
+
+def signal_set_states_desc(signal_id, state, desc):
+    _request_cached({'command': 'set', 'signal': signal_id, 'state': int(state), 'key': 'state_desc', 'value': desc})
+    clear_request_cache(signal_id)
+
+
+def signal_set_state(signal_id, state):
+    _request_cached({'command': 'set', 'signal': signal_id, 'key': 'signal', 'value': int(state)})
+    clear_request_cache(signal_id)
+
+
 def features_get_available():
     return _request_cached({"command": "get_features"})['features']
 

@@ -1,5 +1,5 @@
 <%!
-    from helpers.template import convert_html, list_of_sensor_ids_to_sensors, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str
+    from helpers.template import convert_html, list_of_sensor_ids_to_sensors, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str, list_of_signals_of_brick
     from helpers.shared import config
     import time
     from datetime import datetime
@@ -218,6 +218,22 @@
                 </a>
                 % endfor
                 % endif
+
+                % if 'signal' in brick['features']:
+                % for signal in list_of_signals_of_brick(brick):
+                <a class="container box signal" data-target="${signal['_id']}">
+                    <p class="subtitle is-5">
+                        Signal:&nbsp;${signal['_id'].split('_')[1]}
+                    </p>
+                    <p class="title is-2${' has-text-warning' if signal['state_transmitted_ts'] is None else ''}">
+                        ${signal['states_desc'][signal['state']]}
+                    </p>
+                    <p class="subtitle is-6">
+                        ${signal['desc']}
+                    </p>
+                </a>
+                % endfor
+                % endif
 			</div>
 		</div>
         <div class="modal" id="bricktype-image-modal">
@@ -245,6 +261,17 @@
                 $("#sensor-detail-modal").addClass("is-active");
                 $.ajax( {
                     url:'get_latch_detail/?latch_id=' + target,
+                    success:function(data) {
+                        $("#sensor-detail-modal > .modal-content").html(data);
+                    }
+                });
+            });
+            $(".signal").click(function() {
+                var target = $(this).data("target");
+                $("html").addClass("is-clipped");
+                $("#sensor-detail-modal").addClass("is-active");
+                $.ajax( {
+                    url:'get_signal_detail/?signal_id=' + target,
                     success:function(data) {
                         $("#sensor-detail-modal > .modal-content").html(data);
                     }

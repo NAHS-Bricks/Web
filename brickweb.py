@@ -4,7 +4,11 @@ import sys
 import json
 from mako.template import Template
 from mako.lookup import TemplateLookup
-from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, features_get_available, clear_request_cache, temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc, latch_exists, latch_get, latch_set_desc, latch_set_states_desc, latch_add_trigger, latch_del_trigger
+from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc
+from helpers.brickserver import features_get_available, clear_request_cache
+from helpers.brickserver import temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc
+from helpers.brickserver import latch_exists, latch_get, latch_set_desc, latch_set_states_desc, latch_add_trigger, latch_del_trigger
+from helpers.brickserver import signal_exists, signal_get, signal_set_desc, signal_set_states_desc, signal_set_state
 from helpers.shared import config
 
 
@@ -47,13 +51,15 @@ class BrickWeb(object):
         return serve_template('/runtime-overview.html', session=cherrypy.session)
 
     @cherrypy.expose()
-    def set_desc(self, desc, brick_id=None, sensor_id=None, latch_id=None):
+    def set_desc(self, desc, brick_id=None, sensor_id=None, latch_id=None, signal_id=None):
         if brick_id is not None:
             brick_set_desc(brick_id, desc)
         if sensor_id is not None:
             temp_sensor_set_desc(sensor_id, desc)
         if latch_id is not None:
             latch_set_desc(latch_id, desc)
+        if signal_id is not None:
+            signal_set_desc(signal_id, desc)
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()
@@ -114,9 +120,27 @@ class BrickWeb(object):
             raise cherrypy.HTTPRedirect('/')
         return serve_template('/latch-detail.html', latch=latch)
 
+    @cherrypy.expose
+    def get_signal_detail(self, signal_id):
+        signal = None
+        brick_id, sid = signal_id.split('_')
+        if signal_exists(brick_id, sid):
+            signal = signal_get(brick_id, sid)
+        if signal is None:
+            raise cherrypy.HTTPRedirect('/')
+        return serve_template('/signal-detail.html', signal=signal)
+
     @cherrypy.expose()
-    def set_states_desc(self, desc, latch_id, state):
-        latch_set_states_desc(latch_id, state, desc)
+    def set_states_desc(self, desc, state, latch_id=None, signal_id=None):
+        if latch_id is not None:
+            latch_set_states_desc(latch_id, state, desc)
+        if signal_id is not None:
+            signal_set_states_desc(signal_id, state, desc)
+        raise cherrypy.HTTPRedirect('/')
+
+    @cherrypy.expose()
+    def set_state(self, state, signal_id):
+        signal_set_state(signal_id, state)
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()

@@ -1,0 +1,142 @@
+<%!
+    from helpers.template import convert_html
+    from helpers.shared import config
+    from datetime import datetime
+%>
+        <article class="message">
+            <div class="message-header">
+                <p>
+                    Signal Detail
+                </p>
+            </div>
+            <div class="message-body">
+                <div class="field">
+                    <label class="label">ID</label>
+                    <div class="box">
+                        ${signal['_id']}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Description</label>
+                    <div class="box" id="signal-desc-display">
+                        ${(signal['desc'] if signal['desc'] is not None else '')}
+                        <span class="icon edit-pencil-icon" id="signal-desc-edit-button">
+                            <i class="fas fa-edit fa-sm"></i>
+                        </span>
+                    </div>
+                    <form method="post" action="/set_desc?signal_id=${signal['_id']}" id="signal-desc-edit" style="display: none;">
+                        <div class="field has-addons">
+                            <p class="control is-expanded">
+                                <input class="input" type="text" placeholder="Signal Description" value="${(signal['desc'] if signal['desc'] is not None else '')}" name="desc">
+                            </p>
+                            <p class="control">
+                                <button class="button is-success">Save</button>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+                <div class="field">
+                    <label class="label">Current State</label>
+                    <div class="box">
+                        ${signal['states_desc'][signal['state']]}<br />
+                        <span class="has-text-grey-light">
+                            set at ${str(datetime.fromtimestamp(int(signal['state_set_ts'])).strftime('%d.%m.%Y %H:%M:%S')) if signal['state_set_ts'] is not None else '???'}<br />
+                            transmitted at ${str(datetime.fromtimestamp(int(signal['state_transmitted_ts'])).strftime('%d.%m.%Y %H:%M:%S')) if signal['state_transmitted_ts'] is not None else '---'}
+                        </span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Set State</label>
+                    <div class="box">
+                        <div class="field is-grouped">
+                            % for i in range(0, 2):
+                            <form class="control" method="post" action="/set_state?signal_id=${signal['_id']}&state=${i}">
+                                <button class="button is-dark">${signal['states_desc'][i]}</button>
+                            </form>
+                            % endfor
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">States Descriptions</label>
+                    <button class="button is-dark" id="signal-states-desc-show">show</button>
+                    <button class="button is-dark" id="signal-states-desc-hide" style="display: none;">hide</button>
+                    <div id="signal-states-desc-data" style="display: none;">
+                        % for i in range(0, 2):
+                        <label class="label">State ${i}:</label>
+                        <div class="box" id="signal-states-desc-${i}-display">
+                            ${signal['states_desc'][i]}
+                            <span class="icon edit-pencil-icon" id="signal-states-desc-${i}-edit-button">
+                                <i class="fas fa-edit fa-sm"></i>
+                            </span>
+                        </div>
+                        <form method="post" action="/set_states_desc?signal_id=${signal['_id']}&state=${i}" id="signal-states-desc-${i}-edit" style="display: none;">
+                            <div class="field has-addons">
+                                <p class="control is-expanded">
+                                    <input class="input" type="text" placeholder="State Description" value="${signal['states_desc'][i]}" name="desc">
+                                </p>
+                                <p class="control">
+                                    <button class="button is-success">Save</button>
+                                </p>
+                            </div>
+                        </form>
+                        % endfor
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">RAW Data</label>
+                    <button class="button is-dark" id="signal-raw-show">show</button>
+                    <button class="button is-dark" id="signal-raw-hide" style="display: none;">hide</button>
+                    <div class="box" id="signal-raw-data" style="display: none;">
+                        <p class="is-family-monospace">
+                            ${convert_html(signal)}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <script>
+            $("#signal-raw-show").click(function() {
+                $("#signal-raw-show").hide();
+                $("#signal-raw-hide").show();
+                $("#signal-raw-data").show();
+            });
+
+            $("#signal-raw-hide").click(function() {
+                $("#signal-raw-show").show();
+                $("#signal-raw-hide").hide();
+                $("#signal-raw-data").hide();
+            });
+
+            $("#signal-desc-edit-button").click(function() {
+                $("#signal-desc-display").hide();
+                $("#signal-desc-edit").show();
+            });
+
+            $("#signal-states-desc-show").click(function() {
+                $("#signal-states-desc-show").hide();
+                $("#signal-states-desc-hide").show();
+                $("#signal-states-desc-data").show();
+            });
+
+            $("#signal-states-desc-hide").click(function() {
+                $("#signal-states-desc-show").show();
+                $("#signal-states-desc-hide").hide();
+                $("#signal-states-desc-data").hide();
+            });
+
+            $("#signal-states-desc-0-edit-button").click(function() {
+                $("#signal-states-desc-0-display").hide();
+                $("#signal-states-desc-0-edit").show();
+            });
+            $("#signal-states-desc-1-edit-button").click(function() {
+                $("#signal-states-desc-1-display").hide();
+                $("#signal-states-desc-1-edit").show();
+            });
+
+            $("#signal-triggers-edit-button").click(function() {
+                $("#signal-triggers-display").hide();
+                $("#signal-triggers-edit").show();
+                $("#signal-triggers-edit-button").hide();
+            });
+        </script>
