@@ -8,16 +8,32 @@ def convert_html(json_obj):
     return json.dumps(json_obj, indent=4, sort_keys=True).replace(' ', '&nbsp;').replace('\n', '<br />\n')
 
 
-def list_of_sensor_ids_to_sensors(sensor_ids):
-    return [temp_sensor_get(sensor) for sensor in sensor_ids]
+def list_of_temp_sensors_of_brick(brick):
+    if 'temp' in brick['features']:
+        return [temp_sensor_get(sensor) for sensor in brick['temp_sensors']]
+    else:
+        return list()
 
 
 def list_of_latches_of_brick(brick):
-    return [latch_get(brick['_id'], i) for i in range(0, brick['latch_count'])]
+    if 'latch' in brick['features']:
+        return [latch_get(brick['_id'], i) for i in range(0, brick['latch_count'])]
+    else:
+        return list()
 
 
 def list_of_signals_of_brick(brick):
-    return [signal_get(brick['_id'], i) for i in range(0, brick['signal_count'])]
+    if 'signal' in brick['features']:
+        return [signal_get(brick['_id'], i) for i in range(0, brick['signal_count'])]
+    else:
+        return list()
+
+
+def has_disabled_sensors(brick):
+    for s in list_of_temp_sensors_of_brick(brick) + list_of_latches_of_brick(brick) + list_of_signals_of_brick(brick):
+        if 'ui' in s['disables']:
+            return True
+    return False
 
 
 def grafana_url_bat_level(brick_id):

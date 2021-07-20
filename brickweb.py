@@ -6,10 +6,10 @@ from mako.template import Template
 from mako.lookup import TemplateLookup
 from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc
 from helpers.brickserver import features_get_available, clear_request_cache
-from helpers.brickserver import temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc
-from helpers.brickserver import latch_exists, latch_get, latch_set_desc, latch_set_states_desc, latch_add_trigger, latch_del_trigger
-from helpers.brickserver import signal_exists, signal_get, signal_set_desc, signal_set_states_desc, signal_set_state
-from helpers.shared import config
+from helpers.brickserver import temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc, temp_sensor_disable
+from helpers.brickserver import latch_exists, latch_get, latch_set_desc, latch_set_states_desc, latch_add_trigger, latch_del_trigger, latch_disable
+from helpers.brickserver import signal_exists, signal_get, signal_set_desc, signal_set_states_desc, signal_set_state, signal_disable
+from helpers.shared import config, possible_disables
 
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 5):  # pragma: no cover
@@ -40,6 +40,9 @@ class BrickWeb(object):
         for val in ['bricks_filter_feature', 'bricks_filter_string']:
             if val not in cherrypy.session:
                 cherrypy.session[val] = None
+
+        if 'show_disabled' not in cherrypy.session:
+            cherrypy.session['show_disabled'] = False
 
         if brick is None:
             return serve_template('/index-no-brick.html', session=cherrypy.session)
@@ -144,12 +147,28 @@ class BrickWeb(object):
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()
-    def set_latch_triggers(self, latch_id, triggers):
+    def set_latch_triggers(self, latch_id, triggers=list()):
         for t in range(0, 4):
             if str(t) in triggers:
                 latch_add_trigger(latch_id, t)
             else:
                 latch_del_trigger(latch_id, t)
+        raise cherrypy.HTTPRedirect('/')
+
+    @cherrypy.expose()
+    def set_disables(self, disables=list(), sensor_id=None, latch_id=None, signal_id=None):
+        for d in possible_disables:
+            if sensor_id is not None:
+                temp_sensor_disable(sensor_id, d, d in disables)
+            if latch_id is not None:
+                latch_disable(latch_id, d, d in disables)
+            if signal_id is not None:
+                signal_disable(signal_id, d, d in disables)
+        raise cherrypy.HTTPRedirect('/')
+
+    @cherrypy.expose()
+    def toggle_show_disabled(self):
+        cherrypy.session['show_disabled'] = not cherrypy.session['show_disabled']
         raise cherrypy.HTTPRedirect('/')
 
 

@@ -59,6 +59,23 @@ def serverversion_get():
         return '0.0.0'
 
 
+def features_get_available():
+    return _request_cached({"command": "get_features"})['features']
+
+
+def count_get(item):
+    r = _request_cached({'command': 'get_count', 'item': item})
+    if r['s'] == 0:
+        return int(r['count'])
+    else:
+        return 0
+
+
+"""
+brick operations
+"""
+
+
 def brick_get(brick_id):
     return _request_cached({"command": "get_brick", "brick": brick_id})['brick']
 
@@ -124,6 +141,11 @@ def bricks_get_sorted_by_bat_runtime_prediction():
     return result
 
 
+"""
+temp-sensor operations
+"""
+
+
 def temp_sensor_get(sensor_id):
     return _request_cached({"command": "get_temp_sensor", "temp_sensor": sensor_id})['temp_sensor']
 
@@ -135,6 +157,19 @@ def temp_sensor_exists(sensor_id):
 def temp_sensor_set_desc(sensor_id, desc):
     _request_cached({'command': 'set', 'temp_sensor': sensor_id, 'key': 'desc', 'value': desc})
     clear_request_cache(sensor_id)
+
+
+def temp_sensor_disable(sensor_id, what, enable):
+    if enable:
+        _request_cached({'command': 'set', 'temp_sensor': sensor_id, 'key': 'add_disable', 'value': what})
+    else:
+        _request_cached({'command': 'set', 'temp_sensor': sensor_id, 'key': 'del_disable', 'value': what})
+    clear_request_cache(sensor_id)
+
+
+"""
+latch operations
+"""
 
 
 def latch_get(brick_id, latch_id):
@@ -167,6 +202,19 @@ def latch_del_trigger(latch_id, trigger_id):
     clear_request_cache(latch_id)
 
 
+def latch_disable(latch_id, what, enable):
+    if enable:
+        print(_request_cached({'command': 'set', 'latch': latch_id, 'key': 'add_disable', 'value': what}))
+    else:
+        print(_request_cached({'command': 'set', 'latch': latch_id, 'key': 'del_disable', 'value': what}))
+    clear_request_cache(latch_id)
+
+
+"""
+signal operations
+"""
+
+
 def signal_get(brick_id, signal_id):
     sid = brick_id + '_' + str(signal_id)
     return _request_cached({"command": "get_signal", "signal": sid})['signal']
@@ -192,13 +240,9 @@ def signal_set_state(signal_id, state):
     clear_request_cache(signal_id)
 
 
-def features_get_available():
-    return _request_cached({"command": "get_features"})['features']
-
-
-def count_get(item):
-    r = _request_cached({'command': 'get_count', 'item': item})
-    if r['s'] == 0:
-        return int(r['count'])
+def signal_disable(signal_id, what, enable):
+    if enable:
+        _request_cached({'command': 'set', 'signal': signal_id, 'key': 'add_disable', 'value': what})
     else:
-        return 0
+        _request_cached({'command': 'set', 'signal': signal_id, 'key': 'del_disable', 'value': what})
+    clear_request_cache(signal_id)

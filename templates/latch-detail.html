@@ -1,6 +1,6 @@
 <%!
     from helpers.template import convert_html, grafana_url_latch
-    from helpers.shared import config
+    from helpers.shared import config, possible_disables
     from datetime import datetime
 %>
         <article class="message">
@@ -43,13 +43,49 @@
                 <div class="field">
                     <label class="label">Current State</label>
                     <div class="box">
+                        % if latch['last_state'] is not None:
                         ${latch['states_desc'][latch['last_state']]} <span class="has-text-grey-light">(at ${str(datetime.fromtimestamp(int(latch['last_ts'])).time())})</span>
+                        % else:
+                        None
+                        % endif
                     </div>
                 </div>
                 <div class="field">
                     <label class="label">Previous State</label>
                     <div class="box">
+                        % if latch['prev_state'] is not None:
                         ${latch['states_desc'][latch['prev_state']]} <span class="has-text-grey-light">(at ${str(datetime.fromtimestamp(int(latch['prev_ts'])).time())})</span>
+                        % else:
+                        None
+                        % endif
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">
+                        Disables
+                        <span class="icon edit-pencil-icon" id="latch-disables-edit-button">
+                            <i class="fas fa-edit fa-sm"></i>
+                        </span>
+                    </label>
+                    <div class="box" id="latch-disables-display">
+                        ${"<br />".join(latch['disables'])}
+                    </div>
+                    <div class="box" id="latch-disables-edit" style="display: none;">
+                        <form method="post" action="/set_disables?latch_id=${latch['_id']}">
+                            <div class="field">
+                                <fieldset>
+                                    % for d in possible_disables:
+                                    <p class="control is-expanded">
+                                        <input type="checkbox" name="disables" value="${d}" ${('checked' if d in latch['disables'] else '')}>
+                                        ${d}
+                                    </p>
+                                    % endfor
+                                </fieldset>
+                                <p class="control">
+                                    <button class="button is-success">Save</button>
+                                </p>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div class="field">
@@ -179,6 +215,12 @@
                 $("#latch-triggers-display").hide();
                 $("#latch-triggers-edit").show();
                 $("#latch-triggers-edit-button").hide();
+            });
+
+            $("#latch-disables-edit-button").click(function() {
+                $("#latch-disables-display").hide();
+                $("#latch-disables-edit").show();
+                $("#latch-disables-edit-button").hide();
             });
 
             $("#latch-detail-grafana").click(function() {

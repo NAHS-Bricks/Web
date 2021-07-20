@@ -1,9 +1,10 @@
 <%!
-    from helpers.template import convert_html, list_of_sensor_ids_to_sensors, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str, list_of_signals_of_brick
+    from helpers.template import convert_html, list_of_temp_sensors_of_brick, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str, list_of_signals_of_brick, has_disabled_sensors
     from helpers.shared import config
     import time
     from datetime import datetime
     import os
+    import cherrypy
 %>
         <div class="tile is-2 is-parent">
             <div class="tile is-child">
@@ -174,9 +175,17 @@
 		</div>
 		<div class="tile is-2 is-parent">
 			<div class="tile is-child">
-                % if 'temp' in brick['features']:
-                % for sensor in list_of_sensor_ids_to_sensors(brick['temp_sensors']):
-				<a class="container box temp_sensor" data-target="${sensor['_id']}">
+                % if has_disabled_sensors(brick):
+                <a class="container box disables_switch" href="toggle_show_disabled">
+					<p class="title is-6 has-text-${'success' if cherrypy.session['show_disabled'] else 'danger'}">
+                        show disabled sensors
+                    </p>
+				</a>
+                % endif
+                
+                % for sensor in list_of_temp_sensors_of_brick(brick):
+                % if 'ui' not in sensor['disables'] or cherrypy.session['show_disabled']:
+				<a class="container box temp_sensor${' has-background-grey-lighter' if 'ui' in sensor['disables'] else ''}" data-target="${sensor['_id']}">
 					<p class="subtitle is-5">
                         ${sensor['_id']}
                     </p>
@@ -200,12 +209,12 @@
                         ${sensor['desc']}
                     </p>
 				</a>
-                % endfor
                 % endif
+                % endfor
 
-                % if 'latch' in brick['features']:
                 % for latch in list_of_latches_of_brick(brick):
-                <a class="container box latch" data-target="${latch['_id']}">
+                % if 'ui' not in latch['disables'] or cherrypy.session['show_disabled']:
+                <a class="container box latch${' has-background-grey-lighter' if 'ui' in latch['disables'] else ''}" data-target="${latch['_id']}">
                     <p class="subtitle is-5">
                         Latch:&nbsp;${latch['_id'].split('_')[1]}
                     </p>
@@ -216,12 +225,12 @@
                         ${latch['desc']}
                     </p>
                 </a>
-                % endfor
                 % endif
+                % endfor
 
-                % if 'signal' in brick['features']:
                 % for signal in list_of_signals_of_brick(brick):
-                <a class="container box signal" data-target="${signal['_id']}">
+                % if 'ui' not in signal['disables'] or cherrypy.session['show_disabled']:
+                <a class="container box signal${' has-background-grey-lighter' if 'ui' in signal['disables'] else ''}" data-target="${signal['_id']}">
                     <p class="subtitle is-5">
                         Signal:&nbsp;${signal['_id'].split('_')[1]}
                     </p>
@@ -232,8 +241,9 @@
                         ${signal['desc']}
                     </p>
                 </a>
-                % endfor
                 % endif
+                % endfor
+                
 			</div>
 		</div>
         <div class="modal" id="bricktype-image-modal">

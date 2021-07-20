@@ -1,6 +1,6 @@
 <%!
     from helpers.template import convert_html, grafana_url_temp_sensor
-    from helpers.shared import config
+    from helpers.shared import config, possible_disables
 %>
         <article class="message">
             <div class="message-header">
@@ -23,7 +23,7 @@
                 <div class="field">
                     <label class="label">Description</label>
                     <div class="box" id="temp-sensor-desc-display">
-                        ${sensor['desc']}
+                        ${sensor['desc'] if sensor['desc'] is not None else ''}
                         <span class="icon edit-pencil-icon" id="temp-sensor-desc-edit-button">
                             <i class="fas fa-edit fa-sm"></i>
                         </span>
@@ -31,7 +31,7 @@
                     <form method="post" action="/set_desc?sensor_id=${sensor['_id']}" id="temp-sensor-desc-edit" style="display: none;">
                         <div class="field has-addons">
                             <p class="control is-expanded">
-                                <input class="input" type="text" placeholder="Sensor Description" value="${sensor['desc']}" name="desc">
+                                <input class="input" type="text" placeholder="Sensor Description" value="${sensor['desc'] if sensor['desc'] is not None else ''}" name="desc">
                             </p>
                             <p class="control">
                                 <button class="button is-success">Save</button>
@@ -55,6 +55,34 @@
                     <label class="label">Previous Temperature</label>
                     <div class="box">
                         ${sensor['prev_reading']}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">
+                        Disables
+                        <span class="icon edit-pencil-icon" id="temp-sensor-disables-edit-button">
+                            <i class="fas fa-edit fa-sm"></i>
+                        </span>
+                    </label>
+                    <div class="box" id="temp-sensor-disables-display">
+                        ${"<br />".join(sensor['disables'])}
+                    </div>
+                    <div class="box" id="temp-sensor-disables-edit" style="display: none;">
+                        <form method="post" action="/set_disables?sensor_id=${sensor['_id']}">
+                            <div class="field">
+                                <fieldset>
+                                    % for d in possible_disables:
+                                    <p class="control is-expanded">
+                                        <input type="checkbox" name="disables" value="${d}" ${('checked' if d in sensor['disables'] else '')}>
+                                        ${d}
+                                    </p>
+                                    % endfor
+                                </fieldset>
+                                <p class="control">
+                                    <button class="button is-success">Save</button>
+                                </p>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div class="field">
@@ -85,6 +113,12 @@
             $("#temp-sensor-desc-edit-button").click(function() {
                 $("#temp-sensor-desc-display").hide();
                 $("#temp-sensor-desc-edit").show();
+            });
+
+            $("#temp-sensor-disables-edit-button").click(function() {
+                $("#temp-sensor-disables-display").hide();
+                $("#temp-sensor-disables-edit").show();
+                $("#temp-sensor-disables-edit-button").hide();
             });
 
             $("#temp-sensor-detail-grafana").click(function() {

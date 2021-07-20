@@ -1,6 +1,6 @@
 <%!
     from helpers.template import convert_html
-    from helpers.shared import config
+    from helpers.shared import config, possible_disables
     from datetime import datetime
 %>
         <article class="message">
@@ -55,6 +55,34 @@
                             </form>
                             % endfor
                         </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">
+                        Disables
+                        <span class="icon edit-pencil-icon" id="signal-disables-edit-button">
+                            <i class="fas fa-edit fa-sm"></i>
+                        </span>
+                    </label>
+                    <div class="box" id="signal-disables-display">
+                        ${"<br />".join(signal['disables'])}
+                    </div>
+                    <div class="box" id="signal-disables-edit" style="display: none;">
+                        <form method="post" action="/set_disables?signal_id=${signal['_id']}">
+                            <div class="field">
+                                <fieldset>
+                                    % for d in possible_disables - {'metric'}:
+                                    <p class="control is-expanded">
+                                        <input type="checkbox" name="disables" value="${d}" ${('checked' if d in signal['disables'] else '')}>
+                                        ${d}
+                                    </p>
+                                    % endfor
+                                </fieldset>
+                                <p class="control">
+                                    <button class="button is-success">Save</button>
+                                </p>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div class="field">
@@ -134,9 +162,9 @@
                 $("#signal-states-desc-1-edit").show();
             });
 
-            $("#signal-triggers-edit-button").click(function() {
-                $("#signal-triggers-display").hide();
-                $("#signal-triggers-edit").show();
-                $("#signal-triggers-edit-button").hide();
+            $("#signal-disables-edit-button").click(function() {
+                $("#signal-disables-display").hide();
+                $("#signal-disables-edit").show();
+                $("#signal-disables-edit-button").hide();
             });
         </script>
