@@ -246,3 +246,84 @@ def signal_disable(signal_id, what, enable):
     else:
         _request_cached({'command': 'set', 'signal': signal_id, 'key': 'del_disable', 'value': what})
     clear_request_cache(signal_id)
+
+
+"""
+event operations
+"""
+
+
+def event_get(event_id):
+    return _request_cached({'command': 'get_event', 'event': event_id})['event']
+
+
+def event_add(brick_id):
+    _request_cached({'command': 'add_event', 'brick': brick_id})
+    clear_request_cache(brick_id)
+
+
+def event_delete(brick_id, event_id):
+    _request_cached({'command': 'delete_event', 'brick': brick_id, 'event': event_id})
+    clear_request_cache(brick_id)
+
+
+def event_set_pos(brick_id, event_id, index):
+    _request_cached({'command': 'set', 'key': 'pos', 'event': event_id, 'value': int(index)})
+    clear_request_cache(brick_id)
+    clear_request_cache(event_id)
+
+
+"""
+event_command operations
+"""
+
+
+def event_commands_list():
+    return _request_cached({'command': 'get_event_commands'})['commands']
+
+
+def event_command_set(event_id, command_name, ed_name):
+    _request_cached({'command': 'set', 'key': 'event_command', 'event': event_id, 'event_data': ed_name, 'value': command_name})
+    clear_request_cache(event_id)
+
+
+"""
+event_reaction operations
+"""
+
+
+def event_reactions_list():
+    return _request_cached({'command': 'get_event_reactions'})['reactions']
+
+
+def event_reaction_add(event_id, reaction_name, ed_name):
+    _request_cached({'command': 'add_event_reaction', 'event': event_id, 'event_reaction': reaction_name, 'event_data': ed_name})
+    clear_request_cache(event_id)
+
+
+def event_reaction_delete(event_id, pos):
+    _request_cached({'command': 'delete_event_reaction', 'event': event_id, 'pos': int(pos)})
+    clear_request_cache(event_id)
+
+
+def event_reaction_move(event_id, from_pos, to_pos):
+    _request_cached({'command': 'set', 'key': 'pos', 'event': event_id, 'reaction_src': int(from_pos), 'value': int(to_pos)})
+    clear_request_cache(event_id)
+
+
+"""
+event_data operations
+"""
+
+
+def event_data_replace(event_id, ed_name, ed_data):
+    _request_cached({'command': 'replace_event_data', 'event': event_id, 'event_data': ed_name, 'content': ed_data})
+    clear_request_cache(event_id)
+
+
+def event_data_get(event_id, ed_name):
+    return _request_cached({'command': 'get_event_data', 'event': event_id, 'event_data': ed_name})['event_data']
+
+
+def event_data_get_names(event_id, level):
+    return _request_cached({'command': 'get_event_data_names', 'event': event_id, 'level': level})['event_data_names']

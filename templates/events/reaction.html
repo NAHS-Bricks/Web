@@ -1,0 +1,279 @@
+<%!
+from helpers.brickserver import event_reactions_list, event_data_get_names
+from helpers.template import event_data_level
+import json
+import html
+%>
+                        <div class="card">
+                            <header class="card-header">
+                                <span class="icon delete-icon" id="reaction${reaction_pos}-delete-icon" title="Delete Reaction">
+                                    <i class="fas fa-times"></i>
+                                </span>
+                                <span class="icon save-icon" id="reaction${reaction_pos}-save-icon" title="Save Reaction" style="display: none;">
+                                    <i class="fas fa-save"></i>
+                                </span>
+                                % if reaction_pos is not None and len(event['reactions']) >= 2 and reaction_pos > 0:
+                                <span class="icon move-up-icon" id="reaction${reaction_pos}-move-up-icon" title="Move Reaction up">
+                                    <i class="fas fa-chevron-up"></i>
+                                </span>
+                                % endif
+                                % if reaction_pos is not None and len(event['reactions']) >= 2 and reaction_pos < len(event['reactions']) -1:
+                                <span class="icon move-down-icon" id="reaction${reaction_pos}-move-down-icon" title="Move Reaction down">
+                                    <i class="fas fa-chevron-down"></i>
+                                </span>
+                                % endif
+                            </header>
+                            <div class="card-content">
+                                <div class="field">
+                                    <label class="label">Name:</label>
+                                    <div class="select ${'is-danger' if reaction is None else ''}" id="reaction${reaction_pos}_name_div">
+                                        <select name="reaction${reaction_pos}_name" id="reaction${reaction_pos}_name">
+                                            <option value=""></option>
+                                            % for r in event_reactions_list():
+                                            <option value="${r}" ${'selected' if reaction is not None and reaction[0] == r else ''}>${r}</option>
+                                            % endfor
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">
+                                        Event Data:
+                                        <a class="show-hide" id="reaction${reaction_pos}-show-button">show</a>
+                                        <a class="show-hide" id="reaction${reaction_pos}-hide-button" style="display: none;">hide</a>
+                                    </label>
+                                    <div class="box" id="reaction${reaction_pos}" style="display: none;">
+                                        <div class="field">
+                                            <label class="label">Level:</label>
+                                            <div class="control">
+                                                <label class="radio">
+                                                    <input type="radio" class="reaction${reaction_pos}_ed_level" name="reaction${reaction_pos}_ed_level" value="l" ${'checked' if reaction is None or event_data_level(reaction[1]) == 'l' else ''}>
+                                                    Local
+                                                </label>
+                                                <label class="radio">
+                                                    <input type="radio" class="reaction${reaction_pos}_ed_level" name="reaction${reaction_pos}_ed_level" value="b" ${'checked' if reaction is not None and event_data_level(reaction[1]) == 'b' else ''}>
+                                                    Brick
+                                                </label>
+                                                <label class="radio">
+                                                    <input type="radio" class="reaction${reaction_pos}_ed_level" name="reaction${reaction_pos}_ed_level" value="g" ${'checked' if reaction is not None and event_data_level(reaction[1]) == 'g' else ''}>
+                                                    Global
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label">Name:</label>
+                                            <div class="select">
+                                                <select class="ed_name" name="reaction${reaction_pos}_ed_name" id="reaction${reaction_pos}_ed_name">
+                                                    <option value="_auto_">&lt;auto&gt;</option>
+                                                    <option value="_new_">&lt;new&gt;</option>
+                                                    % for n in event_data_get_names(event['_id'], (event_data_level(reaction[1]) if reaction is not None else 'l')):
+                                                    <option value="${n}" ${'selected' if reaction is not None and reaction[1].lstrip('_') == n else ''}>${n}</option>
+                                                    % endfor
+                                                </select>
+                                            </div>
+                                            <div class="control" id="reaction${reaction_pos}_ed_name_new_div" style="display: none;">
+                                                <input class="input" type="text" id="reaction${reaction_pos}_ed_name_new" name="reaction${reaction_pos}_ed_name_new" placeholder="new event_data name">
+                                            </div>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label">Data:</label>
+                                            <div class="control">
+                                                <textarea class="textarea" id="reaction${reaction_pos}_ed_data" name="reaction${reaction_pos}_ed_data" placeholder="{}" rows="2">${html.escape(json.dumps({k: v for k, v in event_data.items() if k != '_id'})) if event_data is not None else '{}'}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <script>
+                            $("#reaction${reaction_pos}-show-button").click(function() {
+                                $('#reaction${reaction_pos}').show();
+                                $('#reaction${reaction_pos}-hide-button').show();
+                                $(this).hide();
+                            });
+                            $("#reaction${reaction_pos}-hide-button").click(function() {
+                                $('#reaction${reaction_pos}').hide();
+                                $('#reaction${reaction_pos}-show-button').show();
+                                $(this).hide();
+                            });
+                            var reaction${reaction_pos}_name_changed = false;
+                            var reaction${reaction_pos}_ed_name_changed = false;
+                            var reaction${reaction_pos}_ed_level_changed = false;
+                            var reaction${reaction_pos}_ed_data_changed = false;
+                            var reaction${reaction_pos}_ed_data_data_init = '${json.dumps({k: v for k, v in event_data.items() if k != '_id'}) if event_data is not None else '{}'}';
+                            var reaction${reaction_pos}_name_valid = ${'false' if reaction is None else 'true'};
+                            var reaction${reaction_pos}_ed_data_valid = true;
+                            var reaction${reaction_pos}_ed_name_new_valid = true;
+                            function reaction${reaction_pos}_check_changes() {
+                                if (reaction${reaction_pos}_name_changed ||
+                                    reaction${reaction_pos}_ed_name_changed ||
+                                    reaction${reaction_pos}_ed_level_changed ||
+                                    reaction${reaction_pos}_ed_data_changed) {
+                                    $('#reaction${reaction_pos}-save-icon').show();
+                                } else {
+                                    $('#reaction${reaction_pos}-save-icon').hide();
+                                }
+                            };
+                            function reaction${reaction_pos}_check_valid() {
+                                if (reaction${reaction_pos}_ed_name_new_valid) {
+                                    $('#reaction${reaction_pos}_ed_name_new').removeClass("is-danger")
+                                } else {
+                                    $('#reaction${reaction_pos}_ed_name_new').addClass("is-danger")
+                                }
+                                if (reaction${reaction_pos}_ed_data_valid) {
+                                    $('#reaction${reaction_pos}_ed_data').removeClass("is-danger")
+                                } else {
+                                    $('#reaction${reaction_pos}_ed_data').addClass("is-danger")
+                                }
+                                if (reaction${reaction_pos}_name_valid) {
+                                    $('#reaction${reaction_pos}_name_div').removeClass("is-danger")
+                                } else {
+                                    $('#reaction${reaction_pos}_name_div').addClass("is-danger")
+                                }
+                            };
+                            function reaction${reaction_pos}_load_event_data() {
+                                var ed_name = encodeURIComponent($('#reaction${reaction_pos}_ed_name')[0].value);
+                                var ed_level = 'l';
+                                $("input[name='reaction${reaction_pos}_ed_level']").each(function() {
+                                    if (this.checked) {
+                                        ed_level = this.value;
+                                    }
+                                });
+                                $.ajax( {
+                                    url:'event_editor/event_data_data?ed_name=' + ed_name + '&ed_level=' + ed_level,
+                                    success:function(data) {
+                                        if (data != 'None') {
+                                            $("#reaction${reaction_pos}_ed_data").val(data);
+                                            reaction${reaction_pos}_ed_data_data_init = data;
+                                            reaction${reaction_pos}_ed_data_changed = false;
+                                        }
+                                    }
+                                });
+                            };
+                            $('#reaction${reaction_pos}_name').change(function() {
+                                if (this.value != "${reaction[0] if reaction is not None else ''}") {
+                                    reaction${reaction_pos}_name_changed = true;
+                                } else {
+                                    reaction${reaction_pos}_name_changed = false;
+                                }
+                                reaction${reaction_pos}_name_valid = (this.value != "");
+                                reaction${reaction_pos}_check_changes();
+                                reaction${reaction_pos}_check_valid();
+                            });
+                            $('#reaction${reaction_pos}_ed_name').change(function() {
+                                if (this.value == "${reaction[1].lstrip('_') if reaction is not None else ''}") {
+                                    reaction${reaction_pos}_ed_name_changed = false;
+                                } else {
+                                    reaction${reaction_pos}_ed_name_changed = true;
+                                }
+                                if (this.value == "_new_") {
+                                    $('#reaction${reaction_pos}_ed_name_new_div').show();
+                                } else {
+                                    $('#reaction${reaction_pos}_ed_name_new_div').hide();
+                                }
+                                reaction${reaction_pos}_load_event_data();
+                                reaction${reaction_pos}_check_changes();
+                            });
+                            $('.reaction${reaction_pos}_ed_level').change(function() {
+                                if (this.value == "${event_data_level(reaction[1]) if reaction is not None else ''}") {
+                                    reaction${reaction_pos}_ed_level_changed = false;
+                                } else {
+                                    reaction${reaction_pos}_ed_level_changed = true;
+                                }
+                                $('#reaction${reaction_pos}_ed_name_new_div').hide();
+                                var sel = $('#reaction${reaction_pos}_ed_name').get(0);
+                                while (sel.options.length > 2) {
+                                    sel.remove(sel.options.length - 1);
+                                }
+                                if (this.value == "l") {
+                                    var newOpt = ed_names_local;
+                                } else if (this.value == "b") {
+                                    var newOpt = ed_names_brick;
+                                } else {
+                                    var newOpt = ed_names_global;
+                                }
+                                for (i = 0; i < newOpt.length; i++) {
+                                    var opt = document.createElement('option');
+                                    opt.text = newOpt[i];
+                                    opt.value = newOpt[i];
+                                    if (this.value == "${event_data_level(reaction[1]) if reaction is not None else ''}" && newOpt[i] == "${reaction[1].lstrip('_') if reaction is not None else ''}") {
+                                        reaction${reaction_pos}_ed_name_changed = false;
+                                        opt.selected = true;
+                                    }
+                                    sel.add(opt, null);
+                                }
+                                reaction${reaction_pos}_load_event_data();
+                                reaction${reaction_pos}_check_changes();
+                            });
+                            $('#reaction${reaction_pos}_ed_data').keyup(function() {
+                                if (this.value == reaction${reaction_pos}_ed_data_data_init) {
+                                    reaction${reaction_pos}_ed_data_changed = false;
+                                } else {
+                                    reaction${reaction_pos}_ed_data_changed = true;
+                                }
+                                if (this.value.startsWith('{')) {
+                                    reaction${reaction_pos}_ed_data_valid = isJSON(this.value);
+                                } else {
+                                    reaction${reaction_pos}_ed_data_valid = false;
+                                }
+                                reaction${reaction_pos}_check_changes();
+                                reaction${reaction_pos}_check_valid();
+                            });
+                            $('#reaction${reaction_pos}_ed_name_new').keyup(function() {
+                                if (this.value.startsWith('_')) {
+                                    reaction${reaction_pos}_ed_name_new_valid = false;
+                                } else {
+                                    reaction${reaction_pos}_ed_name_new_valid = true;
+                                }
+                                reaction${reaction_pos}_check_valid();
+                            });
+                            $('#reaction${reaction_pos}-save-icon').click(function() {
+                                if (reaction${reaction_pos}_name_valid && reaction${reaction_pos}_ed_name_new_valid && reaction${reaction_pos}_ed_data_valid) {
+                                    var reaction_name = $('#reaction${reaction_pos}_name')[0].value;
+                                    var ed_name = encodeURIComponent($('#reaction${reaction_pos}_ed_name')[0].value);
+                                    var ed_name_new = encodeURIComponent($('#reaction${reaction_pos}_ed_name_new')[0].value);
+                                    var ed_data =  encodeURIComponent($('#reaction${reaction_pos}_ed_data')[0].value);
+                                    var ed_level = 'l';
+                                    $("input[name='reaction${reaction_pos}_ed_level']").each(function() {
+                                        if (this.checked) {
+                                            ed_level = this.value;
+                                        }
+                                    });
+                                    $.ajax( {
+                                        url:'event_editor/save_reaction?reaction_pos=${reaction_pos}&reaction_name=' + reaction_name + '&ed_level=' + ed_level + '&ed_name=' + ed_name + '&ed_name_new=' + ed_name_new + '&ed_data=' + ed_data,
+                                        success:function(data) {
+                                            $("#event-editor-column-reactions").html(data);
+                                        }
+                                    });
+                                } else {
+                                    alert("Invalid inputs, can't save!");
+                                }
+                            });
+                            $("#reaction${reaction_pos}-delete-icon").click(function() {
+                                $.ajax( {
+                                    url:'event_editor/delete_reaction?reaction_pos=${reaction_pos}',
+                                    success:function(data) {
+                                        $("#event-editor-column-reactions").html(data);
+                                    }
+                                });
+                            });
+                            $("#reaction${reaction_pos}-move-up-icon").click(function() {
+                                $.ajax( {
+                                    url:'event_editor/move_up_reaction?reaction_pos=${reaction_pos}',
+                                    success:function(data) {
+                                        $("#event-editor-column-reactions").html(data);
+                                    }
+                                });
+                            });
+                            $("#reaction${reaction_pos}-move-down-icon").click(function() {
+                                $.ajax( {
+                                    url:'event_editor/move_down_reaction?reaction_pos=${reaction_pos}',
+                                    success:function(data) {
+                                        $("#event-editor-column-reactions").html(data);
+                                    }
+                                });
+                            });
+                        </script>

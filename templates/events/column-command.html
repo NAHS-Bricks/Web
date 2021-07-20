@@ -1,0 +1,230 @@
+<%!
+    from helpers.brickserver import event_commands_list, event_data_get, event_data_get_names
+    from helpers.template import convert_html, event_data_level
+    import json
+    import html
+%>
+                        <p class="has-text-weight-bold">Command:</p>
+                        <div class="card">
+                            <header class="card-header">
+                                <span class="icon save-icon" id="command-save-icon" title="Save Command" style="display: none;">
+                                    <i class="fas fa-save"></i>
+                                </span>
+                                &nbsp;
+                            </header>
+
+                            <div class="card-content">
+                                <div class="field">
+                                    <label class="label">Name:</label>
+                                    <div class="select ${'is-danger' if event['command'] is None else ''}" id="command_name_div">
+                                        <select name="command_name" id="command_name">
+                                            <option value=""></option>
+                                            % for r in event_commands_list():
+                                            <option value="${r}" ${'selected' if event['command'] is not None and event['command'][0] == r else ''}>${r}</option>
+                                            % endfor
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">Event Data:</label>
+                                    <div class="box">
+                                        <div class="field">
+                                            <label class="label">Level:</label>
+                                            <div class="control">
+                                                <label class="radio">
+                                                    <input type="radio" class="command_ed_level" name="command_ed_level" value="l" ${'checked' if event['command'] is None or event_data_level(event['command'][1]) == 'l' else ''}>
+                                                    Local
+                                                </label>
+                                                <label class="radio">
+                                                    <input type="radio" class="command_ed_level" name="command_ed_level" value="b" ${'checked' if event['command'] is not None and event_data_level(event['command'][1]) == 'b' else ''}>
+                                                    Brick
+                                                </label>
+                                                <label class="radio">
+                                                    <input type="radio" class="command_ed_level" name="command_ed_level" value="g" ${'checked' if event['command'] is not None and event_data_level(event['command'][1]) == 'g' else ''}>
+                                                    Global
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label">Name:</label>
+                                            <div class="select">
+                                                <select class="ed_name" name="command_ed_name" id="command_ed_name">
+                                                    <option value="_auto_">&lt;auto&gt;</option>
+                                                    <option value="_new_">&lt;new&gt;</option>
+                                                    % for n in event_data_get_names(event['_id'], (event_data_level(event['command'][1]) if event['command'] is not None else 'l')):
+                                                    <option value="${n}" ${'selected' if event['command'] is not None and event['command'][1].lstrip('_') == n else ''}>${n}</option>
+                                                    % endfor
+                                                </select>
+                                            </div>
+                                            <div class="control" id="command_ed_name_new_div" style="display: none;">
+                                                <input class="input" type="text" id="command_ed_name_new" name="command_ed_name_new" placeholder="new event_data name">
+                                            </div>
+                                        </div>
+
+                                        <div class="field">
+                                            <label class="label">Data:</label>
+                                            <div class="control">
+                                                <textarea class="textarea" id="command_ed_data" name="command_ed_data" placeholder="{}" rows="2">${html.escape(json.dumps({k: v for k, v in event_data_get(event['_id'], event['command'][1]).items() if k != '_id'})) if event['command'] is not None else '{}'}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            var command_name_changed = false;
+                            var command_ed_name_changed = false;
+                            var command_ed_level_changed = false;
+                            var command_ed_data_changed = false;
+                            var command_ed_data_data_init = '${json.dumps({k: v for k, v in event_data_get(event['_id'], event['command'][1]).items() if k != '_id'}) if event['command'] is not None else '{}'}';
+                            var command_name_valid = ${'false' if event['command'] is None else 'true'};
+                            var command_ed_data_valid = true;
+                            var command_ed_name_new_valid = true;
+                            function command_check_changes() {
+                                if (command_name_changed ||
+                                    command_ed_name_changed ||
+                                    command_ed_level_changed ||
+                                    command_ed_data_changed) {
+                                    $('#command-save-icon').show();
+                                } else {
+                                    $('#command-save-icon').hide();
+                                }
+                            };
+                            function command_check_valid() {
+                                if (command_ed_name_new_valid) {
+                                    $('#command_ed_name_new').removeClass("is-danger")
+                                } else {
+                                    $('#command_ed_name_new').addClass("is-danger")
+                                }
+                                if (command_ed_data_valid) {
+                                    $('#command_ed_data').removeClass("is-danger")
+                                } else {
+                                    $('#command_ed_data').addClass("is-danger")
+                                }
+                                if (command_name_valid) {
+                                    $('#command_name_div').removeClass("is-danger")
+                                } else {
+                                    $('#command_name_div').addClass("is-danger")
+                                }
+                            };
+                            function command_load_event_data() {
+                                var ed_name = encodeURIComponent($('#command_ed_name')[0].value);
+                                var ed_level = 'l';
+                                $("input[name='command_ed_level']").each(function() {
+                                    if (this.checked) {
+                                        ed_level = this.value;
+                                    }
+                                });
+                                $.ajax( {
+                                    url:'event_editor/event_data_data?ed_name=' + ed_name + '&ed_level=' + ed_level,
+                                    success:function(data) {
+                                        if (data != 'None') {
+                                            $("#command_ed_data").val(data);
+                                            command_ed_data_data_init = data;
+                                            command_ed_data_changed = false;
+                                        }
+                                    }
+                                });
+                            };
+                            $('#command_name').change(function() {
+                                if (this.value != "${event['command'][0] if event['command'] is not None else ''}") {
+                                    command_name_changed = true;
+                                } else {
+                                    command_name_changed = false;
+                                }
+                                command_name_valid = (this.value != "");
+                                command_check_changes();
+                                command_check_valid();
+                            });
+                            $('#command_ed_name').change(function() {
+                                if (this.value == "${event['command'][1].lstrip('_') if event['command'] is not None else ''}") {
+                                    command_ed_name_changed = false;
+                                } else {
+                                    command_ed_name_changed = true;
+                                }
+                                if (this.value == "_new_") {
+                                    $('#command_ed_name_new_div').show();
+                                } else {
+                                    $('#command_ed_name_new_div').hide();
+                                }
+                                command_load_event_data();
+                                command_check_changes();
+                            });
+                            $('.command_ed_level').change(function() {
+                                if (this.value == "${event_data_level(event['command'][1]) if event['command'] is not None else ''}") {
+                                    command_ed_level_changed = false;
+                                } else {
+                                    command_ed_level_changed = true;
+                                }
+                                $('#command_ed_name_new_div').hide();
+                                var sel = $('#command_ed_name').get(0);
+                                while (sel.options.length > 2) {
+                                    sel.remove(sel.options.length - 1);
+                                }
+                                if (this.value == "l") {
+                                    var newOpt = ed_names_local;
+                                } else if (this.value == "b") {
+                                    var newOpt = ed_names_brick;
+                                } else {
+                                    var newOpt = ed_names_global;
+                                }
+                                for (i = 0; i < newOpt.length; i++) {
+                                    var opt = document.createElement('option');
+                                    opt.text = newOpt[i];
+                                    opt.value = newOpt[i];
+                                    if (this.value == "${event_data_level(event['command'][1]) if event['command'] is not None else ''}" && newOpt[i] == "${event['command'][1].lstrip('_') if event['command'] is not None else ''}") {
+                                        command_ed_name_changed = false;
+                                        opt.selected = true;
+                                    }
+                                    sel.add(opt, null);
+                                }
+                                command_load_event_data();
+                                command_check_changes();
+                            });
+                            $('#command_ed_data').keyup(function() {
+                                if (this.value == command_ed_data_data_init) {
+                                    command_ed_data_changed = false;
+                                } else {
+                                    command_ed_data_changed = true;
+                                }
+                                if (this.value.startsWith('{')) {
+                                    command_ed_data_valid = isJSON(this.value);
+                                } else {
+                                    command_ed_data_valid = false;
+                                }
+                                command_check_changes();
+                                command_check_valid();
+                            });
+                            $('#command_ed_name_new').keyup(function() {
+                                if (this.value.startsWith('_')) {
+                                    command_ed_name_new_valid = false;
+                                } else {
+                                    command_ed_name_new_valid = true;
+                                }
+                                command_check_valid();
+                            });
+                            $('#command-save-icon').click(function() {
+                                if (command_name_valid && command_ed_name_new_valid && command_ed_data_valid) {
+                                    var command_name = $('#command_name')[0].value;
+                                    var ed_name = encodeURIComponent($('#command_ed_name')[0].value);
+                                    var ed_name_new = encodeURIComponent($('#command_ed_name_new')[0].value);
+                                    var ed_data =  encodeURIComponent($('#command_ed_data')[0].value);
+                                    var ed_level = 'l';
+                                    $("input[name='command_ed_level']").each(function() {
+                                        if (this.checked) {
+                                            ed_level = this.value;
+                                        }
+                                    });
+                                    $.ajax( {
+                                        url:'event_editor/save_command?command_name=' + command_name + '&ed_level=' + ed_level + '&ed_name=' + ed_name + '&ed_name_new=' + ed_name_new + '&ed_data=' + ed_data,
+                                        success:function(data) {
+                                            $("#event-editor-column-command").html(data);
+                                        }
+                                    });
+                                } else {
+                                    alert("Invalid inputs, can't save!");
+                                }
+                            });
+                        </script>

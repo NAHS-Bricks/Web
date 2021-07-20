@@ -1,0 +1,32 @@
+<%!
+from helpers.shared import serve_template
+from helpers.brickserver import event_data_get, event_data_get_names
+%>
+                        <p class="has-text-weight-bold">Reactions:</p>
+                        
+                        % for reaction_pos in range(0, len(event['reactions'])):
+                        ${serve_template('/events/reaction.html', event=event, reaction_pos=reaction_pos, reaction=event['reactions'][reaction_pos], event_data=event_data_get(event['_id'], event['reactions'][reaction_pos][1]))}
+                        % endfor
+
+                        <div id="new-reaction">
+                            <a class="box new-reaction has-background-grey-lighter" id="new-reaction-button">
+                                <span class="icon" title="Add new Reaction">
+                                    <i class="fas fa-plus-circle"></i>
+                                </span>
+                                New Reaction
+                            </a>
+                        </div>
+
+                        <script>
+                            var ed_names_local = ${event_data_get_names(event['_id'], 'l')};
+                            var ed_names_brick = ${event_data_get_names(event['_id'], 'b')};
+                            var ed_names_global = ${event_data_get_names(event['_id'], 'g')};
+                            $("#new-reaction-button").click(function() {
+                                $.ajax( {
+                                    url:'event_editor/new_reaction',
+                                    success:function(data) {
+                                        $("#new-reaction").html(data);
+                                    }
+                                });
+                            });
+                        </script>

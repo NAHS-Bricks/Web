@@ -1,5 +1,6 @@
 import os
 import json
+from mako.lookup import TemplateLookup
 
 
 config = {
@@ -21,3 +22,10 @@ else:
     open('config.json', 'w').write(json.dumps(config, indent=2, sort_keys=True))
 
 possible_disables = {'ui', 'metric'}
+
+mylookup = TemplateLookup(directories=['./templates'], module_directory='/tmp/brickweb_cache', collection_size=500, filesystem_checks=True)
+
+
+def serve_template(templatename, **kwargs):
+    mytemplate = mylookup.get_template(templatename)
+    return mytemplate.render(**kwargs)

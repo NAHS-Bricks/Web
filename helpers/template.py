@@ -87,3 +87,14 @@ def server_is(version):
         if int(server[i]) < int(version[i]):
             return False
     return True
+
+
+def event_data_level(event_data_name):
+    """
+    Return l, b or g depending on level detected by event_data_name
+    """
+    if event_data_name.startswith('__'):
+        return 'g'
+    if event_data_name.startswith('_'):
+        return 'b'
+    return 'l'

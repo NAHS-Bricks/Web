@@ -1,0 +1,81 @@
+<%!
+    import cherrypy
+%>
+                        <p class="has-text-weight-bold">Events:</p>
+                        % for event_id in brick['events']:
+                        <div class="card event${' has-background-grey-lighter' if not event_id == cherrypy.session['event_id'] else ''}">
+                            <header class="card-header">
+                                <span class="icon delete-icon delete-event" data-target="${event_id}" title="Delete Event">
+                                    <i class="fas fa-times"></i>
+                                </span>
+                                % if not brick['events'].index(event_id) == 0:
+                                <span class="icon move-up-icon move-up-event" data-target="${event_id}" title="Move Event up">
+                                    <i class="fas fa-chevron-up"></i>
+                                </span>
+                                % endif
+                                % if not brick['events'].index(event_id) == len(brick['events']) - 1:
+                                <span class="icon move-down-icon move-down-event" data-target="${event_id}" title="Move Event down">
+                                    <i class="fas fa-chevron-down"></i>
+                                </span>
+                                % endif
+                            </header>
+                            <div class="card-content is-family-monospace">
+                                <a class="select-event" data-target="${event_id}">
+                                    ${event_id[0:int(len(event_id) / 2)]}
+                                    ${event_id[int(len(event_id) / 2):]}
+                                </a>
+                            </div>
+                        </div>
+                        % endfor
+                        <a class="box new-event has-background-grey-lighter">
+                            <span class="icon" title="Add new Event">
+                                <i class="fas fa-plus-circle"></i>
+                            </span>
+                            New Event
+                        </a>
+                        <script>
+                            $(".new-event").click(function() {
+                                $.ajax( {
+                                    url:'event_editor/add_event',
+                                    success:function(data) {
+                                        $("#event-editor-column-events").html(data);
+                                    }
+                                });
+                            });
+                            $(".delete-event").click(function() {
+                                var target = $(this).data("target");
+                                $.ajax( {
+                                    url:'event_editor/delete_event?event_id=' + target,
+                                    success:function(data) {
+                                        $("#event-editor-modal > .modal-content").html(data);
+                                    }
+                                });
+                            });
+                            $(".move-up-event").click(function() {
+                                var target = $(this).data("target");
+                                $.ajax( {
+                                    url:'event_editor/move_up_event?event_id=' + target,
+                                    success:function(data) {
+                                        $("#event-editor-column-events").html(data);
+                                    }
+                                });
+                            });
+                            $(".move-down-event").click(function() {
+                                var target = $(this).data("target");
+                                $.ajax( {
+                                    url:'event_editor/move_down_event?event_id=' + target,
+                                    success:function(data) {
+                                        $("#event-editor-column-events").html(data);
+                                    }
+                                });
+                            });
+                            $(".select-event").click(function() {
+                                var target = $(this).data("target");
+                                $.ajax( {
+                                    url:'event_editor/select_event?event_id=' + target,
+                                    success:function(data) {
+                                        $("#event-editor-modal > .modal-content").html(data);
+                                    }
+                                });
+                            });
+                        </script>

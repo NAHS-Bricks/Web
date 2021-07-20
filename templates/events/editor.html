@@ -1,0 +1,31 @@
+        <script>
+            function isJSON(str) {
+                try {
+                    return (JSON.parse(str) && !!str);
+                } catch (e) {
+                    return false;
+                }
+            };
+        </script>
+        <article class="message">
+            <div class="message-header">
+                <p>Edit Events</p>
+            </div>
+            <div class="message-body">
+                <div class="columns">
+                    <div class="column is-one-fifth" id="event-editor-column-events">
+                        <%include file="column-events.html" />
+                    </div>
+                    <div class="column" id="event-editor-column-command">
+                        % if event is not None:
+                        <%include file="column-command.html" />
+                        % endif
+                    </div>
+                    <div class="column" id="event-editor-column-reactions">
+                        % if event is not None:
+                        <%include file="column-reactions.html" />
+                        % endif
+                    </div>
+                </div>
+            </div>
+        </article>
