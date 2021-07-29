@@ -1,5 +1,5 @@
 <%!
-    from helpers.template import convert_html, list_of_temp_sensors_of_brick, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str, list_of_signals_of_brick, has_disabled_sensors
+    from helpers.template import convert_html, list_of_temp_sensors_of_brick, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str, list_of_signals_of_brick, has_disabled_sensors, server_is
     from helpers.shared import config
     import time
     from datetime import datetime
@@ -61,6 +61,17 @@
                 <div class="container box">
 					<p class="subtitle is-5">
                         Battery
+                        % if server_is('0.6.0'):
+                        % if brick['bat_solar_charging']:
+                        <span class="icon is-small grafana-link-icon" id="brick-detail-bat-solar-charging-disable" title="Disable Solar Charging">
+                            <i class="fas fa-bolt fa-sm"></i>
+                        </span>
+                        % else:
+                        <span class="icon is-small grafana-link-icon" id="brick-detail-bat-solar-charging-enable" title="Enable Solar Charging">
+                            <i class="fas fa-sun fa-sm"></i>
+                        </span>
+                        % endif
+                        % endif
                         % if config['grafana']['enabled']:
                         <span class="icon is-small grafana-link-icon" id="brick-detail-bat-level-grafana" title="Open corresponding Chart in Grafana">
                             <i class="fas fa-chart-line fa-sm"></i>
@@ -71,11 +82,19 @@
                         ${round(brick['bat_last_reading'], 2)}V
                         % if brick['bat_charging']:
                         <span class="icon has-text-warning" title="charging">
+                            % if server_is('0.6.0') and brick['bat_solar_charging']:
+                            <i class="fas fa-sun fa-sm"></i>
+                            % else:
                             <i class="fas fa-bolt fa-sm"></i>
+                            % endif
                         </span>
                         % elif brick['bat_charging_standby']:
                         <span class="icon has-text-success" title="charging finished">
+                            % if server_is('0.6.0') and brick['bat_solar_charging']:
+                            <i class="fas fa-sun fa-sm"></i>
+                            % else:
                             <i class="fas fa-bolt fa-sm"></i>
+                            % endif
                         </span>
                         % elif brick['bat_last_reading'] <= 3.4:
                         <span class="icon is-large has-text-danger" title="battery-empty">
@@ -103,10 +122,32 @@
                         </span>
                         % endif
                     </p>
+                    <p class="subtitle is-5">
+                        <span class="icon" title="predicted to be empty">
+                            <i class="fas fa-calendar-times fa-sm"></i>
+                        </span>
+                        ${f"{round(brick['bat_runtime_prediction'])} days" if brick['bat_runtime_prediction'] else 'unknown'}
+                    </p>
 				</div>
                 <script>
                     $("#brick-detail-bat-level-grafana").click(function() {
                         window.open("${grafana_url_bat_level(brick['_id'])}", 'grafana');
+                    });
+                    $("#brick-detail-bat-solar-charging-disable").click(function() {
+                        $.ajax( {
+                            url:'set_solar_charging/?enable=false',
+                            success:function(data) {
+                                $('#brick-detail').html(data);
+                            }
+                        });
+                    });
+                    $("#brick-detail-bat-solar-charging-enable").click(function() {
+                        $.ajax( {
+                            url:'set_solar_charging/?enable=true',
+                            success:function(data) {
+                                $('#brick-detail').html(data);
+                            }
+                        });
                     });
                 </script>
                 % endif

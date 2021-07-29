@@ -141,6 +141,11 @@ def bricks_get_sorted_by_bat_runtime_prediction():
     return result
 
 
+def brick_set_solar_charging(brick_id, enable):
+    _request_cached({'command': 'set', 'brick': brick_id, 'key': 'bat_solar_charging', 'value': enable})
+    clear_request_cache(brick_id)
+
+
 """
 temp-sensor operations
 """
