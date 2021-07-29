@@ -64,11 +64,11 @@
                         % if server_is('0.6.0'):
                         % if brick['bat_solar_charging']:
                         <span class="icon is-small grafana-link-icon" id="brick-detail-bat-solar-charging-disable" title="Disable Solar Charging">
-                            <i class="fas fa-bolt fa-sm"></i>
+                            <i class="fas fa-sun fa-sm"></i>
                         </span>
                         % else:
                         <span class="icon is-small grafana-link-icon" id="brick-detail-bat-solar-charging-enable" title="Enable Solar Charging">
-                            <i class="fas fa-sun fa-sm"></i>
+                            <i class="fas fa-bolt fa-sm"></i>
                         </span>
                         % endif
                         % endif
@@ -164,6 +164,18 @@
                     <p>
                         ${datetime.fromtimestamp(int(brick['last_ts'])).strftime('%d.%m.%Y %H:%M:%S')}<br />
                         <span class="has-text-grey-light">(${time_ago_str(brick['last_ts'])} ago)</span>
+                    </p>
+                </div>
+                % endif
+
+                % if 'init_ts' in brick and brick['init_ts']:
+                <div class="content box">
+                    <p class="title is-6">
+                        init_ts
+                    </p>
+                    <p>
+                        ${datetime.fromtimestamp(int(brick['init_ts'])).strftime('%d.%m.%Y %H:%M:%S')}<br />
+                        <span class="has-text-grey-light">(${time_ago_str(brick['init_ts'])} ago)</span>
                     </p>
                 </div>
                 % endif
