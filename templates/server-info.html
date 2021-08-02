@@ -33,24 +33,46 @@
                         ${str(count_get('bricks'))}
                     </div>
                 </div>
-                <div class="field">
-                    <label class="label">Temp Sensors count:</label>
-                    <div class="box">
-                        ${str(count_get('temp_sensors'))}
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Latches count:</label>
-                    <div class="box">
-                        ${str(count_get('latches'))}
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Signals count:</label>
-                    <div class="box">
-                        ${str(count_get('signals'))}
-                    </div>
-                </div>
                 % endif
+                <div class="columns">
+                    <div class="column">
+                        % if server_is('0.5.0'):
+                        <div class="field">
+                            <label class="label">Temp Sensors count:</label>
+                            <div class="box">
+                                ${str(count_get('temp_sensors'))}
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Latches count:</label>
+                            <div class="box">
+                                ${str(count_get('latches'))}
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Signals count:</label>
+                            <div class="box">
+                                ${str(count_get('signals'))}
+                            </div>
+                        </div>
+                        % endif
+                    </div>
+                    <div class="column">
+                        % if server_is('0.6.0'):
+                        <div class="field">
+                            <label class="label">Events count:</label>
+                            <div class="box">
+                                ${str(count_get('events'))}
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Event Data count:</label>
+                            <div class="box">
+                                ${str(count_get('event_data'))}
+                            </div>
+                        </div>
+                        % endif
+                    </div>
+                </div>
             </div>
         </article>
