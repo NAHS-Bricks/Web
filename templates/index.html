@@ -38,13 +38,6 @@
                             </div>
 
                             <div class="navbar-end">
-                                % if server_is('0.6.0'):
-                                <div class="navbar-item">
-                                    <a class="button" id="event-editor-button" aria-label="edit events of current brick">
-                                        Events
-                                    </a>
-                                </div>
-                                % endif
                                 <div class="navbar-item">
                                     <a class="button modal-button" data-target="#set-brick-desc-modal" aria-label="change description of current brick">
                                         Change description
@@ -69,12 +62,6 @@
   </section>
 <%include file="select-brick-modal.html" />
 <%include file="runtime-overview-modal.html" />
-  <div class="modal" id="event-editor-modal">
-	<div class="modal-background"></div>
-	<div class="modal-content">
-    </div>
-    <button class="modal-close is-large" aria-label="close"></button>
-  </div>
   <div class="modal" id="set-brick-desc-modal">
 	<div class="modal-background"></div>
 	<div class="modal-content">
@@ -167,17 +154,6 @@
                 url:'get_server_info',
                 success:function(data) {
                     $("#sensor-detail-modal > .modal-content").html(data);
-                }
-            });
-        });
-
-        $("#event-editor-button").click(function() {
-            $("html").addClass("is-clipped");
-            $("#event-editor-modal").addClass("is-active");
-            $.ajax( {
-                url:'event_editor/',
-                success:function(data) {
-                    $("#event-editor-modal > .modal-content").html(data);
                 }
             });
         });
