@@ -39,6 +39,13 @@
 
                             <div class="navbar-end">
                                 <div class="navbar-item">
+                                    <a class="button" id="reload-brick-detail" aria-label="reload Brick-Detail from Server">
+                                        <span class="icon is-small cache-reload-icon">
+                                            <i class="fas fa-sync-alt fa-sm"></i>
+                                        </span>
+                                    </a>
+                                </div>
+                                <div class="navbar-item">
                                     <a class="button modal-button" data-target="#set-brick-desc-modal" aria-label="change description of current brick">
                                         Change description
                                     </a>
@@ -51,6 +58,18 @@
                             </div>
                         </div>
                     </nav>
+                    <script>
+                    autoreloadIntervalID = 1
+                    function reload_brick_detail() {
+                        clearInterval(autoreloadIntervalID);
+                        $.ajax( {
+                            url:'reload_brick_detail/?brick_id=' + "${brick['_id']}",
+                            success:function(data) {
+                                $('#brick-detail').html(data);
+                            }
+                        });
+                    };
+                    </script>
 				</div>
 			</div>
 		</div>
@@ -156,6 +175,10 @@
                     $("#sensor-detail-modal > .modal-content").html(data);
                 }
             });
+        });
+
+        $("#reload-brick-detail").click(function() {
+            reload_brick_detail();
         });
   </script>
   </body>

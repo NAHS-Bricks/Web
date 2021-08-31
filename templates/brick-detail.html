@@ -8,53 +8,34 @@
 %>
         <div class="tile is-2 is-parent">
             <div class="tile is-child">
-                % if 'sleep' in brick['features']:
+                % if 'sleep' in brick['features'] or server_is('0.7.0'):
                 <div class="container box">
 					<p class="subtitle is-5">
                         Autoreload
-                        <span class="icon is-small cache-reload-icon" id="brick-detail-trigger-reload" title="reload Brick-Detail from Server">
-                            <i class="fas fa-sync-alt fa-sm"></i>
-                        </span>
                     </p>
 					<p class="title is-2" id="autoreload-in">
-                        % if ((brick['last_ts'] + brick['sleep_delay'] + 5) - int(time.time())) >= 0:
-                        ${(brick['last_ts'] + brick['sleep_delay'] + 5) - int(time.time())}s
+                        % if ((brick['last_ts'] + (brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5) - int(time.time())) >= 0:
+                        ${(brick['last_ts'] + (brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5) - int(time.time())}s
                         % else:
                         disabled
                         % endif
                     </p>
                     <p class="subtitle is-5">
-                        <progress class="progress" id="autoreload-progress" value="${(int(time.time()) - brick['last_ts'])}" max="${brick['sleep_delay'] + 5}"></progress>
+                        <progress class="progress" id="autoreload-progress" value="${(int(time.time()) - brick['last_ts'])}" max="${(brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5}"></progress>
                     </p>
 				</div>
                 <script>
-                    % if ((brick['last_ts'] + brick['sleep_delay'] + 5) - int(time.time())) >= 0:
-                    var autoreloadIntervalID = setInterval(function() {
-                        var time_left = ${brick['last_ts'] + brick['sleep_delay'] + 5} - Math.floor(new Date / 1000);
+                    % if ((brick['last_ts'] + (brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5) - int(time.time())) >= 0:
+                    autoreloadIntervalID = setInterval(function() {
+                        var time_left = ${brick['last_ts'] + (brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5} - Math.floor(new Date / 1000);
                         $('#autoreload-in').text(time_left + "s");
                         $('#autoreload-progress').val(Math.floor(new Date / 1000) - ${brick['last_ts']});
                         if (time_left <= 0) {
-                            $("#brick-detail-trigger-reload").click();
+                            reload_brick_detail();
                         }
+                        console.log(autoreloadIntervalID);
                     }, 1000);
                     % endif
-                    $("#brick-detail-trigger-reload").click(function() {
-                        if (typeof autoreloadIntervalID !== 'undefined') {
-                            clearInterval(autoreloadIntervalID);
-                        }
-                        $.ajax({url:'clear_cache/?partial=' + "${brick['_id']}"});
-                        % if 'temp' in brick['features']:
-                        % for sensor in brick['temp_sensors']:
-                        $.ajax({url:'clear_cache/?partial=' + "${sensor}"});
-                        % endfor
-                        % endif
-                        $.ajax( {
-                            url:'get_brick_detail/?brick_id=' + "${brick['_id']}",
-                            success:function(data) {
-                                $('#brick-detail').html(data);
-                            }
-                        });
-                    });
                 </script>
                 % endif
                 % if 'bat' in brick['features']:

@@ -82,13 +82,17 @@ class BrickWeb(object):
             return ""
 
     @cherrypy.expose
-    def get_brick_detail(self, brick_id):
+    def reload_brick_detail(self, brick_id):
         brick = None
         if brick_exists(brick_id):
             brick = brick_get(brick_id)
             cherrypy.session['brick_id'] = brick['_id']
         if brick is None:
-            raise cherrypy.HTTPRedirect('/')
+            return
+        clear_request_cache(brick_id)
+        if 'temp' in brick['features']:
+            for sensor in brick['temp_sensors']:
+                clear_request_cache(sensor)
         return serve_template('/brick-detail.html', brick=brick, session=cherrypy.session)
 
     @cherrypy.expose
