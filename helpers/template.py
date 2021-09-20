@@ -1,5 +1,5 @@
 import json
-from helpers.brickserver import temp_sensor_get, latch_get, serverversion_get, signal_get
+from helpers.brickserver import temp_sensor_get, humid_sensor_get, latch_get, serverversion_get, signal_get
 from helpers.config import config
 from datetime import datetime, timedelta
 
@@ -11,6 +11,13 @@ def convert_html(json_obj):
 def list_of_temp_sensors_of_brick(brick):
     if 'temp' in brick['features']:
         return [temp_sensor_get(sensor) for sensor in brick['temp_sensors']]
+    else:
+        return list()
+
+
+def list_of_humid_sensors_of_brick(brick):
+    if 'humid' in brick['features']:
+        return [humid_sensor_get(sensor) for sensor in brick['humid_sensors']]
     else:
         return list()
 
@@ -30,7 +37,7 @@ def list_of_signals_of_brick(brick):
 
 
 def has_disabled_sensors(brick):
-    for s in list_of_temp_sensors_of_brick(brick) + list_of_latches_of_brick(brick) + list_of_signals_of_brick(brick):
+    for s in list_of_temp_sensors_of_brick(brick) + list_of_humid_sensors_of_brick(brick) + list_of_latches_of_brick(brick) + list_of_signals_of_brick(brick):
         if 'ui' in s['disables']:
             return True
     return False
@@ -45,6 +52,12 @@ def grafana_url_bat_level(brick_id):
 def grafana_url_temp_sensor(sensor_id):
     url = "http://" + config['grafana']['host'] + ":" + str(config['grafana']['port']) + "/explore"
     query = f"?orgId=1&left=%5B%22now-1h%22,%22now%22,%22{config['grafana']['datasource']}%22,%7B%22datasource%22:%22{config['grafana']['datasource']}%22,%22policy%22:%228weeks%22,%22resultFormat%22:%22time_series%22,%22orderByTime%22:%22ASC%22,%22tags%22:%5B%7B%22key%22:%22sensor_id%22,%22operator%22:%22%3D%22,%22value%22:%22{sensor_id}%22%7D%5D,%22groupBy%22:%5B%5D,%22select%22:%5B%5B%7B%22type%22:%22field%22,%22params%22:%5B%22celsius%22%5D%7D%5D%5D,%22measurement%22:%22temps%22%7D%5D"
+    return url + query
+
+
+def grafana_url_humid_sensor(sensor_id):
+    url = "http://" + config['grafana']['host'] + ":" + str(config['grafana']['port']) + "/explore"
+    query = f"?orgId=1&left=%5B%22now-1h%22,%22now%22,%22{config['grafana']['datasource']}%22,%7B%22datasource%22:%22{config['grafana']['datasource']}%22,%22policy%22:%228weeks%22,%22resultFormat%22:%22time_series%22,%22orderByTime%22:%22ASC%22,%22tags%22:%5B%7B%22key%22:%22sensor_id%22,%22operator%22:%22%3D%22,%22value%22:%22{sensor_id}%22%7D%5D,%22groupBy%22:%5B%5D,%22select%22:%5B%5B%7B%22type%22:%22field%22,%22params%22:%5B%22humidity%22%5D%7D%5D%5D,%22measurement%22:%22humids%22%7D%5D"
     return url + query
 
 

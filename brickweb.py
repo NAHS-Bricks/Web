@@ -5,6 +5,7 @@ import json
 from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, brick_set_solar_charging, brick_set_sleep_disabled
 from helpers.brickserver import features_get_available, clear_request_cache
 from helpers.brickserver import temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc, temp_sensor_disable
+from helpers.brickserver import humid_sensor_exists, humid_sensor_get, humid_sensor_set_desc, humid_sensor_disable
 from helpers.brickserver import latch_exists, latch_get, latch_set_desc, latch_set_states_desc, latch_add_trigger, latch_del_trigger, latch_disable
 from helpers.brickserver import signal_exists, signal_get, signal_set_desc, signal_set_states_desc, signal_set_state, signal_disable
 from helpers.config import config
@@ -46,11 +47,13 @@ class BrickWeb(object):
         return serve_template('/runtime-overview.html', session=cherrypy.session)
 
     @cherrypy.expose()
-    def set_desc(self, desc, brick_id=None, sensor_id=None, latch_id=None, signal_id=None):
+    def set_desc(self, desc, brick_id=None, sensor_id=None, humid_id=None, latch_id=None, signal_id=None):
         if brick_id is not None:
             brick_set_desc(brick_id, desc)
         if sensor_id is not None:
             temp_sensor_set_desc(sensor_id, desc)
+        if humid_id is not None:
+            humid_sensor_set_desc(humid_id, desc)
         if latch_id is not None:
             latch_set_desc(latch_id, desc)
         if signal_id is not None:
@@ -94,6 +97,9 @@ class BrickWeb(object):
         if 'temp' in brick['features']:
             for sensor in brick['temp_sensors']:
                 clear_request_cache(sensor)
+        if 'humid' in brick['features']:
+            for sensor in brick['humid_sensors']:
+                clear_request_cache(sensor)
         return serve_template('/brick-detail.html', brick=brick, session=cherrypy.session)
 
     @cherrypy.expose
@@ -120,6 +126,15 @@ class BrickWeb(object):
         if sensor is None:
             raise cherrypy.HTTPRedirect('/')
         return serve_template('/temp-sensor-detail.html', sensor=sensor)
+
+    @cherrypy.expose
+    def get_humid_sensor_detail(self, sensor_id):
+        sensor = None
+        if humid_sensor_exists(sensor_id):
+            sensor = humid_sensor_get(sensor_id)
+        if sensor is None:
+            raise cherrypy.HTTPRedirect('/')
+        return serve_template('/humid-sensor-detail.html', sensor=sensor)
 
     @cherrypy.expose
     def get_latch_detail(self, latch_id):
@@ -164,10 +179,12 @@ class BrickWeb(object):
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()
-    def set_disables(self, disables=list(), sensor_id=None, latch_id=None, signal_id=None):
+    def set_disables(self, disables=list(), sensor_id=None, humid_id=None, latch_id=None, signal_id=None):
         for d in possible_disables:
             if sensor_id is not None:
                 temp_sensor_disable(sensor_id, d, d in disables)
+            if humid_id is not None:
+                humid_sensor_disable(humid_id, d, d in disables)
             if latch_id is not None:
                 latch_disable(latch_id, d, d in disables)
             if signal_id is not None:

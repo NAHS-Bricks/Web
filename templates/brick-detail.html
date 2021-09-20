@@ -1,5 +1,5 @@
 <%!
-    from helpers.template import convert_html, list_of_temp_sensors_of_brick, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str, list_of_signals_of_brick, has_disabled_sensors, server_is
+    from helpers.template import convert_html, list_of_temp_sensors_of_brick, list_of_humid_sensors_of_brick, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str, list_of_signals_of_brick, has_disabled_sensors, server_is
     from helpers.config import config
     import time
     from datetime import datetime
@@ -295,6 +295,35 @@
                 % endif
                 % endfor
 
+                % for sensor in list_of_humid_sensors_of_brick(brick):
+                % if 'ui' not in sensor['disables'] or cherrypy.session['show_disabled']:
+				<a class="container box humid_sensor${' has-background-grey-lighter' if 'ui' in sensor['disables'] else ''}" data-target="${sensor['_id']}">
+					<p class="subtitle is-5">
+                        ${sensor['_id']}
+                    </p>
+					<p class="title is-2">
+                        % if sensor['last_reading'] is None or sensor['prev_reading'] is None or sensor['last_reading'] == sensor['prev_reading']:
+                        <span class="icon is-small has-text-success">
+                            <i class="fas fa-arrow-left fa-sm"></i>
+                        </span>
+                        % elif sensor['last_reading'] > sensor['prev_reading']:
+                        <span class="icon is-small has-text-danger">
+                            <i class="fas fa-arrow-up fa-sm"></i>
+                        </span>
+                        % else:
+                        <span class="icon is-small has-text-info">
+                            <i class="fas fa-arrow-down fa-sm"></i>
+                        </span>
+                        % endif
+                        ${round(sensor['last_reading'], 1)}%
+                    </p>
+                    <p class="subtitle is-6">
+                        ${sensor['desc']}
+                    </p>
+				</a>
+                % endif
+                % endfor
+
                 % for latch in list_of_latches_of_brick(brick):
                 % if 'ui' not in latch['disables'] or cherrypy.session['show_disabled']:
                 <a class="container box latch${' has-background-grey-lighter' if 'ui' in latch['disables'] else ''}" data-target="${latch['_id']}">
@@ -343,6 +372,17 @@
                 $("#sensor-detail-modal").addClass("is-active");
                 $.ajax( {
                     url:'get_temp_sensor_detail/?sensor_id=' + target,
+                    success:function(data) {
+                        $("#sensor-detail-modal > .modal-content").html(data);
+                    }
+                });
+            });
+            $(".humid_sensor").click(function() {
+                var target = $(this).data("target");
+                $("html").addClass("is-clipped");
+                $("#sensor-detail-modal").addClass("is-active");
+                $.ajax( {
+                    url:'get_humid_sensor_detail/?sensor_id=' + target,
                     success:function(data) {
                         $("#sensor-detail-modal > .modal-content").html(data);
                     }

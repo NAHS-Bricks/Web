@@ -178,6 +178,32 @@ def temp_sensor_disable(sensor_id, what, enable):
 
 
 """
+humid-sensor operations
+"""
+
+
+def humid_sensor_get(sensor_id):
+    return _request_cached({"command": "get_humid_sensor", "humid_sensor": sensor_id})['humid_sensor']
+
+
+def humid_sensor_exists(sensor_id):
+    return 0 == _request_cached({"command": "get_humid_sensor", "humid_sensor": sensor_id})['s']
+
+
+def humid_sensor_set_desc(sensor_id, desc):
+    _request_cached({'command': 'set', 'humid_sensor': sensor_id, 'key': 'desc', 'value': desc})
+    clear_request_cache(sensor_id)
+
+
+def humid_sensor_disable(sensor_id, what, enable):
+    if enable:
+        _request_cached({'command': 'set', 'humid_sensor': sensor_id, 'key': 'add_disable', 'value': what})
+    else:
+        _request_cached({'command': 'set', 'humid_sensor': sensor_id, 'key': 'del_disable', 'value': what})
+    clear_request_cache(sensor_id)
+
+
+"""
 latch operations
 """
 

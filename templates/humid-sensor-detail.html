@@ -1,0 +1,137 @@
+<%!
+    from helpers.template import convert_html, grafana_url_humid_sensor
+    from helpers.config import config
+    from helpers.shared import possible_disables
+    from datetime import datetime
+%>
+        <article class="message">
+            <div class="message-header">
+                <p>
+                    Humid Sensor Detail
+                    % if config['grafana']['enabled']:
+                    <span class="icon is-small grafana-link-icon" id="humid-sensor-detail-grafana" title="Open corresponding Chart in Grafana">
+                        <i class="fas fa-chart-line fa-sm"></i>
+                    </span>
+                    % endif
+                </p>
+            </div>
+            <div class="message-body">
+                <div class="field">
+                    <label class="label">ID</label>
+                    <div class="box">
+                        ${sensor['_id']}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Description</label>
+                    <div class="box" id="humid-sensor-desc-display">
+                        ${sensor['desc'] if sensor['desc'] is not None else ''}
+                        <span class="icon edit-pencil-icon" id="humid-sensor-desc-edit-button">
+                            <i class="fas fa-edit fa-sm"></i>
+                        </span>
+                    </div>
+                    <form method="post" action="/set_desc?humid_id=${sensor['_id']}" id="humid-sensor-desc-edit" style="display: none;">
+                        <div class="field has-addons">
+                            <p class="control is-expanded">
+                                <input class="input" type="text" placeholder="Sensor Description" value="${sensor['desc'] if sensor['desc'] is not None else ''}" name="desc">
+                            </p>
+                            <p class="control">
+                                <button class="button is-success">Save</button>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+                <div class="field">
+                    <label class="label">Humidity Correction Value</label>
+                    <div class="box">
+                        ${sensor['corr']}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Current Humidity</label>
+                    <div class="box">
+                        % if sensor['last_reading'] is not None:
+                        ${sensor['last_reading']} <span class="has-text-grey-light">(at ${str(datetime.fromtimestamp(int(sensor['last_ts'])).time())})</span>
+                        % else:
+                        None
+                        % endif
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Previous Humidity</label>
+                    <div class="box">
+                        % if sensor['prev_reading'] is not None:
+                        ${sensor['prev_reading']} <span class="has-text-grey-light">(at ${str(datetime.fromtimestamp(int(sensor['prev_ts'])).time())})</span>
+                        % else:
+                        None
+                        % endif
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">
+                        Disables
+                        <span class="icon edit-pencil-icon" id="humid-sensor-disables-edit-button">
+                            <i class="fas fa-edit fa-sm"></i>
+                        </span>
+                    </label>
+                    <div class="box" id="humid-sensor-disables-display">
+                        ${"<br />".join(sensor['disables'])}
+                    </div>
+                    <div class="box" id="humid-sensor-disables-edit" style="display: none;">
+                        <form method="post" action="/set_disables?humid_id=${sensor['_id']}">
+                            <div class="field">
+                                <fieldset>
+                                    % for d in possible_disables:
+                                    <p class="control is-expanded">
+                                        <input type="checkbox" name="disables" value="${d}" ${('checked' if d in sensor['disables'] else '')}>
+                                        ${d}
+                                    </p>
+                                    % endfor
+                                </fieldset>
+                                <p class="control">
+                                    <button class="button is-success">Save</button>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">RAW Data</label>
+                    <button class="button is-dark" id="humid-sensor-raw-show">show</button>
+                    <button class="button is-dark" id="humid-sensor-raw-hide" style="display: none;">hide</button>
+                    <div class="box" id="humid-sensor-raw-data" style="display: none;">
+                        <p class="is-family-monospace">
+                            ${convert_html(sensor)}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <script>
+            $("#humid-sensor-raw-show").click(function() {
+                $("#humid-sensor-raw-show").hide();
+                $("#humid-sensor-raw-hide").show();
+                $("#humid-sensor-raw-data").show();
+            });
+
+            $("#humid-sensor-raw-hide").click(function() {
+                $("#humid-sensor-raw-show").show();
+                $("#humid-sensor-raw-hide").hide();
+                $("#humid-sensor-raw-data").hide();
+            });
+
+            $("#humid-sensor-desc-edit-button").click(function() {
+                $("#humid-sensor-desc-display").hide();
+                $("#humid-sensor-desc-edit").show();
+            });
+
+            $("#humid-sensor-disables-edit-button").click(function() {
+                $("#humid-sensor-disables-display").hide();
+                $("#humid-sensor-disables-edit").show();
+                $("#humid-sensor-disables-edit-button").hide();
+            });
+
+            $("#humid-sensor-detail-grafana").click(function() {
+                window.open("${grafana_url_humid_sensor(sensor['_id'])}", 'grafana');
+            });
+        </script>
