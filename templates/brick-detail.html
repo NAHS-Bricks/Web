@@ -132,6 +132,55 @@
                     });
                 </script>
                 % endif
+                % if 'sleep' in brick['features']:
+                <div class="container box">
+					<p class="subtitle is-5">
+                        Sleeping
+                        % if server_is('0.7.0') and brick['features']['sleep'] >= 1.01:
+                        % if brick['sleep_set_disabled']:
+                        <span class="icon is-small success-icon" id="brick-detail-sleep-enable" title="Enable Sleeping">
+                            <i class="fas fa-check fa-sm"></i>
+                        </span>
+                        % else:
+                        <span class="icon is-small danger-icon" id="brick-detail-sleep-disable" title="Disable Sleeping">
+                            <i class="fas fa-times-circle fa-sm"></i>
+                        </span>
+                        % endif
+                        % endif
+                    </p>
+                    % if not brick['features']['sleep'] >= 1.01 or not server_is('0.7.0'):
+                    <p class="title is-2">
+                        enabled
+                    </p>
+                    % else:
+                    <p class="title is-2${' has-text-warning' if not brick['sleep_disabled'] == brick['sleep_set_disabled'] else ''}">
+                        %if brick['sleep_disabled']:
+                        disabled
+                        % else:
+                        enabled
+                        %endif
+                    </p>
+                    %endif
+				</div>
+                <script>
+                    $("#brick-detail-sleep-enable").click(function() {
+                        $.ajax( {
+                            url:'set_sleep_disabled/?disabled=false',
+                            success:function(data) {
+                                $('#brick-detail').html(data);
+                            }
+                        });
+                    });
+                    $("#brick-detail-sleep-disable").click(function() {
+                        $.ajax( {
+                            url:'set_sleep_disabled/?disabled=true',
+                            success:function(data) {
+                                $('#brick-detail').html(data);
+                            }
+                        });
+                    });
+                </script>
+                %endif
             </div>
         </div>
 		<div class="tile is-3 is-parent">

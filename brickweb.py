@@ -2,7 +2,7 @@ import cherrypy
 import os
 import sys
 import json
-from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, brick_set_solar_charging
+from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, brick_set_solar_charging, brick_set_sleep_disabled
 from helpers.brickserver import features_get_available, clear_request_cache
 from helpers.brickserver import temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc, temp_sensor_disable
 from helpers.brickserver import latch_exists, latch_get, latch_set_desc, latch_set_states_desc, latch_add_trigger, latch_del_trigger, latch_disable
@@ -99,6 +99,12 @@ class BrickWeb(object):
     @cherrypy.expose
     def set_solar_charging(self, enable):
         brick_set_solar_charging(cherrypy.session['brick_id'], (enable == 'true'))
+        brick = brick_get(cherrypy.session['brick_id'])
+        return serve_template('/brick-detail.html', brick=brick, session=cherrypy.session)
+
+    @cherrypy.expose
+    def set_sleep_disabled(self, disabled):
+        brick_set_sleep_disabled(cherrypy.session['brick_id'], (disabled == 'true'))
         brick = brick_get(cherrypy.session['brick_id'])
         return serve_template('/brick-detail.html', brick=brick, session=cherrypy.session)
 

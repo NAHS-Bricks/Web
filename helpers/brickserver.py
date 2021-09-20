@@ -146,6 +146,11 @@ def brick_set_solar_charging(brick_id, enable):
     clear_request_cache(brick_id)
 
 
+def brick_set_sleep_disabled(brick_id, disabled=False):
+    _request_cached({'command': 'set', 'brick': brick_id, 'key': 'sleep_disabled', 'value': disabled})
+    clear_request_cache(brick_id)
+
+
 """
 temp-sensor operations
 """
