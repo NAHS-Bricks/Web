@@ -1,6 +1,6 @@
 import json
 from helpers.brickserver import temp_sensor_get, latch_get, serverversion_get, signal_get
-from helpers.shared import config
+from helpers.config import config
 from datetime import datetime, timedelta
 
 

@@ -7,7 +7,8 @@ from helpers.brickserver import features_get_available, clear_request_cache
 from helpers.brickserver import temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc, temp_sensor_disable
 from helpers.brickserver import latch_exists, latch_get, latch_set_desc, latch_set_states_desc, latch_add_trigger, latch_del_trigger, latch_disable
 from helpers.brickserver import signal_exists, signal_get, signal_set_desc, signal_set_states_desc, signal_set_state, signal_disable
-from helpers.shared import config, serve_template, possible_disables
+from helpers.config import config
+from helpers.shared import serve_template, possible_disables
 from helpers.template import server_is
 
 

@@ -1,7 +1,7 @@
 import requests
 import json
 import time
-from helpers.shared import config
+from helpers.config import config
 
 
 _request_cache = {}
