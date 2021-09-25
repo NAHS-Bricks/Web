@@ -112,7 +112,7 @@
 				</div>
                 <script>
                     $("#brick-detail-bat-level-grafana").click(function() {
-                        window.open("${grafana_url_bat_level(brick['_id'])}", 'grafana');
+                        window.open("${grafana_url_bat_level(brick)}", 'grafana');
                     });
                     $("#brick-detail-bat-solar-charging-disable").click(function() {
                         $.ajax( {

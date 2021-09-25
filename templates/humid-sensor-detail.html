@@ -132,6 +132,6 @@
             });
 
             $("#humid-sensor-detail-grafana").click(function() {
-                window.open("${grafana_url_humid_sensor(sensor['_id'])}", 'grafana');
+                window.open("${grafana_url_humid_sensor(brick, sensor)}", 'grafana');
             });
         </script>

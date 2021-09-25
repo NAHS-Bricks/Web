@@ -43,28 +43,38 @@ def has_disabled_sensors(brick):
     return False
 
 
-def grafana_url_bat_level(brick_id):
-    url = "http://" + config['grafana']['host'] + ":" + str(config['grafana']['port']) + "/explore"
-    query = f"?orgId=1&left=%5B%22now-24h%22,%22now%22,%22{config['grafana']['datasource']}%22,%7B%22datasource%22:%22{config['grafana']['datasource']}%22,%22policy%22:%2226weeks%22,%22resultFormat%22:%22time_series%22,%22orderByTime%22:%22ASC%22,%22tags%22:%5B%7B%22key%22:%22brick_id%22,%22operator%22:%22%3D%22,%22value%22:%22{brick_id}%22%7D%5D,%22groupBy%22:%5B%5D,%22select%22:%5B%5B%7B%22type%22:%22field%22,%22params%22:%5B%22voltage%22%5D%7D%5D%5D,%22measurement%22:%22bat_levels%22%7D%5D"
+def grafana_url_bat_level(brick):
+    url = f"http://{config['grafana']['host']}:{config['grafana']['port']}/d/2RQaypHnk/?"
+    query = f"var-brick_desc={brick['desc'] if brick['desc'] is not None else ''}"
+    query += f"&var-brick_id={brick['_id']}"
     return url + query
 
 
-def grafana_url_temp_sensor(sensor_id):
-    url = "http://" + config['grafana']['host'] + ":" + str(config['grafana']['port']) + "/explore"
-    query = f"?orgId=1&left=%5B%22now-1h%22,%22now%22,%22{config['grafana']['datasource']}%22,%7B%22datasource%22:%22{config['grafana']['datasource']}%22,%22policy%22:%228weeks%22,%22resultFormat%22:%22time_series%22,%22orderByTime%22:%22ASC%22,%22tags%22:%5B%7B%22key%22:%22sensor_id%22,%22operator%22:%22%3D%22,%22value%22:%22{sensor_id}%22%7D%5D,%22groupBy%22:%5B%5D,%22select%22:%5B%5B%7B%22type%22:%22field%22,%22params%22:%5B%22celsius%22%5D%7D%5D%5D,%22measurement%22:%22temps%22%7D%5D"
+def grafana_url_temp_sensor(brick, sensor):
+    url = f"http://{config['grafana']['host']}:{config['grafana']['port']}/d/bwVhKMEMz/?"
+    query = f"var-brick_desc={brick['desc'] if brick['desc'] is not None else ''}"
+    query += f"&var-brick_id={brick['_id']}"
+    query += f"&var-sensor_desc={sensor['desc'] if sensor['desc'] is not None else ''}"
+    query += f"&var-sensor_id={sensor['_id']}"
     return url + query
 
 
-def grafana_url_humid_sensor(sensor_id):
-    url = "http://" + config['grafana']['host'] + ":" + str(config['grafana']['port']) + "/explore"
-    query = f"?orgId=1&left=%5B%22now-1h%22,%22now%22,%22{config['grafana']['datasource']}%22,%7B%22datasource%22:%22{config['grafana']['datasource']}%22,%22policy%22:%228weeks%22,%22resultFormat%22:%22time_series%22,%22orderByTime%22:%22ASC%22,%22tags%22:%5B%7B%22key%22:%22sensor_id%22,%22operator%22:%22%3D%22,%22value%22:%22{sensor_id}%22%7D%5D,%22groupBy%22:%5B%5D,%22select%22:%5B%5B%7B%22type%22:%22field%22,%22params%22:%5B%22humidity%22%5D%7D%5D%5D,%22measurement%22:%22humids%22%7D%5D"
+def grafana_url_humid_sensor(brick, sensor):
+    url = f"http://{config['grafana']['host']}:{config['grafana']['port']}/d/5i1GBVNnz/?"
+    query = f"var-brick_desc={brick['desc'] if brick['desc'] is not None else ''}"
+    query += f"&var-brick_id={brick['_id']}"
+    query += f"&var-sensor_desc={sensor['desc'] if sensor['desc'] is not None else ''}"
+    query += f"&var-sensor_id={sensor['_id']}"
     return url + query
 
 
-def grafana_url_latch(latch_id):
-    brick_id, lid = latch_id.split('_')
-    url = "http://" + config['grafana']['host'] + ":" + str(config['grafana']['port']) + "/explore"
-    query = f"?orgId=1&left=%5B%22now-6h%22,%22now%22,%22{config['grafana']['datasource']}%22,%7B%22datasource%22:%22{config['grafana']['datasource']}%22,%22policy%22:%2226weeks%22,%22resultFormat%22:%22time_series%22,%22orderByTime%22:%22ASC%22,%22tags%22:%5B%7B%22key%22:%22brick_id%22,%22operator%22:%22%3D%22,%22value%22:%22{brick_id}%22%7D,%7B%22condition%22:%22AND%22,%22key%22:%22latch_id%22,%22operator%22:%22%3D%22,%22value%22:%22{lid}%22%7D%5D,%22groupBy%22:%5B%5D,%22select%22:%5B%5B%7B%22type%22:%22field%22,%22params%22:%5B%22state%22%5D%7D%5D%5D,%22measurement%22:%22latches%22%7D%5D"
+def grafana_url_latch(brick, latch):
+    brick_id, lid = latch['_id'].split('_')
+    url = f"http://{config['grafana']['host']}:{config['grafana']['port']}/d/0qV6PIN7z/?"
+    query = f"var-brick_desc={brick['desc'] if brick['desc'] is not None else ''}"
+    query += f"&var-brick_id={brick['_id']}"
+    query += f"&var-latch_desc={latch['desc'] if latch['desc'] is not None else ''}"
+    query += f"&var-latch_id={lid}"
     return url + query
 
 

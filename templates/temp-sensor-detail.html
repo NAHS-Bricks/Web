@@ -123,6 +123,6 @@
             });
 
             $("#temp-sensor-detail-grafana").click(function() {
-                window.open("${grafana_url_temp_sensor(sensor['_id'])}", 'grafana');
+                window.open("${grafana_url_temp_sensor(brick, sensor)}", 'grafana');
             });
         </script>

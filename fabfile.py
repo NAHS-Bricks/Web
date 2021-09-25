@@ -133,14 +133,16 @@ def deploy(c):
 def grafana(c):
     c.run('hostname')
     c.run('uname -a')
-    systemctl_stop(c, 'docker.grafana.service')
     install_apt_package(c, 'curl')
     install_docker(c)
-    create_directorys(c, [storagedir_grafana])
-    c.run(f"chmod 777 {storagedir_grafana}")
-    systemctl_install_service(c, 'docker.service', 'docker.grafana.service', [('__storage__', storagedir_grafana + ':/var/lib/grafana'), ('__port__', '3000:3000'), ('__image__', grafana_image)])
-    c.run("systemctl daemon-reload")
     systemctl_start_docker(c)
     docker_pull(c, grafana_image)
+    # Timecritical stuff (when service allready runs) - start
+    systemctl_stop(c, 'docker.grafana.service')
+    create_directorys(c, [storagedir_grafana])
+    c.run(f"chmod 777 {storagedir_grafana}")
+    systemctl_install_service(c, 'docker.service', 'docker.grafana.service', [('__additional__', ''), ('__storage__', storagedir_grafana + ':/var/lib/grafana'), ('__port__', '3000:3000'), ('__image__', grafana_image)])
+    c.run("systemctl daemon-reload")
     systemctl_start(c, 'docker.grafana.service')
+    # Timecritical stuff (when service allready runs) - end
     docker_prune(c)

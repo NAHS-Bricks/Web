@@ -11,8 +11,7 @@ config = {
     'grafana': {
         'enabled': False,
         'host': '',
-        'port': 3000,
-        'datasource': 'InfluxDB'
+        'port': 3000
     }
 }
 if os.path.isfile('config.json'):

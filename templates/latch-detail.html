@@ -225,6 +225,6 @@
             });
 
             $("#latch-detail-grafana").click(function() {
-                window.open("${grafana_url_latch(latch['_id'])}", 'grafana');
+                window.open("${grafana_url_latch(brick, latch)}", 'grafana');
             });
         </script>

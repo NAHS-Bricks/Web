@@ -125,7 +125,8 @@ class BrickWeb(object):
             sensor = temp_sensor_get(sensor_id)
         if sensor is None:
             raise cherrypy.HTTPRedirect('/')
-        return serve_template('/temp-sensor-detail.html', sensor=sensor)
+        brick = brick_get(cherrypy.session['brick_id'])
+        return serve_template('/temp-sensor-detail.html', sensor=sensor, brick=brick)
 
     @cherrypy.expose
     def get_humid_sensor_detail(self, sensor_id):
@@ -134,7 +135,8 @@ class BrickWeb(object):
             sensor = humid_sensor_get(sensor_id)
         if sensor is None:
             raise cherrypy.HTTPRedirect('/')
-        return serve_template('/humid-sensor-detail.html', sensor=sensor)
+        brick = brick_get(cherrypy.session['brick_id'])
+        return serve_template('/humid-sensor-detail.html', sensor=sensor, brick=brick)
 
     @cherrypy.expose
     def get_latch_detail(self, latch_id):
@@ -144,7 +146,8 @@ class BrickWeb(object):
             latch = latch_get(brick_id, lid)
         if latch is None:
             raise cherrypy.HTTPRedirect('/')
-        return serve_template('/latch-detail.html', latch=latch)
+        brick = brick_get(cherrypy.session['brick_id'])
+        return serve_template('/latch-detail.html', latch=latch, brick=brick)
 
     @cherrypy.expose
     def get_signal_detail(self, signal_id):

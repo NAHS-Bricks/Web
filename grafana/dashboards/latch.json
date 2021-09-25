@@ -1,0 +1,335 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_NAHS-BRICKSERVER",
+      "label": "NAHS-BrickServer",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "influxdb",
+      "pluginName": "InfluxDB"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "8.1.5"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph (old)",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "version": "1.0.0"
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "iteration": 1632255364629,
+  "links": [],
+  "panels": [
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_NAHS-BRICKSERVER}",
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 16,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "hiddenSeries": false,
+      "id": 2,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "8.1.5",
+      "pointradius": 1,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:639",
+          "alias": "Finite - State",
+          "fill": 1,
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": true,
+      "targets": [
+        {
+          "alias": "RAW - States",
+          "groupBy": [],
+          "measurement": "latches",
+          "orderByTime": "ASC",
+          "policy": "8weeks",
+          "queryType": "randomWalk",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "state"
+                ],
+                "type": "field"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "brick_id",
+              "operator": "=~",
+              "value": "/^$brick_id$/"
+            },
+            {
+              "condition": "AND",
+              "key": "latch_id",
+              "operator": "=~",
+              "value": "/^$latch_id$/"
+            }
+          ]
+        },
+        {
+          "alias": "Finite - State",
+          "groupBy": [],
+          "hide": false,
+          "measurement": "latches",
+          "orderByTime": "ASC",
+          "policy": "8weeks",
+          "queryType": "randomWalk",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "state"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [
+                  "%2 "
+                ],
+                "type": "math"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "brick_id",
+              "operator": "=~",
+              "value": "/^$brick_id$/"
+            },
+            {
+              "condition": "AND",
+              "key": "latch_id",
+              "operator": "=~",
+              "value": "/^$latch_id$/"
+            }
+          ]
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Latch Readings",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:302",
+          "decimals": 0,
+          "format": "none",
+          "label": null,
+          "logBase": 1,
+          "max": "5",
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:303",
+          "decimals": 0,
+          "format": "bool_on_off",
+          "label": null,
+          "logBase": 1,
+          "max": "5",
+          "min": "0",
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 30,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "${DS_NAHS-BRICKSERVER}",
+        "definition": "SHOW TAG VALUES FROM \"8weeks\".\"latches\" WITH KEY = \"brick_desc\"",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "brick_desc",
+        "options": [],
+        "query": "SHOW TAG VALUES FROM \"8weeks\".\"latches\" WITH KEY = \"brick_desc\"",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "${DS_NAHS-BRICKSERVER}",
+        "definition": "SHOW TAG VALUES FROM \"8weeks\".\"latches\" WITH KEY = \"brick_id\" WHERE \"brick_desc\" =~ /^$brick_desc$/",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "brick_id",
+        "options": [],
+        "query": "SHOW TAG VALUES FROM \"8weeks\".\"latches\" WITH KEY = \"brick_id\" WHERE \"brick_desc\" =~ /^$brick_desc$/",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "${DS_NAHS-BRICKSERVER}",
+        "definition": "SHOW TAG VALUES FROM \"8weeks\".\"latches\" WITH KEY = \"latch_desc\"  WHERE \"brick_id\" =~ /^$brick_id$/",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "latch_desc",
+        "options": [],
+        "query": "SHOW TAG VALUES FROM \"8weeks\".\"latches\" WITH KEY = \"latch_desc\"  WHERE \"brick_id\" =~ /^$brick_id$/",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {},
+        "datasource": "${DS_NAHS-BRICKSERVER}",
+        "definition": "SHOW TAG VALUES FROM \"8weeks\".\"latches\" WITH KEY = \"latch_id\"  WHERE \"brick_id\" =~ /^$brick_id$/ AND \"latch_desc\" =~ /^$latch_desc$/",
+        "description": null,
+        "error": null,
+        "hide": 0,
+        "includeAll": false,
+        "label": null,
+        "multi": false,
+        "name": "latch_id",
+        "options": [],
+        "query": "SHOW TAG VALUES FROM \"8weeks\".\"latches\" WITH KEY = \"latch_id\"  WHERE \"brick_id\" =~ /^$brick_id$/ AND \"latch_desc\" =~ /^$latch_desc$/",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "latch",
+  "uid": "0qV6PIN7z",
+  "version": 2
+}
