@@ -1,0 +1,501 @@
+[
+    {
+        "id": "39c8988d7579f7fd",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "f508a8bc63d51d65",
+        "type": "subflow",
+        "name": "Latch sets Signal",
+        "info": "",
+        "category": "",
+        "in": [],
+        "out": [],
+        "env": [
+            {
+                "name": "latch_brick_id",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "latch_id",
+                "type": "num",
+                "value": "0",
+                "ui": {
+                    "type": "spinner",
+                    "opts": {
+                        "min": 0,
+                        "max": 8
+                    }
+                }
+            },
+            {
+                "name": "latch_state",
+                "type": "num",
+                "value": "2",
+                "ui": {
+                    "type": "spinner",
+                    "opts": {
+                        "min": 2,
+                        "max": 5
+                    }
+                }
+            },
+            {
+                "name": "signal_brick_id",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "signal_id",
+                "type": "num",
+                "value": "0",
+                "ui": {
+                    "type": "spinner",
+                    "opts": {
+                        "min": 0,
+                        "max": 8
+                    }
+                }
+            },
+            {
+                "name": "signal_state",
+                "type": "num",
+                "value": "0",
+                "ui": {
+                    "type": "spinner",
+                    "opts": {
+                        "min": 0,
+                        "max": 1
+                    }
+                }
+            }
+        ],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
+        "id": "928b6cd8afe78e19",
+        "type": "subflow",
+        "name": "BrickServer Admin API",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 120,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "59b74ca18ab4c3db"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 820,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "5e400d82346df396",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 820,
+                "y": 220,
+                "wires": [
+                    {
+                        "id": "d9cf924b99f9a8ed",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
+        "id": "6c8bc1031ca33a4f",
+        "type": "mqtt-broker",
+        "z": "f508a8bc63d51d65",
+        "name": "BrickServer",
+        "broker": "192.168.1.232",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "protocolVersion": "5",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "sessionExpiry": ""
+    },
+    {
+        "id": "93500dc77341337f",
+        "type": "mqtt in",
+        "z": "f508a8bc63d51d65",
+        "name": "",
+        "topic": "brick/+/latch/+",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "6c8bc1031ca33a4f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 210,
+        "y": 220,
+        "wires": [
+            [
+                "a35c0ae67237cd4f"
+            ]
+        ]
+    },
+    {
+        "id": "a35c0ae67237cd4f",
+        "type": "function",
+        "z": "f508a8bc63d51d65",
+        "name": "Extract Vars",
+        "func": "msg.brick_id = msg.topic.split(\"/\")[1];\nmsg.latch_id = msg.topic.split(\"/\")[3].split(\"_\")[1];\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 220,
+        "wires": [
+            [
+                "fdce96596e0f377c"
+            ]
+        ]
+    },
+    {
+        "id": "fdce96596e0f377c",
+        "type": "switch",
+        "z": "f508a8bc63d51d65",
+        "name": "if brick_id == latch_brick_id",
+        "property": "brick_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "latch_brick_id",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 700,
+        "y": 220,
+        "wires": [
+            [
+                "d9998b2afdb0cbfa"
+            ]
+        ]
+    },
+    {
+        "id": "d9998b2afdb0cbfa",
+        "type": "switch",
+        "z": "f508a8bc63d51d65",
+        "name": "if latch_id == latch_id",
+        "property": "latch_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "latch_id",
+                "vt": "env"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 1,
+        "x": 1000,
+        "y": 220,
+        "wires": [
+            [
+                "4a63e06dc24fd137"
+            ]
+        ]
+    },
+    {
+        "id": "4a63e06dc24fd137",
+        "type": "switch",
+        "z": "f508a8bc63d51d65",
+        "name": "if payload == latch_state",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "latch_state",
+                "vt": "env"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 1,
+        "x": 1290,
+        "y": 220,
+        "wires": [
+            [
+                "95100125f55f517d"
+            ]
+        ]
+    },
+    {
+        "id": "4e221ca2d908f65f",
+        "type": "subflow:f508a8bc63d51d65",
+        "z": "39c8988d7579f7fd",
+        "name": "",
+        "env": [
+            {
+                "name": "latch_brick_id",
+                "value": "localhost",
+                "type": "str"
+            },
+            {
+                "name": "signal_brick_id",
+                "value": "local2",
+                "type": "str"
+            },
+            {
+                "name": "signal_id",
+                "value": "3",
+                "type": "num"
+            },
+            {
+                "name": "signal_state",
+                "value": "1",
+                "type": "num"
+            }
+        ],
+        "x": 310,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "a05fdb8f7e50cf76",
+        "type": "function",
+        "z": "f508a8bc63d51d65",
+        "name": "",
+        "func": "msg.payload = {\"command\":\"set\",\"key\":\"signal\",\"activate\":true};\nmsg.payload.signal = env.get(\"signal_brick_id\") + \"_\" + env.get(\"signal_id\");\nmsg.payload.value = env.get(\"signal_state\");\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 340,
+        "wires": [
+            [
+                "b30d5ecfe35ec57a"
+            ]
+        ]
+    },
+    {
+        "id": "2adf3aa91c3aea42",
+        "type": "debug",
+        "z": "f508a8bc63d51d65",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 870,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "95100125f55f517d",
+        "type": "link out",
+        "z": "f508a8bc63d51d65",
+        "name": "",
+        "links": [
+            "3b602f143d2b6b1a"
+        ],
+        "x": 1475,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "3b602f143d2b6b1a",
+        "type": "link in",
+        "z": "f508a8bc63d51d65",
+        "name": "",
+        "links": [
+            "95100125f55f517d"
+        ],
+        "x": 295,
+        "y": 340,
+        "wires": [
+            [
+                "a05fdb8f7e50cf76"
+            ]
+        ]
+    },
+    {
+        "id": "80ae1dc59aca1268",
+        "type": "http request",
+        "z": "928b6cd8afe78e19",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://192.168.1.232:8081/admin",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 450,
+        "y": 160,
+        "wires": [
+            [
+                "5e400d82346df396",
+                "d9cf924b99f9a8ed"
+            ]
+        ]
+    },
+    {
+        "id": "8b474b2b1c7790e3",
+        "type": "comment",
+        "z": "928b6cd8afe78e19",
+        "name": "Info",
+        "info": "# BrickServer Admin API\n\nThis SubFlow is just for sending a (json)payload to BrickServer's Admin Interface and receiving it's response.\n\nReason for this SubFlow is to have a single place where the BrickServer connection parameters needs to be configured.\n\n## Outputs:\n\n**1**: Input payload\n\n**2**: Response payload",
+        "x": 150,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "59b74ca18ab4c3db",
+        "type": "change",
+        "z": "928b6cd8afe78e19",
+        "name": "save payload",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload_o",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 250,
+        "y": 160,
+        "wires": [
+            [
+                "80ae1dc59aca1268"
+            ]
+        ]
+    },
+    {
+        "id": "5e400d82346df396",
+        "type": "change",
+        "z": "928b6cd8afe78e19",
+        "name": "restore payload",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload_o",
+                "tot": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "payload_o",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 660,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d9cf924b99f9a8ed",
+        "type": "change",
+        "z": "928b6cd8afe78e19",
+        "name": "cleanup msg",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "payload_o",
+                "pt": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 670,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b30d5ecfe35ec57a",
+        "type": "subflow:928b6cd8afe78e19",
+        "z": "f508a8bc63d51d65",
+        "name": "",
+        "x": 640,
+        "y": 340,
+        "wires": [
+            [
+                "2adf3aa91c3aea42"
+            ],
+            [
+                "2adf3aa91c3aea42"
+            ]
+        ]
+    }
+]
