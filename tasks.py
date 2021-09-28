@@ -26,15 +26,23 @@ def start_development(c):
     if 'dev-grafana' not in r.stdout:
         print("Starting Grafana")
         c.run("sudo docker run --name=dev-grafana --rm -p 3000:3000 -d grafana/grafana")
+    r = c.run("sudo docker ps -f name=dev-nodered", hide=True)
+    if 'dev-nodered' not in r.stdout:
+        print("Starting NodeRed")
+        c.run("mkdir -p /media/ramdisk/nodered")
+        c.run("chown 1000:1000 /media/ramdisk/nodered")
+        c.run("sudo docker run --name=dev-nodered --rm -p 1880:1880 -v /media/ramdisk/nodered:/data -d nodered/node-red")
 
 
 @task(name="dev-stop")
 def stop_development(c):
-    for name in ['dev-grafana']:
+    for name in ['dev-grafana', 'dev-nodered']:
         r = c.run(f"sudo docker ps -f name={name}", hide=True)
         if name in r.stdout:
             print(f"Stopping {name}")
             c.run(f"sudo docker stop {name}")
+    print('Removing storage for dev-nodered')
+    c.run('sudo rm -rf /media/ramdisk/nodered')
 
 
 @task(pre=[stop_development], post=[start_development], name="dev-clean")
