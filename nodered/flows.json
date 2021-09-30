@@ -11,12 +11,12 @@
         "type": "subflow",
         "name": "Latch sets Signal",
         "info": "",
-        "category": "",
+        "category": "BrickWeb",
         "in": [],
         "out": [],
         "env": [
             {
-                "name": "latch_brick_id",
+                "name": "input_brick_id",
                 "type": "str",
                 "value": "",
                 "ui": {
@@ -29,7 +29,7 @@
                 }
             },
             {
-                "name": "latch_id",
+                "name": "input_id",
                 "type": "num",
                 "value": "0",
                 "ui": {
@@ -41,7 +41,7 @@
                 }
             },
             {
-                "name": "latch_state",
+                "name": "input_state",
                 "type": "num",
                 "value": "2",
                 "ui": {
@@ -97,12 +97,12 @@
         "id": "928b6cd8afe78e19",
         "type": "subflow",
         "name": "BrickServer Admin API",
-        "info": "",
-        "category": "",
+        "info": "This SubFlow is just for sending a (json)payload to BrickServer's Admin Interface and receiving it's response.\n\nReason for this SubFlow is to have a single place where the BrickServer connection parameters needs to be configured.\n\n# Input:\n\nPayload to send to BrickServer\n\n# Outputs:\n\n**1**: untouched input payload\n\n**2**: Response payload\n\n# Additional Info:\n\nIt's possible to change the URL of the 'http request' node with new BrickServer connection information. This is going to be persisted even with rerunning the NodeRed Preconfiguration.\n\nEverything else in this Subflow is overwritten by NodeRed Preconfiguration!",
+        "category": "BrickWeb",
         "in": [
             {
-                "x": 120,
-                "y": 160,
+                "x": 40,
+                "y": 100,
                 "wires": [
                     {
                         "id": "59b74ca18ab4c3db"
@@ -112,8 +112,8 @@
         ],
         "out": [
             {
-                "x": 820,
-                "y": 160,
+                "x": 740,
+                "y": 100,
                 "wires": [
                     {
                         "id": "5e400d82346df396",
@@ -122,8 +122,8 @@
                 ]
             },
             {
-                "x": 820,
-                "y": 220,
+                "x": 740,
+                "y": 160,
                 "wires": [
                     {
                         "id": "d9cf924b99f9a8ed",
@@ -133,15 +133,25 @@
             }
         ],
         "env": [],
-        "meta": {},
-        "color": "#DDAA99"
+        "meta": {
+            "author": "Nils Ostrowski",
+            "desc": "SubFlow for sending a (json)payload to BrickServer's Admin Interface"
+        },
+        "color": "#DDAA99",
+        "inputLabels": [
+            "payload"
+        ],
+        "outputLabels": [
+            "input payload",
+            "response"
+        ]
     },
     {
         "id": "6c8bc1031ca33a4f",
         "type": "mqtt-broker",
         "z": "f508a8bc63d51d65",
         "name": "BrickServer",
-        "broker": "192.168.1.232",
+        "broker": "192.168.56.102",
         "port": "1883",
         "clientid": "",
         "usetls": false,
@@ -205,13 +215,13 @@
         "id": "fdce96596e0f377c",
         "type": "switch",
         "z": "f508a8bc63d51d65",
-        "name": "if brick_id == latch_brick_id",
+        "name": "if brick_id == input_brick_id",
         "property": "brick_id",
         "propertyType": "msg",
         "rules": [
             {
                 "t": "eq",
-                "v": "latch_brick_id",
+                "v": "input_brick_id",
                 "vt": "env"
             }
         ],
@@ -230,13 +240,13 @@
         "id": "d9998b2afdb0cbfa",
         "type": "switch",
         "z": "f508a8bc63d51d65",
-        "name": "if latch_id == latch_id",
+        "name": "if latch_id == input_id",
         "property": "latch_id",
         "propertyType": "msg",
         "rules": [
             {
                 "t": "eq",
-                "v": "latch_id",
+                "v": "input_id",
                 "vt": "env"
             }
         ],
@@ -255,13 +265,13 @@
         "id": "4a63e06dc24fd137",
         "type": "switch",
         "z": "f508a8bc63d51d65",
-        "name": "if payload == latch_state",
+        "name": "if payload == input_state",
         "property": "payload",
         "propertyType": "msg",
         "rules": [
             {
                 "t": "eq",
-                "v": "latch_state",
+                "v": "input_state",
                 "vt": "env"
             }
         ],
@@ -283,7 +293,7 @@
         "name": "",
         "env": [
             {
-                "name": "latch_brick_id",
+                "name": "input_brick_id",
                 "value": "localhost",
                 "type": "str"
             },
@@ -301,6 +311,11 @@
                 "name": "signal_state",
                 "value": "1",
                 "type": "num"
+            },
+            {
+                "name": "latch_brick_id",
+                "value": "localhost",
+                "type": "str"
             }
         ],
         "x": 310,
@@ -378,13 +393,13 @@
         "method": "POST",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "http://192.168.1.232:8081/admin",
+        "url": "http://192.168.56.102:8081/admin",
         "tls": "",
         "persist": false,
         "proxy": "",
         "authType": "",
-        "x": 450,
-        "y": 160,
+        "x": 370,
+        "y": 100,
         "wires": [
             [
                 "5e400d82346df396",
@@ -396,10 +411,10 @@
         "id": "8b474b2b1c7790e3",
         "type": "comment",
         "z": "928b6cd8afe78e19",
-        "name": "Info",
-        "info": "# BrickServer Admin API\n\nThis SubFlow is just for sending a (json)payload to BrickServer's Admin Interface and receiving it's response.\n\nReason for this SubFlow is to have a single place where the BrickServer connection parameters needs to be configured.\n\n## Outputs:\n\n**1**: Input payload\n\n**2**: Response payload",
-        "x": 150,
-        "y": 60,
+        "name": "SubFlow for sending a (json)payload to BrickServer's Admin Interface",
+        "info": "This SubFlow is just for sending a (json)payload to BrickServer's Admin Interface and receiving it's response.\n\nReason for this SubFlow is to have a single place where the BrickServer connection parameters needs to be configured.\n\n# Input:\n\nPayload to send to BrickServer\n\n# Outputs:\n\n**1**: untouched input payload\n\n**2**: Response payload\n\n# Additional Info:\n\nIt's possible to change the URL of the 'http request' node with new BrickServer connection information. This is going to be persisted even with rerunning the NodeRed Preconfiguration.\n\nEverything else in this Subflow is overwritten by NodeRed Preconfiguration!",
+        "x": 270,
+        "y": 40,
         "wires": []
     },
     {
@@ -421,8 +436,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 250,
-        "y": 160,
+        "x": 170,
+        "y": 100,
         "wires": [
             [
                 "80ae1dc59aca1268"
@@ -453,8 +468,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 660,
-        "y": 160,
+        "x": 580,
+        "y": 100,
         "wires": [
             []
         ]
@@ -476,8 +491,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 670,
-        "y": 220,
+        "x": 590,
+        "y": 160,
         "wires": [
             []
         ]
