@@ -147,9 +147,143 @@
         ]
     },
     {
+        "id": "70aad4cc197c0fa0",
+        "type": "subflow",
+        "name": "Trafficlight",
+        "info": "",
+        "category": "",
+        "in": [],
+        "out": [],
+        "env": [
+            {
+                "name": "input_type",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "select",
+                    "opts": {
+                        "opts": [
+                            {
+                                "l": {
+                                    "en-US": "temp sensor"
+                                },
+                                "v": "temp"
+                            },
+                            {
+                                "l": {
+                                    "en-US": "humidity sensor"
+                                },
+                                "v": "humid"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "input_brick_id",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "input_sensor_id",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "watermark_high",
+                "type": "num",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "watermark_low",
+                "type": "num",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "signal_brick_id",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "signal_to_high",
+                "type": "num",
+                "value": "0",
+                "ui": {
+                    "type": "spinner",
+                    "opts": {
+                        "min": 0
+                    }
+                }
+            },
+            {
+                "name": "signal_ok",
+                "type": "num",
+                "value": "1",
+                "ui": {
+                    "type": "spinner",
+                    "opts": {
+                        "min": 0
+                    }
+                }
+            },
+            {
+                "name": "signal_to_low",
+                "type": "num",
+                "value": "2",
+                "ui": {
+                    "type": "spinner",
+                    "opts": {
+                        "min": 0
+                    }
+                }
+            }
+        ],
+        "meta": {},
+        "color": "#DDAA99"
+    },
+    {
         "id": "6c8bc1031ca33a4f",
         "type": "mqtt-broker",
-        "z": "f508a8bc63d51d65",
         "name": "BrickServer",
         "broker": "192.168.56.102",
         "port": "1883",
@@ -326,7 +460,7 @@
         "id": "a05fdb8f7e50cf76",
         "type": "function",
         "z": "f508a8bc63d51d65",
-        "name": "",
+        "name": "prepare json",
         "func": "msg.payload = {\"command\":\"set\",\"key\":\"signal\",\"activate\":true};\nmsg.payload.signal = env.get(\"signal_brick_id\") + \"_\" + env.get(\"signal_id\");\nmsg.payload.value = env.get(\"signal_state\");\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
@@ -511,6 +645,481 @@
             [
                 "2adf3aa91c3aea42"
             ]
+        ]
+    },
+    {
+        "id": "f4474e3c756cc949",
+        "type": "mqtt in",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "topic": "brick/+/+/+",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "6c8bc1031ca33a4f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 80,
+        "y": 120,
+        "wires": [
+            [
+                "f658e7a1b1f65a8a"
+            ]
+        ]
+    },
+    {
+        "id": "f658e7a1b1f65a8a",
+        "type": "function",
+        "z": "70aad4cc197c0fa0",
+        "name": "Extract vars",
+        "func": "msg.sensor_brick = msg.topic.split(\"/\")[1];\nmsg.sensor_type = msg.topic.split(\"/\")[2];\nmsg.sensor_id = msg.topic.split(\"/\")[3];\nmsg.sensor_value = int(msg.payload);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 120,
+        "wires": [
+            [
+                "3c41bf382d95f4ce"
+            ]
+        ]
+    },
+    {
+        "id": "3c41bf382d95f4ce",
+        "type": "switch",
+        "z": "70aad4cc197c0fa0",
+        "name": "if sensor_brick == input_brick_id",
+        "property": "sensor_brick",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "input_brick_id",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 500,
+        "y": 120,
+        "wires": [
+            [
+                "2b1235e47c53ac34"
+            ]
+        ]
+    },
+    {
+        "id": "2b1235e47c53ac34",
+        "type": "switch",
+        "z": "70aad4cc197c0fa0",
+        "name": "if sensor_type == input_type",
+        "property": "sensor_type",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "input_type",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 800,
+        "y": 120,
+        "wires": [
+            [
+                "95492132cb450b8a"
+            ]
+        ]
+    },
+    {
+        "id": "95492132cb450b8a",
+        "type": "switch",
+        "z": "70aad4cc197c0fa0",
+        "name": "if sensor_id == input_sensor_id",
+        "property": "sensor_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "input_sensor_id",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1090,
+        "y": 120,
+        "wires": [
+            [
+                "82c8e1e95730e7a9"
+            ]
+        ]
+    },
+    {
+        "id": "82c8e1e95730e7a9",
+        "type": "link out",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "links": [
+            "2951f1bb3f7282e8"
+        ],
+        "x": 1275,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "2951f1bb3f7282e8",
+        "type": "link in",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "links": [
+            "82c8e1e95730e7a9"
+        ],
+        "x": 75,
+        "y": 220,
+        "wires": [
+            [
+                "51a4b8417188b58f"
+            ]
+        ]
+    },
+    {
+        "id": "51a4b8417188b58f",
+        "type": "function",
+        "z": "70aad4cc197c0fa0",
+        "name": "prepare to high",
+        "func": "msg.payload = {\"command\":\"set\",\"key\":\"signal\"};\nmsg.payload.signal = env.get(\"signal_brick_id\") + \"_\" + env.get(\"signal_to_high\");\nmsg.payload.value = 0;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 220,
+        "wires": [
+            [
+                "b1238ce1c0d3f057"
+            ]
+        ]
+    },
+    {
+        "id": "b1238ce1c0d3f057",
+        "type": "switch",
+        "z": "70aad4cc197c0fa0",
+        "name": "sensor value to high",
+        "property": "sensor_value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "watermark_high",
+                "vt": "env"
+            },
+            {
+                "t": "lte",
+                "v": "watermark_high",
+                "vt": "env"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 440,
+        "y": 220,
+        "wires": [
+            [
+                "e855d7b9390e9ac4"
+            ],
+            [
+                "e03b0b17ce565175"
+            ]
+        ]
+    },
+    {
+        "id": "e855d7b9390e9ac4",
+        "type": "change",
+        "z": "70aad4cc197c0fa0",
+        "name": "enable signal",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.value",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 680,
+        "y": 180,
+        "wires": [
+            [
+                "e03b0b17ce565175"
+            ]
+        ]
+    },
+    {
+        "id": "e03b0b17ce565175",
+        "type": "subflow:928b6cd8afe78e19",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "x": 900,
+        "y": 220,
+        "wires": [
+            [
+                "0b37e2ee1e32e4ce"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "0b37e2ee1e32e4ce",
+        "type": "link out",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "links": [
+            "dac636ac4d9db7a0"
+        ],
+        "x": 1075,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "dac636ac4d9db7a0",
+        "type": "link in",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "links": [
+            "0b37e2ee1e32e4ce"
+        ],
+        "x": 75,
+        "y": 320,
+        "wires": [
+            [
+                "4e000005a254ce1f"
+            ]
+        ]
+    },
+    {
+        "id": "4e000005a254ce1f",
+        "type": "function",
+        "z": "70aad4cc197c0fa0",
+        "name": "prepare to low",
+        "func": "msg.payload.signal = env.get(\"signal_brick_id\") + \"_\" + env.get(\"signal_to_low\");\nmsg.payload.value = 0;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 320,
+        "wires": [
+            [
+                "64f7ae15f6458ef3"
+            ]
+        ]
+    },
+    {
+        "id": "64f7ae15f6458ef3",
+        "type": "switch",
+        "z": "70aad4cc197c0fa0",
+        "name": "sensor value to low",
+        "property": "sensor_value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "lt",
+                "v": "watermark_low",
+                "vt": "env"
+            },
+            {
+                "t": "gte",
+                "v": "watermark_low",
+                "vt": "env"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 430,
+        "y": 320,
+        "wires": [
+            [
+                "0690f6a534d6f5cd"
+            ],
+            [
+                "950295310503ad63"
+            ]
+        ]
+    },
+    {
+        "id": "0690f6a534d6f5cd",
+        "type": "change",
+        "z": "70aad4cc197c0fa0",
+        "name": "enable signal",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.value",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 680,
+        "y": 280,
+        "wires": [
+            [
+                "950295310503ad63"
+            ]
+        ]
+    },
+    {
+        "id": "950295310503ad63",
+        "type": "subflow:928b6cd8afe78e19",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "x": 900,
+        "y": 320,
+        "wires": [
+            [
+                "402716462860b45c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "4e312c8c270d57c3",
+        "type": "link in",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "links": [
+            "402716462860b45c"
+        ],
+        "x": 75,
+        "y": 420,
+        "wires": [
+            [
+                "bb15d4a4ad4bfecc"
+            ]
+        ]
+    },
+    {
+        "id": "402716462860b45c",
+        "type": "link out",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "links": [
+            "4e312c8c270d57c3"
+        ],
+        "x": 1075,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "bb15d4a4ad4bfecc",
+        "type": "function",
+        "z": "70aad4cc197c0fa0",
+        "name": "prepare ok",
+        "func": "msg.payload.activate = true\nmsg.payload.signal = env.get(\"signal_brick_id\") + \"_\" + env.get(\"signal_ok\");\nmsg.payload.value = 0;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 210,
+        "y": 420,
+        "wires": [
+            [
+                "9805e7d644228626"
+            ]
+        ]
+    },
+    {
+        "id": "9805e7d644228626",
+        "type": "switch",
+        "z": "70aad4cc197c0fa0",
+        "name": "sensor value is ok",
+        "property": "sensor_value",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "watermark_low",
+                "vt": "env",
+                "v2": "watermark_high",
+                "v2t": "env"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 430,
+        "y": 420,
+        "wires": [
+            [
+                "b4ee187aca6f2639"
+            ],
+            [
+                "c2a67cfecfa485a3"
+            ]
+        ]
+    },
+    {
+        "id": "b4ee187aca6f2639",
+        "type": "change",
+        "z": "70aad4cc197c0fa0",
+        "name": "enable signal",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.value",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 680,
+        "y": 380,
+        "wires": [
+            [
+                "c2a67cfecfa485a3"
+            ]
+        ]
+    },
+    {
+        "id": "c2a67cfecfa485a3",
+        "type": "subflow:928b6cd8afe78e19",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "x": 900,
+        "y": 420,
+        "wires": [
+            [],
+            []
         ]
     }
 ]
