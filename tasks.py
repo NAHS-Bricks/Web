@@ -84,3 +84,8 @@ def testserver_deploy_grafana(c):
 @task(name="preconfigure-grafana")
 def preconfigure_grafana(c):
     c.run("cd grafana; python preconfiguration.py; cd ..")
+
+
+@task(name="preconfigure-nodered")
+def preconfigure_grafana(c):
+    c.run("cd nodered; python preconfiguration.py; cd ..")
