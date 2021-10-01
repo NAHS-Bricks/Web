@@ -31,9 +31,10 @@
                         $('#autoreload-in').text(time_left + "s");
                         $('#autoreload-progress').val(Math.floor(new Date / 1000) - ${brick['last_ts']});
                         if (time_left <= 0) {
+                            clearInterval(autoreloadIntervalID);
                             reload_brick_detail();
+                            $('#autoreload-in').text("disabled");
                         }
-                        console.log(autoreloadIntervalID);
                     }, 1000);
                     % endif
                 </script>
