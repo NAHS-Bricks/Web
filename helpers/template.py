@@ -23,14 +23,14 @@ def list_of_humid_sensors_of_brick(brick):
 
 
 def list_of_latches_of_brick(brick):
-    if 'latch' in brick['features']:
+    if 'latch' in brick['features'] and brick['latch_count'] is not None:
         return [latch_get(brick['_id'], i) for i in range(0, brick['latch_count'])]
     else:
         return list()
 
 
 def list_of_signals_of_brick(brick):
-    if 'signal' in brick['features']:
+    if 'signal' in brick['features'] and brick['signal_count'] is not None:
         return [signal_get(brick['_id'], i) for i in range(0, brick['signal_count'])]
     else:
         return list()
