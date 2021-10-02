@@ -87,5 +87,5 @@ def preconfigure_grafana(c):
 
 
 @task(name="preconfigure-nodered")
-def preconfigure_grafana(c):
+def preconfigure_nodered(c):
     c.run("cd nodered; python preconfiguration.py; cd ..")
