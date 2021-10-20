@@ -106,10 +106,13 @@ with open('config.json', 'w') as f:
 load new preconfigured flow and enrich them with gathered connection data
 """
 flows = json.loads(open('flows.json', 'r').read())
-flows_ids = list()
+nodes_ids = list()  # holds all id's of predefined nodes
+parent_ids = list()  # holds id's of predefines tabs and subflows
 for node in flows:
     if 'id' in node:
-        flows_ids.append(node['id'])
+        nodes_ids.append(node['id'])
+        if 'type' in node and (node['type'] == 'subflow' or node['type'] == 'tab'):
+            parent_ids.append(node['id'])
     if node['id'] == brickserver_node_id:
         node['url'] = f"http://{config['brickserver_host']}:{config['brickserver_port']}/admin"
         pass
@@ -123,8 +126,11 @@ copy over user custom flows to new flow set
 """
 for node in flows_server:
     if 'id' in node:
-        if node['id'] not in flows_ids:
-            flows.append(node)
+        if node['id'] not in nodes_ids:
+            if 'z' in node and node['z'] not in parent_ids:  # only copy over custom nodes that are not present in a predefined subflow or tab
+                flows.append(node)
+            elif 'z' not in node:
+                flows.append(node)
 
 
 """
