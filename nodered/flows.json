@@ -150,8 +150,8 @@
         "id": "70aad4cc197c0fa0",
         "type": "subflow",
         "name": "Trafficlight",
-        "info": "",
-        "category": "",
+        "info": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)\n\n# Variables\n\n**input_type**: whether the input sensor is a _temp sensor_ or a _humid sensor_\n\n**input_brick_id**: _id_ of brick housing the _temp_ or _humid_ sensor\n\n**input_sensor_id**: _id_ of _temp_ or _humid_ sensor\n\n**watermark_high**: sensor values above (not equal) this watermark are considered to high\n\n**watermark_low**: sensor values below (not equal) this watermark are considered to low\n\n**signal_brick_id**: _id_ of brick housing the output signals\n\n**signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n\n**signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n\n**signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low",
+        "category": "BrickWeb",
         "in": [],
         "out": [],
         "env": [
@@ -278,14 +278,17 @@
                 }
             }
         ],
-        "meta": {},
+        "meta": {
+            "author": "Nils Ostrowski",
+            "desc": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)"
+        },
         "color": "#DDAA99"
     },
     {
         "id": "6c8bc1031ca33a4f",
         "type": "mqtt-broker",
         "name": "BrickServer",
-        "broker": "192.168.1.232",
+        "broker": "192.168.56.102",
         "port": "1883",
         "clientid": "",
         "usetls": false,
@@ -527,7 +530,7 @@
         "method": "POST",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "http://192.168.1.232:8081/admin",
+        "url": "http://192.168.56.102:8081/admin",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -660,7 +663,7 @@
         "rap": true,
         "rh": 0,
         "x": 80,
-        "y": 120,
+        "y": 100,
         "wires": [
             [
                 "f658e7a1b1f65a8a"
@@ -679,7 +682,7 @@
         "finalize": "",
         "libs": [],
         "x": 250,
-        "y": 120,
+        "y": 100,
         "wires": [
             [
                 "3c41bf382d95f4ce"
@@ -704,7 +707,7 @@
         "repair": false,
         "outputs": 1,
         "x": 500,
-        "y": 120,
+        "y": 100,
         "wires": [
             [
                 "2b1235e47c53ac34"
@@ -729,7 +732,7 @@
         "repair": false,
         "outputs": 1,
         "x": 800,
-        "y": 120,
+        "y": 100,
         "wires": [
             [
                 "95492132cb450b8a"
@@ -754,7 +757,7 @@
         "repair": false,
         "outputs": 1,
         "x": 1090,
-        "y": 120,
+        "y": 100,
         "wires": [
             [
                 "82c8e1e95730e7a9"
@@ -770,7 +773,7 @@
             "2951f1bb3f7282e8"
         ],
         "x": 1275,
-        "y": 120,
+        "y": 100,
         "wires": []
     },
     {
@@ -782,7 +785,7 @@
             "82c8e1e95730e7a9"
         ],
         "x": 75,
-        "y": 220,
+        "y": 200,
         "wires": [
             [
                 "51a4b8417188b58f"
@@ -801,7 +804,7 @@
         "finalize": "",
         "libs": [],
         "x": 220,
-        "y": 220,
+        "y": 200,
         "wires": [
             [
                 "b1238ce1c0d3f057"
@@ -831,7 +834,7 @@
         "repair": false,
         "outputs": 2,
         "x": 440,
-        "y": 220,
+        "y": 200,
         "wires": [
             [
                 "e855d7b9390e9ac4"
@@ -861,7 +864,7 @@
         "to": "",
         "reg": false,
         "x": 680,
-        "y": 180,
+        "y": 160,
         "wires": [
             [
                 "e03b0b17ce565175"
@@ -874,7 +877,7 @@
         "z": "70aad4cc197c0fa0",
         "name": "",
         "x": 900,
-        "y": 220,
+        "y": 200,
         "wires": [
             [
                 "0b37e2ee1e32e4ce"
@@ -891,7 +894,7 @@
             "dac636ac4d9db7a0"
         ],
         "x": 1075,
-        "y": 220,
+        "y": 200,
         "wires": []
     },
     {
@@ -903,7 +906,7 @@
             "0b37e2ee1e32e4ce"
         ],
         "x": 75,
-        "y": 320,
+        "y": 300,
         "wires": [
             [
                 "4e000005a254ce1f"
@@ -922,7 +925,7 @@
         "finalize": "",
         "libs": [],
         "x": 220,
-        "y": 320,
+        "y": 300,
         "wires": [
             [
                 "64f7ae15f6458ef3"
@@ -952,7 +955,7 @@
         "repair": false,
         "outputs": 2,
         "x": 430,
-        "y": 320,
+        "y": 300,
         "wires": [
             [
                 "0690f6a534d6f5cd"
@@ -982,7 +985,7 @@
         "to": "",
         "reg": false,
         "x": 680,
-        "y": 280,
+        "y": 260,
         "wires": [
             [
                 "950295310503ad63"
@@ -995,7 +998,7 @@
         "z": "70aad4cc197c0fa0",
         "name": "",
         "x": 900,
-        "y": 320,
+        "y": 300,
         "wires": [
             [
                 "402716462860b45c"
@@ -1012,7 +1015,7 @@
             "402716462860b45c"
         ],
         "x": 75,
-        "y": 420,
+        "y": 400,
         "wires": [
             [
                 "bb15d4a4ad4bfecc"
@@ -1028,7 +1031,7 @@
             "4e312c8c270d57c3"
         ],
         "x": 1075,
-        "y": 320,
+        "y": 300,
         "wires": []
     },
     {
@@ -1043,7 +1046,7 @@
         "finalize": "",
         "libs": [],
         "x": 210,
-        "y": 420,
+        "y": 400,
         "wires": [
             [
                 "9805e7d644228626"
@@ -1073,7 +1076,7 @@
         "repair": false,
         "outputs": 2,
         "x": 430,
-        "y": 420,
+        "y": 400,
         "wires": [
             [
                 "b4ee187aca6f2639"
@@ -1103,7 +1106,7 @@
         "to": "",
         "reg": false,
         "x": 680,
-        "y": 380,
+        "y": 360,
         "wires": [
             [
                 "c2a67cfecfa485a3"
@@ -1116,10 +1119,20 @@
         "z": "70aad4cc197c0fa0",
         "name": "",
         "x": 900,
-        "y": 420,
+        "y": 400,
         "wires": [
             [],
             []
         ]
+    },
+    {
+        "id": "bc54aa231d4420d6",
+        "type": "comment",
+        "z": "70aad4cc197c0fa0",
+        "name": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)",
+        "info": "# Variables\n\n**input_type**: whether the input sensor is a _temp sensor_ or a _humid sensor_\n\n**input_brick_id**: _id_ of brick housing the _temp_ or _humid_ sensor\n\n**input_sensor_id**: _id_ of _temp_ or _humid_ sensor\n\n**watermark_high**: sensor values above (not equal) this watermark are considered to high\n\n**watermark_low**: sensor values below (not equal) this watermark are considered to low\n\n**signal_brick_id**: _id_ of brick housing the output signals\n\n**signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n\n**signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n\n**signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low",
+        "x": 410,
+        "y": 40,
+        "wires": []
     }
 ]
