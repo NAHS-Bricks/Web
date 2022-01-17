@@ -8,9 +8,12 @@ from helpers.brickserver import temp_sensor_exists, temp_sensor_get, temp_sensor
 from helpers.brickserver import humid_sensor_exists, humid_sensor_get, humid_sensor_set_desc, humid_sensor_disable
 from helpers.brickserver import latch_exists, latch_get, latch_set_desc, latch_set_states_desc, latch_add_trigger, latch_del_trigger, latch_disable
 from helpers.brickserver import signal_exists, signal_get, signal_set_desc, signal_set_states_desc, signal_set_state, signal_disable
+from helpers.brickserver import firmware_get, firmware_update, firmware_upload as firmware_upload_bk, firmware_delete, firmware_fetch
+from helpers.firmware import firmware_is_used
 from helpers.config import config
 from helpers.shared import serve_template, possible_disables
 from helpers.template import server_is
+import tempfile
 
 
 if not (sys.version_info.major == 3 and sys.version_info.minor >= 5):  # pragma: no cover
@@ -37,10 +40,24 @@ class BrickWeb(object):
         if 'show_disabled' not in cherrypy.session:
             cherrypy.session['show_disabled'] = False
 
+        if brick is not None and 'alert' in cherrypy.session:
+            alert = cherrypy.session['alert']
+            cherrypy.session.pop('alert', None)
+            if 'alert-level' in cherrypy.session:
+                alert_level = cherrypy.session['alert-level']
+                cherrypy.session.pop('alert-level', None)
+            else:
+                alert_level = 'info'
+            if alert_level not in ['info', 'success', 'warning', 'danger']:
+                alert_level = 'info'
+        else:
+            alert = None
+            alert_level = None
+
         if brick is None:
             return serve_template('/index-no-brick.html', session=cherrypy.session)
         else:
-            return serve_template('/index.html', brick=brick, session=cherrypy.session)
+            return serve_template('/index.html', brick=brick, session=cherrypy.session, alert=alert, alert_level=alert_level)
 
     @cherrypy.expose()
     def runtime_overview(self):
@@ -197,6 +214,95 @@ class BrickWeb(object):
     @cherrypy.expose()
     def toggle_show_disabled(self):
         cherrypy.session['show_disabled'] = not cherrypy.session['show_disabled']
+        raise cherrypy.HTTPRedirect('/')
+
+    @cherrypy.expose()
+    def firmware_compare(self, fw1, fw2):
+        fw1m = firmware_get(name=fw1)
+        fw2m = firmware_get(name=fw2)
+        return serve_template('/firmware/compare.html', fw1=fw1m, fw2=fw2m)
+
+    @cherrypy.expose()
+    def firmware_update(self, request):
+        firmware_update(brick_id=cherrypy.session['brick_id'], request=(request == 'true'))
+        brick = brick_get(cherrypy.session['brick_id'])
+        return serve_template('/brick-detail.html', brick=brick, session=cherrypy.session)
+
+    @cherrypy.expose()
+    def firmware_upload(self, firmware):
+        if firmware is not None:
+            size = 0
+            with tempfile.SpooledTemporaryFile(max_size=2105345) as tmp_file:
+                while True:
+                    data = firmware.file.read(8192)
+                    if not data:
+                        break
+                    tmp_file.write(data)
+                    size += len(data)
+                    if size > 2097152:
+                        return {'s': 2, 'm': 'file size is to big'}
+                tmp_file.seek(0)
+                result = firmware_upload_bk(tmp_file)
+        if not result['s'] == 0:
+            cherrypy.session['alert'] = result['m']
+            cherrypy.session['alert-level'] = 'danger'
+        else:
+            cherrypy.session['alert'] = 'New firmware package successfully uploaded'
+            cherrypy.session['alert-level'] = 'success'
+        raise cherrypy.HTTPRedirect('/')
+
+    @cherrypy.expose()
+    def firmware_browser(self):
+        if 'fw_browser_filter' not in cherrypy.session:
+            cherrypy.session['fw_browser_filter'] = None
+        if 'fw_browser_filter_bt' not in cherrypy.session:
+            cherrypy.session['fw_browser_filter_bt'] = None
+        if 'fw_browser_detail' not in cherrypy.session:
+            cherrypy.session['fw_browser_detail'] = None
+        return serve_template('/firmware/browser.html', session=cherrypy.session)
+
+    @cherrypy.expose()
+    def firmware_browser_browse(self, f=None, t=None):
+        cherrypy.session['fw_browser_filter'] = None if str(f) == 'None' else f
+        cherrypy.session['fw_browser_filter_bt'] = None if str(t) == 'None' else t
+        return serve_template('/firmware/browser-browse-column.html', session=cherrypy.session)
+
+    @cherrypy.expose()
+    def firmware_browser_detail(self, d=None):
+        cherrypy.session['fw_browser_detail'] = d
+        return serve_template('/firmware/browser-detail-column.html', session=cherrypy.session)
+
+    @cherrypy.expose()
+    def firmware_delete(self, name, bin_only='false'):
+        if not bin_only == 'true' and firmware_is_used(fw=firmware_get(name=name)):
+            cherrypy.session['alert'] = "Firmware can't be deleted as it is used!"
+            cherrypy.session['alert-level'] = 'warning'
+        else:
+            result = firmware_delete(name=name, bin_only=(bin_only == 'true'))
+            cherrypy.session['fw_browser_detail'] = None
+            if not result.get('s', 0) == 0:
+                cherrypy.session['alert'] = result['m']
+                cherrypy.session['alert-level'] = 'danger'
+            else:
+                result = result.get('deleted')
+                cherrypy.session['alert'] = 'Deleted: ' + (f"FirmwareBin ({result['firmware']}) " if 'firmware' in result else '') + \
+                    ('and ' if 'firmware' in result and 'metadata' in result else '') + \
+                    (f"FirmwareMetadata ({result['metadata']})" if 'metadata' in result else '')
+                cherrypy.session['alert-level'] = 'success'
+        raise cherrypy.HTTPRedirect('/')
+
+    @cherrypy.expose()
+    def firmware_fetch(self, what, brick_id=None, brick_type=None, version=None):
+        result = firmware_fetch(what=what, brick_id=brick_id, brick_type=brick_type, version=version)
+        if not result.get('s', 0) == 0:
+            cherrypy.session['alert'] = result.get('m', '')
+            cherrypy.session['alert-level'] = 'danger'
+        else:
+            result = result.get('fetched')
+            cherrypy.session['alert'] = 'Fetched: ' + (f"FirmwareBin {result['firmware']} " if 'firmware' in result else '') + \
+                ('and ' if 'firmware' in result and 'metadata' in result else '') + \
+                (f"FirmwareMetadata {result['metadata']}" if 'metadata' in result else '')
+            cherrypy.session['alert-level'] = 'success'
         raise cherrypy.HTTPRedirect('/')
 
 

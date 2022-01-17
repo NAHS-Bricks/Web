@@ -1,0 +1,58 @@
+<%!
+    from helpers.firmware import firmware_name, firmware_compare_table
+%>
+        <article class="message">
+            <div class="message-header">
+                <p>
+                    Firmware Comparison
+                </p>
+            </div>
+            <div class="message-body">
+                <table class="table is-narrow is-fullwidth">
+                    <tr>
+                        <th></th>
+                        <th style="text-align: center;">
+                            ${firmware_name(fw1)}
+                            % if fw1 is not None:
+                            <span class="icon info-icon firmware_show_details" data-target="${firmware_name(fw1)}" title="Show Details in Firmware Browser">
+                                <i class="fas fa-search-plus" aria-hidden="true"></i>
+                            </span>
+                            % endif
+                        </th>
+                        <th style="text-align: center;">
+                            ${firmware_name(fw2)}
+                            % if fw2 is not None:
+                            <span class="icon info-icon firmware_show_details" data-target="${firmware_name(fw2)}" title="Show Details in Firmware Browser">
+                                <i class="fas fa-search-plus" aria-hidden="true"></i>
+                            </span>
+                            % endif
+                        </th>
+                    </tr>
+                    % for feature, v1, v2 in firmware_compare_table(fw1, fw2):
+                    <tr>
+                        <td>${feature}</td>
+                        <td style="text-align: center;">${v1}</td>
+                        <td style="text-align: center;" ${'class="is-selected"' if not v1 == v2 else ''}>${v2}</td>
+                    </tr>
+                    % endfor
+                </table>
+            </div>
+        </article>
+        <script>
+            $(".firmware_show_details").click(function() {
+                var target = $(this).data("target");
+                $.ajax( {
+                    url:'firmware_browser_detail?d=' + target,
+                    success:function(data) {
+                        $.ajax( {
+                            url:'firmware_browser',
+                            success:function(data) {
+                                $("#firmware-browser-modal > .modal-content").html(data);
+                                $("#sensor-detail-modal").removeClass("is-active");
+                                $("#firmware-browser-modal").addClass("is-active");
+                            }
+                        });
+                    }
+                });
+            });
+        </script>

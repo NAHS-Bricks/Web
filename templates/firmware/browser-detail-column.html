@@ -1,0 +1,111 @@
+<%!
+    from helpers.firmware import firmware_name, firmware_get, firmware_is_used, firmware_is_latest, firmware_bin_present, firmware_is_dev, firmware_used_on
+    from helpers.template import convert_html
+%>
+                            % if session['fw_browser_detail']:
+                            % for fw in [firmware_get(name=session['fw_browser_detail'])]:
+                            <div class="box">
+                                <div class="field">
+                                    <div class="control">
+                                        <span class="icon ${'has-text-success' if firmware_is_latest(fw) else 'has-text-danger'}" title="${'Latest' if firmware_is_latest(fw) else 'Old'} Firmware version for Brick-Type">
+                                            <i class="fas fa-flag-checkered" aria-hidden="true"></i>
+                                        </span>
+                                        <span class="icon ${'has-text-success' if firmware_is_used(fw=fw) else 'has-text-danger'}" title="Firmware is${'' if firmware_is_used(fw=fw) else ' not'} used on Brick(s)">
+                                            <i class="fas fa-check-double" aria-hidden="true"></i>
+                                        </span>
+                                        <span class="icon ${'has-text-success' if firmware_is_dev(fw=fw) else 'has-text-danger'}" title="Firmware is${'' if firmware_is_dev(fw=fw) else ' not'} a development version">
+                                            <i class="fas fa-file-code" aria-hidden="true"></i>
+                                        </span>
+                                        <span class="icon ${'has-text-success danger-icon' if firmware_bin_present(fw=fw) else 'has-text-danger success-icon'}" id="${'delete' if firmware_bin_present(fw=fw) else 'fetch'}_firmware_bin" title="${'Delete Firmware BIN from BrickServer' if firmware_bin_present(fw=fw) else 'Fetch Firmware BIN from Downstrem as it is not available on BrickServer'}">
+                                            <i class="fas fa-download" aria-hidden="true"></i>
+                                        </span>
+                                        <span class="icon ${'danger-icon' if not firmware_is_used(fw=fw) else ''}" ${'id="delete_firmware"' if not firmware_is_used(fw=fw) else ''} title="${'Delete Firmware' if not firmware_is_used(fw=fw) else "Firmware can't be deleted as it is used"}">
+                                            <i class="fas fa-times" aria-hidden="true"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Brick Type</label>
+                                    <div class="control">
+                                        ${fw.get('brick_type')}
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">Version</label>
+                                    <div class="control">
+                                        ${fw.get('version')}
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">SketchMD5</label>
+                                    <div class="control">
+                                        ${fw.get('sketchMD5')}
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">
+                                        Content
+                                        <span class="icon is-small info-icon firmware-detail-show-icon" id="content-firmware-show-icon" data-target="content" title="show">
+                                            <i class="fas fa-plus-square" aria-hidden="true"></i>
+                                        </span>
+                                        <span class="icon is-small info-icon firmware-detail-hide-icon" id="content-firmware-hide-icon" data-target="content" title="hide" style="display: none;">
+                                            <i class="fas fa-minus-square" aria-hidden="true"></i>
+                                        </span>
+                                    </label>
+                                    <div class="control">
+                                        <table class="table is-narrow" id ="content-firmware-element" style="display: none;">
+                                            % for feature, version in fw.get('content', {}).items():
+                                            <tr>
+                                                <td>${feature}</td>
+                                                <td>${version}</td>
+                                            </tr>
+                                            % endfor
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label">
+                                        Used on
+                                        <span class="icon is-small info-icon firmware-detail-show-icon" id="usedon-firmware-show-icon" data-target="usedon" title="show">
+                                            <i class="fas fa-plus-square" aria-hidden="true"></i>
+                                        </span>
+                                        <span class="icon is-small info-icon firmware-detail-hide-icon" id="usedon-firmware-hide-icon" data-target="usedon" title="hide" style="display: none;">
+                                            <i class="fas fa-minus-square" aria-hidden="true"></i>
+                                        </span>
+                                    </label>
+                                    <div class="control">
+                                        <table class="table is-narrow" id ="usedon-firmware-element" style="display: none;">
+                                            % for brick in firmware_used_on(fw=fw):
+                                            <tr>
+                                                <td>${brick.get('_id')} (${brick.get('desc') if brick.get('desc', None) is not None else ''})</td>
+                                            </tr>
+                                            % endfor
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                $("#delete_firmware").click(function() {
+                                    window.location = 'firmware_delete?name=${firmware_name(fw=fw)}';
+                                });
+                                $("#delete_firmware_bin").click(function() {
+                                    window.location = 'firmware_delete?name=${firmware_name(fw=fw)}&bin_only=true';
+                                });
+                                $("#fetch_firmware_bin").click(function() {
+                                    window.location = 'firmware_fetch?what=bin&brick_type=${fw.get('brick_type')}&version=${fw.get('version')}';
+                                });
+                                $(".firmware-detail-show-icon").click(function() {
+                                    var target = $(this).data('target');
+                                    $("#" + target + "-firmware-show-icon").hide();
+                                    $("#" + target + "-firmware-hide-icon").show();
+                                    $("#" + target + "-firmware-element").show();
+                                });
+                                $(".firmware-detail-hide-icon").click(function() {
+                                    var target = $(this).data('target');
+                                    $("#" + target + "-firmware-hide-icon").hide();
+                                    $("#" + target + "-firmware-element").hide();
+                                    $("#" + target + "-firmware-show-icon").show();
+                                });
+                            </script>
+                            % endfor
+                            % endif

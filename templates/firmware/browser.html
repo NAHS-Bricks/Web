@@ -1,0 +1,51 @@
+<%!
+%>
+		<article class="message">
+            <div class="message-header">
+                <p>
+                    Firmware Browser
+                </p>
+            </div>
+            <div class="message-body">
+                <div class="columns">
+                    <div class="column is-three-fifths">
+                        <div class="box">
+                            <form action="/firmware-upload" method="post" enctype="multipart/form-data">
+                                <div class="file has-name is-fullwidth">
+                                    <label class="file-label">
+                                        <input class="file-input" type="file" id="firmware-file" name="firmware">
+                                        <span class="file-cta">
+                                            <span class="file-icon">
+                                                <i class="fas fa-upload"></i>
+                                            </span>
+                                            <span class="file-label">
+                                                Upload Firmware
+                                            </span>
+                                        </span>
+                                        <span class="file-name" id="firmware-filename">
+                                        </span>
+                                    </label>
+                                    <div class="control">
+                                        <button class="button is-success">Upload</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="panel" id="firmware-browser-column-browse">
+                            <%include file="browser-browse-column.html" />
+                        </div>
+                    </div>
+                    <div class="column" id="firmware-browser-column-detail">
+                        <%include file="browser-detail-column.html" />
+                    </div>
+                </div>
+            </div>
+        </article>
+        <script>
+            $("#firmware-file").change(function() {
+                var filename = $(this).val().split("\\");
+                filename = filename[filename.length-1]
+                console.log(filename);
+                $("#firmware-filename").html(filename);
+            });
+        </script>

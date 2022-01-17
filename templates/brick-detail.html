@@ -1,6 +1,8 @@
 <%!
     from helpers.template import convert_html, list_of_temp_sensors_of_brick, list_of_humid_sensors_of_brick, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str, list_of_signals_of_brick, has_disabled_sensors, server_is
+    from helpers.firmware import firmware_name, firmware_version, firmware_state, firmware_bin_present, firmware_is_updating
     from helpers.config import config
+    from helpers.brickserver import firmware_get
     import time
     from datetime import datetime
     import os
@@ -14,18 +16,36 @@
                         Autoreload
                     </p>
 					<p class="title is-2" id="autoreload-in">
-                        % if ((brick['last_ts'] + (brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5) - int(time.time())) >= 0:
+                        % if firmware_is_updating(brick):
+                        10s
+                        % elif ((brick['last_ts'] + (brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5) - int(time.time())) >= 0:
                         ${(brick['last_ts'] + (brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5) - int(time.time())}s
                         % else:
                         disabled
                         % endif
                     </p>
                     <p class="subtitle is-5">
+                        % if not firmware_is_updating(brick):
                         <progress class="progress" id="autoreload-progress" value="${(int(time.time()) - brick['last_ts'])}" max="${(brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5}"></progress>
+                        % else:
+                        <progress class="progress" id="autoreload-progress" value="0" max="10"></progress>
+                        % endif
                     </p>
 				</div>
                 <script>
-                    % if ((brick['last_ts'] + (brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5) - int(time.time())) >= 0:
+                    % if firmware_is_updating(brick):
+                    autoreloadIntervalID = setInterval(function() {
+                        var time_gone = $('#autoreload-progress').val() + 1;
+                        var time_left = 10 - time_gone;
+                        $('#autoreload-in').text(time_left + "s");
+                        $('#autoreload-progress').val(time_gone);
+                        if (time_left <= 0) {
+                            clearInterval(autoreloadIntervalID);
+                            reload_brick_detail();
+                            $('#autoreload-in').text("disabled");
+                        }
+                    }, 1000);
+                    % elif ((brick['last_ts'] + (brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5) - int(time.time())) >= 0:
                     autoreloadIntervalID = setInterval(function() {
                         var time_left = ${brick['last_ts'] + (brick['delay'] if 'delay' in brick else brick['sleep_delay']) + 5} - Math.floor(new Date / 1000);
                         $('#autoreload-in').text(time_left + "s");
@@ -182,6 +202,86 @@
                     });
                 </script>
                 %endif
+                % if server_is('0.8.0'):
+                <div class="container box">
+					<p class="subtitle is-5">
+                        Firmware
+                        % if brick['features']['os'] >= 1.01 and firmware_state(brick) in ['outdated', 'requested']:
+                        <span class="icon is-small info-icon" id="firmware-compare" title="Show Firmware Differences">
+                            <i class="fas fa-stream fa-sm"></i>
+                        </span>
+                        % elif firmware_state(brick) == 'up to date':
+                        <span class="icon is-small info-icon" id="firmware-details" title="Show Firmware Details">
+                            <i class="fas fa-bars fa-sm"></i>
+                        </span>
+                        % endif
+                        % if brick['features']['os'] >= 1.01 and firmware_state(brick) == 'outdated' and firmware_bin_present(latest=brick.get('type')):
+                        <span class="icon is-small success-icon" id="firmware-update-request" title="Request OTA Firmware Update">
+                            <i class="fas fa-arrow-alt-circle-up fa-sm"></i>
+                        </span>
+                        % elif firmware_state(brick) == 'requested':
+                        <span class="icon is-small danger-icon" id="firmware-update-cancel" title="Cancel OTA Firmware Update Request">
+                            <i class="fas fa-times-circle fa-sm"></i>
+                        </span>
+                        % endif
+                    </p>
+					<p class="title is-3">
+                        ${firmware_state(brick)}
+                    </p>
+                    <p class="subtitle is-5">
+                        ${firmware_version(brick)}
+                    </p>
+				</div>
+                <script>
+                    % if brick['features']['os'] >= 1.01 and firmware_state(brick) in ['outdated', 'requested']:
+                    $("#firmware-compare").click(function() {
+                        $("html").addClass("is-clipped");
+                        $("#sensor-detail-modal").addClass("is-active");
+                        $.ajax( {
+                            url:'firmware_compare/?fw1=${firmware_name(firmware_get(brick_type=brick["type"], sketchMD5=brick["sketchMD5"]))}&fw2=${firmware_name(firmware_get(latest=brick["type"]))}',
+                            success:function(data) {
+                                $("#sensor-detail-modal > .modal-content").html(data);
+                            }
+                        });
+                    });
+                    % elif firmware_state(brick) == 'up to date':
+                    $("#firmware-details").click(function() {
+                        $.ajax( {
+                            url:'firmware_browser_detail?d=${firmware_version(brick)}',
+                            success:function(data) {
+                                $.ajax( {
+                                    url:'firmware_browser',
+                                    success:function(data) {
+                                        $("#firmware-browser-modal > .modal-content").html(data);
+                                        $("html").addClass("is-clipped");
+                                        $("#firmware-browser-modal").addClass("is-active");
+                                    }
+                                });
+                            }
+                        });
+                    });
+                    % endif
+                    % if brick['features']['os'] >= 1.01 and firmware_state(brick) == 'outdated':
+                    $("#firmware-update-request").click(function() {
+                        $.ajax( {
+                            url:'firmware_update/?request=true',
+                            success:function(data) {
+                                $('#brick-detail').html(data);
+                            }
+                        });
+                    });
+                    % elif firmware_state(brick) == 'requested':
+                    $("#firmware-update-cancel").click(function() {
+                        $.ajax( {
+                            url:'firmware_update/?request=false',
+                            success:function(data) {
+                                $('#brick-detail').html(data);
+                            }
+                        });
+                    });
+                    % endif
+                </script>
+                % endif
             </div>
         </div>
 		<div class="tile is-3 is-parent">
@@ -365,7 +465,7 @@
                 <img src="/static/images/bricktype/${brick['type']}.jpg" />
             </div>
             <button class="modal-close is-large" aria-label="close"></button>
-          </div>
+        </div>
         <script>
             $(".temp_sensor").click(function() {
                 var target = $(this).data("target");

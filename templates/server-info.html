@@ -66,7 +66,33 @@
                             </div>
                         </div>
                         % endif
+                        % if server_is('0.8.0'):
+                        <div class="field">
+                            <label class="label">Firmwares count:</label>
+                            <div class="box">
+                                ${str(count_get('firmwares'))}
+                                <span class="icon is-small info-icon" id="firmware-browser-open-icon" title="Open Firmware Browser">
+                                    <i class="fas fa-info-circle"></i>
+                                </span>
+                            </div>
+                        </div>
+                        % endif
                     </div>
                 </div>
             </div>
         </article>
+        <script>
+            % if server_is('0.8.0'):
+            $("#firmware-browser-open-icon").click(function() {
+                $("html").addClass("is-clipped");
+                $("#sensor-detail-modal").removeClass("is-active");
+                $("#firmware-browser-modal").addClass("is-active");
+                $.ajax( {
+                    url:'firmware_browser',
+                    success:function(data) {
+                        $("#firmware-browser-modal > .modal-content").html(data);
+                    }
+                });
+            });
+            % endif
+        </script>

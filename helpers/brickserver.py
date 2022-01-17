@@ -6,6 +6,7 @@ from helpers.config import config
 
 _request_cache = {}
 _request_cache_stats = {'hits': 0, 'misses': 0, 'outdated': 0, 'clears': 0, 'partial': 0}
+_server_url = 'http://' + config['brickserver']['host'] + ':' + str(config['brickserver']['port'])
 
 
 def clear_request_cache(partial=None):
@@ -23,6 +24,7 @@ def clear_request_cache(partial=None):
 def _request_cached(payload):
     global _request_cache
     global _request_cache_stats
+    global _server_url
     session = requests.Session()
     session.headers = {
         'content-type': "application/json",
@@ -43,7 +45,7 @@ def _request_cached(payload):
         _request_cache_stats['outdated'] += 1
 
     _request_cache_stats['misses'] += 1
-    url = 'http://' + config['brickserver']['host'] + ':' + str(config['brickserver']['port']) + '/admin'
+    url = _server_url + '/admin'
     r = session.post(url, data=payload).json()
     _request_cache[payload] = {'time': time.time(), 'data': r}
     print(f"Request Cache Misses: {payload}")
@@ -282,3 +284,72 @@ def signal_disable(signal_id, what, enable):
     else:
         _request_cached({'command': 'set', 'signal': signal_id, 'key': 'del_disable', 'value': what})
     clear_request_cache(signal_id)
+
+
+"""
+firmware operations
+"""
+
+
+def firmwares_get():
+    return _request_cached({"command": "get_firmwares"}).get('firmwares')
+
+
+def firmware_get(brick_type=None, sketchMD5=None, latest=None, version=None, name=None):
+    if name is not None and not name.lower() == 'none':
+        brick_type, version = name.split('_', 1)
+    if brick_type is not None and version is not None:
+        return _request_cached({"command": "get_firmware", "brick_type": brick_type, "version": version}).get('firmware')
+    elif brick_type is not None and sketchMD5 is not None:
+        return _request_cached({"command": "get_firmware", "brick_type": brick_type, "sketchmd5": sketchMD5}).get('firmware')
+    elif latest is not None:
+        return _request_cached({"command": "get_firmware", "latest": latest}).get('firmware')
+    else:
+        return None
+
+
+def firmware_delete(brick_type=None, sketchMD5=None, latest=None, version=None, name=None, fw=None, bin_only=False):
+    if fw is not None and not fw.lower() == 'none':
+        brick_type = fw.get('brick_type')
+        version = fw.get('version')
+    elif name is not None and not name.lower() == 'none':
+        brick_type, version = name.split('_', 1)
+    result = None
+    if brick_type is not None and version is not None:
+        result = _request_cached({"command": "delete_firmware", "brick_type": brick_type, "version": version, "bin_only": bin_only})
+    elif brick_type is not None and sketchMD5 is not None:
+        result = _request_cached({"command": "delete_firmware", "brick_type": brick_type, "sketchmd5": sketchMD5, "bin_only": bin_only})
+    elif latest is not None:
+        result = _request_cached({"command": "delete_firmware", "latest": latest, "bin_only": bin_only})
+    clear_request_cache('firmware')
+    return result
+
+
+def firmware_update(brick_id, request=True):
+    """
+    requests or canceles an OTA Update
+    """
+    _request_cached({'command': 'set', 'brick': brick_id, 'key': 'otaupdate', 'value': ('requested' if request else 'canceled')})
+    clear_request_cache(brick_id)
+
+
+def firmware_upload(firmware):
+    global _server_url
+    files = {'firmware': firmware}
+    url = _server_url + '/upload'
+    result = requests.post(url, files=files).json()
+    clear_request_cache('firmware')
+    return result
+
+
+def firmware_fetch(what, brick_id=None, brick_type=None, version=None):
+    payload = {'command': 'fetch_firmware', 'what': what}
+    if brick_id is not None:
+        payload['brick'] = brick_id
+    if brick_type is not None:
+        payload['brick_type'] = brick_type
+    if version is not None:
+        payload['version'] = version
+    result = _request_cached(payload)
+    clear_request_cache('firmware')
+    return result
