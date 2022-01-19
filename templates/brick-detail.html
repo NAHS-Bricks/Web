@@ -74,6 +74,11 @@
                         </span>
                         % endif
                         % endif
+                        % if server_is('0.8.0') and brick['features']['bat'] >= 2:
+                        <span class="icon is-small grafana-link-icon" id="brick-detail-bat-align-adv5v" title="Calibrate Voltage Readings">
+                            <i class="fas fa-ruler-vertical fa-sm"></i>
+                        </span>
+                        % endif
                         % if config['grafana']['enabled']:
                         <span class="icon is-small grafana-link-icon" id="brick-detail-bat-level-grafana" title="Open corresponding Chart in Grafana">
                             <i class="fas fa-chart-line fa-sm"></i>
@@ -148,6 +153,16 @@
                             url:'set_solar_charging/?enable=true',
                             success:function(data) {
                                 $('#brick-detail').html(data);
+                            }
+                        });
+                    });
+                    $("#brick-detail-bat-align-adv5v").click(function() {
+                        $.ajax( {
+                            url:'bat_align_adc5v_dialog',
+                            success:function(data) {
+                                $("#sensor-detail-modal > .modal-content").html(data);
+                                $("html").addClass("is-clipped");
+                                $("#sensor-detail-modal").addClass("is-active");
                             }
                         });
                     });

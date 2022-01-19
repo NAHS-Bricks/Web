@@ -153,6 +153,11 @@ def brick_set_sleep_disabled(brick_id, disabled=False):
     clear_request_cache(brick_id)
 
 
+def brick_set_adc5V(brick_id, adc5V):
+    _request_cached({'command': 'set', 'brick': brick_id, 'key': 'bat_adc5V', 'value': int(adc5V)})
+    clear_request_cache(brick_id)
+
+
 """
 temp-sensor operations
 """

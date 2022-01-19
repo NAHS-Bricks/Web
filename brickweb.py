@@ -2,7 +2,7 @@ import cherrypy
 import os
 import sys
 import json
-from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, brick_set_solar_charging, brick_set_sleep_disabled
+from helpers.brickserver import brick_get, brick_exists, brick_delete, brick_set_desc, brick_set_solar_charging, brick_set_sleep_disabled, brick_set_adc5V
 from helpers.brickserver import features_get_available, clear_request_cache
 from helpers.brickserver import temp_sensor_exists, temp_sensor_get, temp_sensor_set_desc, temp_sensor_disable
 from helpers.brickserver import humid_sensor_exists, humid_sensor_get, humid_sensor_set_desc, humid_sensor_disable
@@ -304,6 +304,17 @@ class BrickWeb(object):
                 (f"FirmwareMetadata {result['metadata']}" if 'metadata' in result else '')
             cherrypy.session['alert-level'] = 'success'
         raise cherrypy.HTTPRedirect('/')
+
+    @cherrypy.expose()
+    def bat_align_adc5v_dialog(self):
+        brick = brick_get(cherrypy.session['brick_id'])
+        return serve_template('/bat-align-adc5v-dialog.html', brick=brick)
+
+    @cherrypy.expose()
+    def bat_align_adc5v_submit(self, adc5v):
+        brick_set_adc5V(brick_id=cherrypy.session['brick_id'], adc5V=adc5v)
+        brick = brick_get(cherrypy.session['brick_id'])
+        return serve_template('/brick-detail.html', brick=brick, session=cherrypy.session)
 
 
 if __name__ == '__main__':
