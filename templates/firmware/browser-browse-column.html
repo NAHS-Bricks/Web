@@ -1,0 +1,95 @@
+<%!
+    from helpers.brickserver import firmwares_get
+    from helpers.firmware import firmware_name, firmware_is_latest, firmware_bin_present, firmware_is_used, firmware_browser_is_shown
+%>
+                        <div class="panel-block">
+                            <p>
+                                Filter&nbsp;Brick&nbsp;Type:&nbsp;
+                            </p>
+                            <div class="control has-icons-left">
+                                <div class="select is-small is-rounded">
+                                    <select id="fw-browse-filter-bt">
+                                        <option value="None" ${'selected' if session['fw_browser_filter_bt'] is None else ''}>all</option>
+                                        % for brick_type in sorted({fw.get('brick_type') for fw in firmwares_get()}):
+                                        <option value="${brick_type}" ${'selected' if session['fw_browser_filter_bt'] == str(brick_type) else ''}>${brick_type}</option>
+                                        % endfor
+                                    </select>
+                                </div>
+                                <div class="icon is-small is-left">
+                                    <i class="fas fa-cube"></i>
+                                </div>
+                            </div>
+                            <button class="button is-small is-rounded" id="fetch_firmware_latest">DS: Fetch Latest</button>
+                            <button class="button is-small is-rounded" id="fetch_firmware_missing">DS: Fetch Missing</button>
+                        </div>
+                        <p class="panel-tabs">
+                            <a ${'class="is-active"' if not session['fw_browser_filter'] else 'class="fw-browse-filter" data-target="all"'}>all</a>
+                            <a ${'class="is-active"' if session['fw_browser_filter'] == 'latest' else 'class="fw-browse-filter" data-target="latest"'}>latest</a>
+                            <a ${'class="is-active"' if session['fw_browser_filter'] == 'present' else 'class="fw-browse-filter" data-target="present"'}>present</a>
+                            <a ${'class="is-active"' if session['fw_browser_filter'] == 'used' else 'class="fw-browse-filter" data-target="used"'}>used</a>
+                            <a ${'class="is-active"' if session['fw_browser_filter'] == 'dev' else 'class="fw-browse-filter" data-target="dev"'}>dev</a>
+                        </p>
+                        % for fw in firmwares_get():
+                        % if firmware_browser_is_shown(f=session['fw_browser_filter'], t=session['fw_browser_filter_bt'], fw=fw):
+                        <a class="panel-block fw-browse-detail ${'is-active' if session['fw_browser_detail'] == firmware_name(fw=fw) else ''}" data-target="${firmware_name(fw=fw)}">
+                            <span class="panel-icon ${'has-text-success' if firmware_bin_present(fw=fw) else 'has-text-danger'}" title="Firmware BIN is${'' if firmware_bin_present(fw=fw) else ' not'} available on BrickServer">
+                                <i class="fas fa-download" aria-hidden="true"></i>
+                            </span>
+                            <span class="panel-icon ${'has-text-success' if firmware_is_latest(fw) else 'has-text-danger'}" title="${'Latest' if firmware_is_latest(fw) else 'Old'} Firmware version for Brick-Type">
+                                <i class="fas fa-flag-checkered" aria-hidden="true"></i>
+                            </span>
+                            <span class="panel-icon ${'has-text-success' if firmware_is_used(fw=fw) else 'has-text-danger'}" title="Firmware is${'' if firmware_is_used(fw=fw) else ' not'} used on Brick(s)">
+                                <i class="fas fa-check-double" aria-hidden="true"></i>
+                            </span>
+                            ${firmware_name(fw=fw)}
+                        </a>
+                        % endif
+                        % endfor
+                        <script>
+                            $("#fw-browse-filter-bt").change(function() {
+                                var url = 'firmware_browser_browse?f=${str(session['fw_browser_filter'])}&t=' + $(this).val();
+                                $.ajax( {
+                                    url: url,
+                                    success: function(data) {
+                                        $("#firmware-browser-column-browse").html(data);
+                                    }
+                                });
+                            });
+                            $(".fw-browse-filter").click(function() {
+                                var target = $(this).data("target");
+                                var url = 'firmware_browser_browse?t=${str(session['fw_browser_filter_bt'])}';
+                                if (target !== 'all') {
+                                    var url = url + '&f=' + target;
+                                }
+                                $.ajax( {
+                                    url: url,
+                                    success: function(data) {
+                                        $("#firmware-browser-column-browse").html(data);
+                                    }
+                                });
+                            });
+                            $(".fw-browse-detail").click(function() {
+                                var target = $(this).data("target");
+                                var url = 'firmware_browser_detail?d=' + target;
+                                $.ajax( {
+                                    url: url,
+                                    success: function(data) {
+                                        $("#firmware-browser-column-detail").html(data);
+                                        var url = 'firmware_browser_browse?f=${str(session['fw_browser_filter'])}&t=${str(session['fw_browser_filter_bt'])}';
+                                        $.ajax( {
+                                            url: url,
+                                            success: function(data) {
+                                                $("#firmware-browser-column-browse").html(data);
+                                            }
+                                        });
+                                    }
+                                });
+                            });
+                            $("#fetch_firmware_missing").click(function() {
+                                window.location = 'firmware_fetch?what=used';
+                            });
+                            $("#fetch_firmware_latest").click(function() {
+                                var url = 'firmware_fetch?what=latest${f"&brick_type={session['fw_browser_filter_bt']}" if session['fw_browser_filter_bt'] is not None else ''}';
+                                window.location = url;
+                            });
+                        </script>

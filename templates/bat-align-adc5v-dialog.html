@@ -1,0 +1,65 @@
+<%!
+    from helpers.template import convert_html, grafana_url_temp_sensor
+    from helpers.config import config
+    from helpers.shared import possible_disables
+%>
+        <article class="message">
+            <div class="message-header">
+                <p>
+                    Align adc5V
+                </p>
+            </div>
+            <div class="message-body">
+                % if brick.get('bat_adc5V') is None:
+                adc5V value not yet fetched from Brick, wait for this till you are able to continue.
+                % elif 'bat_adc5V' in brick.get('admin_override', {}) or brick.get('bat_init_ts') is None:
+                There is allready an adjustment of adc5V pending. Wait till this is applyed.
+                % else:
+                Align current adc5V value (${brick.get('bat_adc5V')}) to expect
+                <div class="field has-addons">
+                    <p class="control">
+                        <input class="input is-small is-rounded" id="bat-align-adc5v-ref" type="text" value="${brick.get('bat_last_reading')}">
+                    </p>
+                    <p class="control">
+                        <a class="button is-small is-rounded is-static">
+                            Volt
+                        </a>
+                    </p>
+                </div>
+                as 4.2Volt.<br />
+                The resulting adc5V value is going to be set to:
+                <strong id="bat-align-adc5v-new">
+                ${int((((brick.get('bat_adc5V')/5)*brick.get('bat_last_reading'))/4.2)*5)}
+                </strong><br />
+                <button class="button is-success" id="bat-align-adc5v-submit">Continue</button>
+                % endif
+            </div>
+        </article>
+        <script>
+            % if brick.get('bat_adc5V') is not None and 'bat_adc5V' not in brick.get('admin_override', {}) and brick.get('bat_init_ts') is not None:
+            function bat_align_adc5v_calc() {
+                var ref_v = $('#bat-align-adc5v-ref').val();
+                var adc_o = ${brick.get('bat_adc5V')};
+                var adc_n = Math.floor((((adc_o/5.0)*ref_v)/4.2)*5);
+                $('#bat-align-adc5v-new').html(adc_n);
+            };
+            $("#bat-align-adc5v-ref").keyup(function() {
+                bat_align_adc5v_calc();
+            });
+            $("#bat-align-adc5v-ref").change(function() {
+                bat_align_adc5v_calc();
+            });
+            $("#bat-align-adc5v-submit").click(function() {
+                bat_align_adc5v_calc();
+                var adc_n = parseInt($('#bat-align-adc5v-new').html());
+                $.ajax( {
+                    url:'bat_align_adc5v_submit/?adc5v=' + adc_n,
+                    success:function(data) {
+                        $("#sensor-detail-modal").removeClass("is-active");
+                        $("html").removeClass("is-clipped");
+                        $('#brick-detail').html(data);
+                    }
+                });
+            });
+            % endif
+        </script>

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>NAHS-BrickWeb</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-divider@0.2.0/dist/css/bulma-divider.min.css">
 	<link rel="stylesheet" href="/static/fontawesome/css/fontawesome.min.css">
     <link rel="stylesheet" href="/static/fontawesome/css/solid.min.css">
@@ -13,15 +13,22 @@
         #select-brick-search-clear { pointer-events: all; cursor:pointer }
         #select-brick-search-clear:hover {color: #f14668 }
         .edit-pencil-icon { pointer-events: all; cursor:pointer }
-        .edit-pencil-icon:hover {color: #3298dc }
+        .edit-pencil-icon:hover {color: #3298dc !important; }
         .cache-reload-icon { pointer-events: all; cursor:pointer }
-        .cache-reload-icon:hover {color: #3298dc }
+        .cache-reload-icon:hover {color: #3298dc !important; }
         .grafana-link-icon { pointer-events: all; cursor:pointer }
-        .grafana-link-icon:hover {color: #3298dc }
+        .grafana-link-icon:hover {color: #3298dc !important; }
         .danger-icon { pointer-events: all; cursor:pointer }
-        .danger-icon:hover {color: #f14668 }
+        .danger-icon:hover {color: #f14668 !important; }
         .success-icon { pointer-events: all; cursor:pointer }
-        .success-icon:hover {color: #48c774 }
+        .success-icon:hover {color: #48c774 !important; }
+        .info-icon { pointer-events: all; cursor:pointer }
+        .info-icon:hover {color: #3298dc !important; }
+        #firmware-browser-modal .modal-content { width: 1000px; }
+        #firmware-browser-column-browse a { text-decoration: none; }
+        #firmware-browser-column-browse .panel-tabs a:not(.is-active) { color: #485fc7; }
+        #firmware-browser-column-browse .panel-block { border-left-width: 2px; border-left-style: solid; border-left-color: #ffffff00; }
+        #firmware-browser-column-browse .panel-block.is-active { border-left-color: #485fc7; background-color: #eeeeee; }
     </style>
   </head>
   <body>

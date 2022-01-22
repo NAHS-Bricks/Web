@@ -4,6 +4,28 @@
 <%include file="header.html" />
   <section class="section">
     <div class="container">
+      % if alert is not None:
+      <div class="tile is-ancestor" id="alert-message">
+        <div class="tile is-parent">
+            <div class="tile is-child">
+                <div class="notification is-${alert_level}">
+                    <button class="delete" id="alert-message-close-btn"></button>
+                    ${alert}
+                </div>
+            </div>
+        </div>
+      </div>
+      <script>
+        clearAlertMessageIntervalID = setInterval(function() {
+            clearInterval(clearAlertMessageIntervalID);
+            $("#alert-message").hide();
+        }, 5000);
+        $("#alert-message-close-btn").click(function() {
+            clearInterval(clearAlertMessageIntervalID);
+            $("#alert-message").hide();
+        });
+      </script>
+      % endif
 	  <div class="tile is-ancestor">
 		<div class="tile is-parent">
 			<div class="tile is-child">
@@ -132,6 +154,12 @@
     <button class="modal-close is-large" aria-label="close"></button>
   </div>
   <div class="modal" id="sensor-detail-modal">
+	<div class="modal-background"></div>
+	<div class="modal-content">
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
+  <div class="modal" id="firmware-browser-modal">
 	<div class="modal-background"></div>
 	<div class="modal-content">
     </div>
