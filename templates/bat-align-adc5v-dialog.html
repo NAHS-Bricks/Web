@@ -26,7 +26,17 @@
                         </a>
                     </p>
                 </div>
-                as 4.2Volt.<br />
+                as
+                <div class="field has-addons">
+                    <p class="control">
+                        <input class="input is-small is-rounded" id="bat-align-adc5v-set" type="text" value="4.2">
+                    </p>
+                    <p class="control">
+                        <a class="button is-small is-rounded is-static">
+                            Volt
+                        </a>
+                    </p>
+                </div>
                 The resulting adc5V value is going to be set to:
                 <strong id="bat-align-adc5v-new">
                 ${int((((brick.get('bat_adc5V')/5)*brick.get('bat_last_reading'))/4.2)*5)}
@@ -39,14 +49,21 @@
             % if brick.get('bat_adc5V') is not None and 'bat_adc5V' not in brick.get('admin_override', {}) and brick.get('bat_init_ts') is not None:
             function bat_align_adc5v_calc() {
                 var ref_v = $('#bat-align-adc5v-ref').val();
+                var set_v = $('#bat-align-adc5v-set').val();
                 var adc_o = ${brick.get('bat_adc5V')};
-                var adc_n = Math.floor((((adc_o/5.0)*ref_v)/4.2)*5);
+                var adc_n = Math.floor((((adc_o/5.0)*ref_v)/set_v)*5);
                 $('#bat-align-adc5v-new').html(adc_n);
             };
             $("#bat-align-adc5v-ref").keyup(function() {
                 bat_align_adc5v_calc();
             });
             $("#bat-align-adc5v-ref").change(function() {
+                bat_align_adc5v_calc();
+            });
+            $("#bat-align-adc5v-set").keyup(function() {
+                bat_align_adc5v_calc();
+            });
+            $("#bat-align-adc5v-set").change(function() {
                 bat_align_adc5v_calc();
             });
             $("#bat-align-adc5v-submit").click(function() {
