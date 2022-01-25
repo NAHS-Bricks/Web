@@ -36,7 +36,7 @@
                     "type": "spinner",
                     "opts": {
                         "min": 0,
-                        "max": 8
+                        "max": 7
                     }
                 }
             },
@@ -97,7 +97,7 @@
         "id": "928b6cd8afe78e19",
         "type": "subflow",
         "name": "BrickServer Admin API",
-        "info": "This SubFlow is just for sending a (json)payload to BrickServer's Admin Interface and receiving it's response.\n\nReason for this SubFlow is to have a single place where the BrickServer connection parameters needs to be configured.\n\n# Input:\n\nPayload to send to BrickServer\n\n# Outputs:\n\n**1**: untouched input payload\n\n**2**: Response payload\n\n# Additional Info:\n\nIt's possible to change the URL of the 'http request' node with new BrickServer connection information. This is going to be persisted even with rerunning the NodeRed Preconfiguration.\n\nEverything else in this Subflow is overwritten by NodeRed Preconfiguration!",
+        "info": "This SubFlow is just for sending a (json)payload to BrickServer's Admin Interface and receiving it's response.\n\nReason for this SubFlow is to have a single place where the BrickServer connection parameters needs to be configured.\n\n# Input:\n\nPayload to send to BrickServer\n\n# Outputs:\n\n - **1**: untouched input payload\n - **2**: Response payload\n\n# Additional Info:\n\nIt's possible to change the URL of the 'http request' node with new BrickServer connection information. This is going to be persisted even with rerunning the NodeRed Preconfiguration.\n\nEverything else in this Subflow is overwritten by NodeRed Preconfiguration!",
         "category": "BrickWeb",
         "in": [
             {
@@ -150,7 +150,7 @@
         "id": "70aad4cc197c0fa0",
         "type": "subflow",
         "name": "Trafficlight",
-        "info": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)\n\n# Variables\n\n**input_type**: whether the input sensor is a _temp sensor_ or a _humid sensor_\n\n**input_brick_id**: _id_ of brick housing the _temp_ or _humid_ sensor\n\n**input_sensor_id**: _id_ of _temp_ or _humid_ sensor\n\n**watermark_high**: sensor values above (not equal) this watermark are considered to high\n\n**watermark_low**: sensor values below (not equal) this watermark are considered to low\n\n**signal_brick_id**: _id_ of brick housing the output signals\n\n**signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n\n**signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n\n**signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low",
+        "info": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)\n\n# Variables\n\n - **input_type**: whether the input sensor is a _temp sensor_ or a _humid sensor_\n - **input_brick_id**: _id_ of brick housing the _temp_ or _humid_ sensor\n - **input_sensor_id**: _id_ of _temp_ or _humid_ sensor\n - **watermark_high**: sensor values above (not equal) this watermark are considered to high\n - **watermark_low**: sensor values below (not equal) this watermark are considered to low\n - **signal_brick_id**: _id_ of brick housing the output signals\n - **signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n - **signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n - **signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low",
         "category": "BrickWeb",
         "in": [],
         "out": [],
@@ -283,6 +283,116 @@
             "desc": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)"
         },
         "color": "#DDAA99"
+    },
+    {
+        "id": "cde3b5b7e84fb2ca",
+        "type": "subflow",
+        "name": "Latch",
+        "info": "This SubFlow is just an easy way of attaching to a Latch. Depending on the State a Latch transmitts the corresponding Output is used to pass trough the Latch information.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **latch_id**: the _id_ (_index_) of Latch this Node is listening for\n\n# Outputs:\n\n - **1**: used when Latch transmitted State 0\n - **2**: used when Latch transmitted State 1\n - **3**: used when Latch transmitted State 2\n - **4**: used when Latch transmitted State 3\n - **5**: used when Latch transmitted State 4\n - **6**: used when Latch transmitted State 5\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Latch\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The latch_id (index) for this Latch\n - **msg.latch_state**: The State transmitted by this Latch (is just copied over from payload)",
+        "category": "BrickWeb",
+        "in": [],
+        "out": [
+            {
+                "x": 440,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 440,
+                "y": 220,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 1
+                    }
+                ]
+            },
+            {
+                "x": 440,
+                "y": 280,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 2
+                    }
+                ]
+            },
+            {
+                "x": 440,
+                "y": 360,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 3
+                    }
+                ]
+            },
+            {
+                "x": 440,
+                "y": 420,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 4
+                    }
+                ]
+            },
+            {
+                "x": 440,
+                "y": 480,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 5
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "brick_id",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "latch_id",
+                "type": "num",
+                "value": "",
+                "ui": {
+                    "type": "spinner",
+                    "opts": {
+                        "min": 0,
+                        "max": 7
+                    }
+                }
+            }
+        ],
+        "meta": {
+            "author": "Nils Ostrowski",
+            "desc": "Capture the Latch-States you wish"
+        },
+        "color": "#DDAA99",
+        "outputLabels": [
+            "Latch transmitted State 0",
+            "Latch transmitted State 1",
+            "Latch transmitted State 2",
+            "Latch transmitted State 3",
+            "Latch transmitted State 4",
+            "Latch transmitted State 5"
+        ]
     },
     {
         "id": "6c8bc1031ca33a4f",
@@ -424,42 +534,6 @@
         ]
     },
     {
-        "id": "4e221ca2d908f65f",
-        "type": "subflow:f508a8bc63d51d65",
-        "z": "39c8988d7579f7fd",
-        "name": "",
-        "env": [
-            {
-                "name": "input_brick_id",
-                "value": "localhost",
-                "type": "str"
-            },
-            {
-                "name": "signal_brick_id",
-                "value": "local2",
-                "type": "str"
-            },
-            {
-                "name": "signal_id",
-                "value": "3",
-                "type": "num"
-            },
-            {
-                "name": "signal_state",
-                "value": "1",
-                "type": "num"
-            },
-            {
-                "name": "latch_brick_id",
-                "value": "localhost",
-                "type": "str"
-            }
-        ],
-        "x": 310,
-        "y": 180,
-        "wires": []
-    },
-    {
         "id": "a05fdb8f7e50cf76",
         "type": "function",
         "z": "f508a8bc63d51d65",
@@ -477,22 +551,6 @@
                 "b30d5ecfe35ec57a"
             ]
         ]
-    },
-    {
-        "id": "2adf3aa91c3aea42",
-        "type": "debug",
-        "z": "f508a8bc63d51d65",
-        "name": "",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 870,
-        "y": 340,
-        "wires": []
     },
     {
         "id": "95100125f55f517d",
@@ -549,7 +607,7 @@
         "type": "comment",
         "z": "928b6cd8afe78e19",
         "name": "SubFlow for sending a (json)payload to BrickServer's Admin Interface",
-        "info": "This SubFlow is just for sending a (json)payload to BrickServer's Admin Interface and receiving it's response.\n\nReason for this SubFlow is to have a single place where the BrickServer connection parameters needs to be configured.\n\n# Input:\n\nPayload to send to BrickServer\n\n# Outputs:\n\n**1**: untouched input payload\n\n**2**: Response payload\n\n# Additional Info:\n\nIt's possible to change the URL of the 'http request' node with new BrickServer connection information. This is going to be persisted even with rerunning the NodeRed Preconfiguration.\n\nEverything else in this Subflow is overwritten by NodeRed Preconfiguration!",
+        "info": "This SubFlow is just for sending a (json)payload to BrickServer's Admin Interface and receiving it's response.\n\nReason for this SubFlow is to have a single place where the BrickServer connection parameters needs to be configured.\n\n# Input:\n\nPayload to send to BrickServer\n\n# Outputs:\n\n - **1**: untouched input payload\n - **2**: Response payload\n\n# Additional Info:\n\nIt's possible to change the URL of the 'http request' node with new BrickServer connection information. This is going to be persisted even with rerunning the NodeRed Preconfiguration.\n\nEverything else in this Subflow is overwritten by NodeRed Preconfiguration!",
         "x": 270,
         "y": 40,
         "wires": []
@@ -642,12 +700,8 @@
         "x": 640,
         "y": 340,
         "wires": [
-            [
-                "2adf3aa91c3aea42"
-            ],
-            [
-                "2adf3aa91c3aea42"
-            ]
+            [],
+            []
         ]
     },
     {
@@ -1130,8 +1184,188 @@
         "type": "comment",
         "z": "70aad4cc197c0fa0",
         "name": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)",
-        "info": "# Variables\n\n**input_type**: whether the input sensor is a _temp sensor_ or a _humid sensor_\n\n**input_brick_id**: _id_ of brick housing the _temp_ or _humid_ sensor\n\n**input_sensor_id**: _id_ of _temp_ or _humid_ sensor\n\n**watermark_high**: sensor values above (not equal) this watermark are considered to high\n\n**watermark_low**: sensor values below (not equal) this watermark are considered to low\n\n**signal_brick_id**: _id_ of brick housing the output signals\n\n**signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n\n**signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n\n**signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low",
+        "info": "# Variables\n\n - **input_type**: whether the input sensor is a _temp sensor_ or a _humid sensor_\n - **input_brick_id**: _id_ of brick housing the _temp_ or _humid_ sensor\n - **input_sensor_id**: _id_ of _temp_ or _humid_ sensor\n - **watermark_high**: sensor values above (not equal) this watermark are considered to high\n - **watermark_low**: sensor values below (not equal) this watermark are considered to low\n - **signal_brick_id**: _id_ of brick housing the output signals\n - **signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n - **signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n - **signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low",
         "x": 410,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "bc75c7d4f6600cc8",
+        "type": "mqtt in",
+        "z": "cde3b5b7e84fb2ca",
+        "name": "",
+        "topic": "brick/+/latch/+",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "6c8bc1031ca33a4f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "x": 90,
+        "y": 100,
+        "wires": [
+            [
+                "3a0f0f29881461b2"
+            ]
+        ]
+    },
+    {
+        "id": "3a0f0f29881461b2",
+        "type": "function",
+        "z": "cde3b5b7e84fb2ca",
+        "name": "Extract Vars",
+        "func": "msg.brick_id = msg.topic.split(\"/\")[1];\nmsg.latch_id = msg.topic.split(\"/\")[3].split(\"_\")[1];\nmsg.latch_state = msg.payload;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 100,
+        "wires": [
+            [
+                "b56bab932990bd19"
+            ]
+        ]
+    },
+    {
+        "id": "b56bab932990bd19",
+        "type": "switch",
+        "z": "cde3b5b7e84fb2ca",
+        "name": "if brick_id == input:brick_id",
+        "property": "brick_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "brick_id",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 500,
+        "y": 100,
+        "wires": [
+            [
+                "d5fa41ae8f6fa662"
+            ]
+        ]
+    },
+    {
+        "id": "d5fa41ae8f6fa662",
+        "type": "switch",
+        "z": "cde3b5b7e84fb2ca",
+        "name": "if latch_id == input:latch_id",
+        "property": "latch_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "latch_id",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 780,
+        "y": 100,
+        "wires": [
+            [
+                "5594d5de1787d96b"
+            ]
+        ]
+    },
+    {
+        "id": "b61d4372f00eea49",
+        "type": "switch",
+        "z": "cde3b5b7e84fb2ca",
+        "name": "eval latch_state",
+        "property": "latch_state",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "2",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "3",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "4",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "5",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 6,
+        "x": 220,
+        "y": 320,
+        "wires": [
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "4166b33525038ecc",
+        "type": "link in",
+        "z": "cde3b5b7e84fb2ca",
+        "name": "",
+        "links": [
+            "5594d5de1787d96b"
+        ],
+        "x": 75,
+        "y": 320,
+        "wires": [
+            [
+                "b61d4372f00eea49"
+            ]
+        ]
+    },
+    {
+        "id": "5594d5de1787d96b",
+        "type": "link out",
+        "z": "cde3b5b7e84fb2ca",
+        "name": "",
+        "links": [
+            "4166b33525038ecc"
+        ],
+        "x": 955,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "5a29fd4b52368def",
+        "type": "comment",
+        "z": "cde3b5b7e84fb2ca",
+        "name": "Capture the Latch-States you wish",
+        "info": "This SubFlow is just an easy way of attaching to a Latch. Depending on the State a Latch transmitts the corresponding Output is used to pass trough the Latch information.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **latch_id**: the _id_ (_index_) of Latch this Node is listening for\n\n# Outputs:\n\n - **1**: used when Latch transmitted State 0\n - **2**: used when Latch transmitted State 1\n - **3**: used when Latch transmitted State 2\n - **4**: used when Latch transmitted State 3\n - **5**: used when Latch transmitted State 4\n - **6**: used when Latch transmitted State 5\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Latch\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The latch_id (index) for this Latch\n - **msg.latch_state**: The State transmitted by this Latch (is just copied over from payload)",
+        "x": 160,
         "y": 40,
         "wires": []
     }
