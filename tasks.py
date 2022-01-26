@@ -51,7 +51,7 @@ def cleanup_development(c):
 
 
 @task(name="deploy")
-def testserver_deploy(c):
+def deploy(c):
     config_load()
     host = input(f"Host ({config['deploy_host']}): ")
     if host == '' and config['deploy_host'] == '':
@@ -64,7 +64,7 @@ def testserver_deploy(c):
 
 
 @task(name="deploy-grafana")
-def testserver_deploy_grafana(c):
+def deploy_grafana(c):
     config_load()
     if config['grafana_host'] == '' and not config['deploy_host'] == '':
         config['grafana_host'] = config['deploy_host']
@@ -79,6 +79,24 @@ def testserver_deploy_grafana(c):
     select = input('Preconfigure Grafana? (y/n): ')
     if select == 'y':
         preconfigure_grafana(c)
+
+
+@task(name="deploy-nodered")
+def deploy_nodered(c):
+    config_load()
+    if config['nodered_host'] == '' and not config['deploy_host'] == '':
+        config['nodered_host'] = config['deploy_host']
+    host = input(f"Host ({config['nodered_host']}): ")
+    if host == '' and config['nodered_host'] == '':
+        print("invalid input!")
+        sys.exit(1)
+    if not host == '':
+        config['nodered_host'] = host
+    c.run(f"fab -H root@{config['nodered_host']} nodered")
+    config_save()
+    select = input('Preconfigure Node-Red? (y/n): ')
+    if select == 'y':
+        preconfigure_nodered(c)
 
 
 @task(name="preconfigure-grafana")
