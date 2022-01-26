@@ -2,6 +2,11 @@ import requests
 import json
 import os
 import sys
+import argparse
+
+parser = argparse.ArgumentParser(description="Preconfigure-Grafana")
+parser.add_argument('--host', dest='host', required=False, help='Used to inject the Host-Address')
+args = parser.parse_args()
 
 config = {
     'host': '',
@@ -73,6 +78,9 @@ gather login info
 if os.path.isfile('config.json'):
     with open('config.json', 'r') as f:
         config.update(json.loads(f.read()))
+
+if args.host:
+    config['host'] = args.host
 
 host = input(f"grafana host ({config['host']}): ")
 if host.strip() == '':

@@ -5,7 +5,11 @@ import os
 apt_update_run = False
 project_dir = "/opt/middleware/nahs/brickweb"
 storagedir_grafana = "/var/data/grafana"
+storagedir_nodered = "/var/data/nodered"
 grafana_image = 'grafana/grafana'
+nodered_image = 'nodered/node-red'
+grafana_service = 'docker.grafana.service'
+nodered_service = 'docker.nodered.service'
 
 
 def docker_pull(c, image):
@@ -138,11 +142,30 @@ def grafana(c):
     systemctl_start_docker(c)
     docker_pull(c, grafana_image)
     # Timecritical stuff (when service allready runs) - start
-    systemctl_stop(c, 'docker.grafana.service')
+    systemctl_stop(c, grafana_service)
     create_directorys(c, [storagedir_grafana])
     c.run(f"chmod 777 {storagedir_grafana}")
-    systemctl_install_service(c, 'docker.service', 'docker.grafana.service', [('__additional__', ''), ('__storage__', storagedir_grafana + ':/var/lib/grafana'), ('__port__', '3000:3000'), ('__image__', grafana_image)])
+    systemctl_install_service(c, 'docker.service', grafana_service, [('__additional__', ''), ('__storage__', storagedir_grafana + ':/var/lib/grafana'), ('__port__', '3000:3000'), ('__image__', grafana_image)])
     c.run("systemctl daemon-reload")
-    systemctl_start(c, 'docker.grafana.service')
+    systemctl_start(c, grafana_service)
+    # Timecritical stuff (when service allready runs) - end
+    docker_prune(c)
+
+
+@task
+def nodered(c):
+    c.run('hostname')
+    c.run('uname -a')
+    install_apt_package(c, 'curl')
+    install_docker(c)
+    systemctl_start_docker(c)
+    docker_pull(c, nodered_image)
+    # Timecritical stuff (when service allready runs) - start
+    systemctl_stop(c, nodered_service)
+    create_directorys(c, [storagedir_nodered])
+    c.run(f"chown 1000:1000 {storagedir_nodered}")
+    systemctl_install_service(c, 'docker.service', nodered_service, [('__additional__', ''), ('__storage__', storagedir_nodered + ':/data'), ('__port__', '1880:1880'), ('__image__', nodered_image)])
+    c.run("systemctl daemon-reload")
+    systemctl_start(c, nodered_service)
     # Timecritical stuff (when service allready runs) - end
     docker_prune(c)

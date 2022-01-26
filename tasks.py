@@ -7,7 +7,8 @@ import json
 config_file = 'config_deploy.json'
 config = {
     'deploy_host': '',
-    'grafana_host': ''
+    'grafana_host': '',
+    'nodered_host': ''
 }
 
 
@@ -101,9 +102,17 @@ def deploy_nodered(c):
 
 @task(name="preconfigure-grafana")
 def preconfigure_grafana(c):
-    c.run("cd grafana; python preconfiguration.py; cd ..")
+    config_load()
+    if config['grafana_host'] == '':
+        c.run("cd grafana; python preconfiguration.py; cd ..")
+    else:
+        c.run(f"cd grafana; python preconfiguration.py --host {config['grafana_host']}; cd ..")
 
 
 @task(name="preconfigure-nodered")
 def preconfigure_nodered(c):
-    c.run("cd nodered; python preconfiguration.py; cd ..")
+    config_load()
+    if config['nodered_host'] == '':
+        c.run("cd nodered; python preconfiguration.py; cd ..")
+    else:
+        c.run(f"cd nodered; python preconfiguration.py --host {config['nodered_host']}; cd ..")

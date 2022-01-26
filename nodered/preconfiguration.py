@@ -1,6 +1,11 @@
 import requests
 import json
 import os
+import argparse
+
+parser = argparse.ArgumentParser(description="Preconfigure-Nodered")
+parser.add_argument('--host', dest='host', required=False, help='Used to inject the Host-Address')
+args = parser.parse_args()
 
 config = {
     'host': '',
@@ -21,6 +26,9 @@ gather NodeRed server connection information
 if os.path.isfile('config.json'):
     with open('config.json', 'r') as f:
         config.update(json.loads(f.read()))
+
+if args.host:
+    config['host'] = args.host
 
 host = input(f"NodeRed Host ({config['host']}): ")
 if host.strip() == '':
