@@ -78,6 +78,16 @@ def grafana_url_latch(brick, latch):
     return url + query
 
 
+def grafana_url_signal(brick, signal):
+    brick_id, sid = signal['_id'].split('_')
+    url = f"http://{config['grafana']['host']}:{config['grafana']['port']}/d/FKBPR0bnk/?"
+    query = f"var-brick_desc={brick['desc'] if brick['desc'] is not None else ''}"
+    query += f"&var-brick_id={brick['_id']}"
+    query += f"&var-signal_desc={signal['desc'] if signal['desc'] is not None else ''}"
+    query += f"&var-signal_id={sid}"
+    return url + query
+
+
 def time_ago_str(fromtime_ts):
     seconds = int((datetime.now() - datetime.fromtimestamp(fromtime_ts)).total_seconds())
     result = ''
