@@ -174,7 +174,8 @@ class BrickWeb(object):
             signal = signal_get(brick_id, sid)
         if signal is None:
             raise cherrypy.HTTPRedirect('/')
-        return serve_template('/signal-detail.html', signal=signal)
+        brick = brick_get(cherrypy.session['brick_id'])
+        return serve_template('/signal-detail.html', signal=signal, brick=brick)
 
     @cherrypy.expose()
     def set_states_desc(self, desc, state, latch_id=None, signal_id=None):

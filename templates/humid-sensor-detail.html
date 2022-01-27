@@ -8,7 +8,7 @@
             <div class="message-header">
                 <p>
                     Humid Sensor Detail
-                    % if config['grafana']['enabled']:
+                    % if config['grafana']['enabled'] and 'metric' not in sensor['disables']:
                     <span class="icon is-small grafana-link-icon" id="humid-sensor-detail-grafana" title="Open corresponding Chart in Grafana">
                         <i class="fas fa-chart-line fa-sm"></i>
                     </span>
