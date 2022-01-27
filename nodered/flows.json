@@ -63,7 +63,7 @@
         "id": "cde3b5b7e84fb2ca",
         "type": "subflow",
         "name": "Latch",
-        "info": "This SubFlow is just an easy way of attaching to a Latch. Depending on the State a Latch transmitts the corresponding Output is used to pass trough the Latch information.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **latch_id**: the _id_ (_index_) of Latch this Node is listening for\n\n# Outputs:\n\n - **1**: used when Latch transmitted State 0\n - **2**: used when Latch transmitted State 1\n - **3**: used when Latch transmitted State 2\n - **4**: used when Latch transmitted State 3\n - **5**: used when Latch transmitted State 4\n - **6**: used when Latch transmitted State 5\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Latch\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The latch_id (index) for this Latch\n - **msg.latch_state**: The State transmitted by this Latch (is just copied over from payload)",
+        "info": "This SubFlow is just an easy way of attaching to a Latch. Depending on the State a Latch transmitts, the corresponding Output is used to pass trough the Latch information.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **latch_id**: the _id_ (_index_) of Latch this Node is listening for\n\n# Outputs:\n\n - **1**: used when Latch transmitted State 0\n - **2**: used when Latch transmitted State 1\n - **3**: used when Latch transmitted State 2\n - **4**: used when Latch transmitted State 3\n - **5**: used when Latch transmitted State 4\n - **6**: used when Latch transmitted State 5\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Latch\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The latch_id (index) for this Latch\n - **msg.latch_state**: The State transmitted by this Latch (is just copied over from payload)",
         "category": "BrickWeb",
         "in": [],
         "out": [
@@ -173,7 +173,7 @@
         "id": "f508a8bc63d51d65",
         "type": "subflow",
         "name": "Signal",
-        "info": "",
+        "info": "This SubFlow is just an easy way of attaching to a Signal. The Outputs are used listen to Signal statechanges via MQTT. The Input is capable of setting the Signal to a new State.\n\n# Variables: (TBD)\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **latch_id**: the _id_ (_index_) of Latch this Node is listening for\n\n# Input:\n\nExpects msg.signal_state to be set to 0 or 1 as the input-value that is transmitted to BrickServer.\n\n# Outputs: (TBD)\n\n - **1**: used when Signal was set to 0\n - **2**: used when Signal was set to 1\n\n# Additional Info: (TBD)\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Latch\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The latch_id (index) for this Latch\n - **msg.latch_state**: The State transmitted by this Latch (is just copied over from payload)",
         "category": "BrickWeb",
         "in": [
             {
@@ -241,7 +241,14 @@
             }
         ],
         "meta": {},
-        "color": "#DDAA99"
+        "color": "#DDAA99",
+        "inputLabels": [
+            "Set signal_state"
+        ],
+        "outputLabels": [
+            "Signal was set to 0",
+            "Signal was set to 1"
+        ]
     },
     {
         "id": "70aad4cc197c0fa0",
@@ -385,7 +392,7 @@
         "id": "6c8bc1031ca33a4f",
         "type": "mqtt-broker",
         "name": "BrickServer",
-        "broker": "192.168.56.102",
+        "broker": "162.168.56.1",
         "port": "1883",
         "clientid": "",
         "usetls": false,
@@ -522,7 +529,7 @@
         "method": "POST",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "http://192.168.56.102:8081/admin",
+        "url": "http://192.165.56.1:8081/admin",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -631,6 +638,7 @@
         "type": "subflow:928b6cd8afe78e19",
         "z": "f508a8bc63d51d65",
         "name": "",
+        "env": [],
         "x": 640,
         "y": 200,
         "wires": [
@@ -1298,7 +1306,7 @@
         "type": "comment",
         "z": "cde3b5b7e84fb2ca",
         "name": "Capture the Latch-States you wish",
-        "info": "This SubFlow is just an easy way of attaching to a Latch. Depending on the State a Latch transmitts the corresponding Output is used to pass trough the Latch information.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **latch_id**: the _id_ (_index_) of Latch this Node is listening for\n\n# Outputs:\n\n - **1**: used when Latch transmitted State 0\n - **2**: used when Latch transmitted State 1\n - **3**: used when Latch transmitted State 2\n - **4**: used when Latch transmitted State 3\n - **5**: used when Latch transmitted State 4\n - **6**: used when Latch transmitted State 5\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Latch\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The latch_id (index) for this Latch\n - **msg.latch_state**: The State transmitted by this Latch (is just copied over from payload)",
+        "info": "This SubFlow is just an easy way of attaching to a Latch. Depending on the State a Latch transmitts, the corresponding Output is used to pass trough the Latch information.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **latch_id**: the _id_ (_index_) of Latch this Node is listening for\n\n# Outputs:\n\n - **1**: used when Latch transmitted State 0\n - **2**: used when Latch transmitted State 1\n - **3**: used when Latch transmitted State 2\n - **4**: used when Latch transmitted State 3\n - **5**: used when Latch transmitted State 4\n - **6**: used when Latch transmitted State 5\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Latch\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The latch_id (index) for this Latch\n - **msg.latch_state**: The State transmitted by this Latch (is just copied over from payload)",
         "x": 160,
         "y": 40,
         "wires": []
@@ -1341,6 +1349,11 @@
         "propertyType": "msg",
         "rules": [
             {
+                "t": "eq",
+                "v": "",
+                "vt": "prev"
+            },
+            {
                 "t": "btwn",
                 "v": "0",
                 "vt": "num",
@@ -1348,12 +1361,13 @@
                 "v2t": "num"
             }
         ],
-        "checkall": "true",
+        "checkall": "false",
         "repair": false,
-        "outputs": 1,
+        "outputs": 2,
         "x": 220,
         "y": 200,
         "wires": [
+            [],
             [
                 "a05fdb8f7e50cf76"
             ]
