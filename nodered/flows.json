@@ -7,93 +7,6 @@
         "info": ""
     },
     {
-        "id": "f508a8bc63d51d65",
-        "type": "subflow",
-        "name": "Latch sets Signal",
-        "info": "",
-        "category": "BrickWeb",
-        "in": [],
-        "out": [],
-        "env": [
-            {
-                "name": "input_brick_id",
-                "type": "str",
-                "value": "",
-                "ui": {
-                    "type": "input",
-                    "opts": {
-                        "types": [
-                            "str"
-                        ]
-                    }
-                }
-            },
-            {
-                "name": "input_id",
-                "type": "num",
-                "value": "0",
-                "ui": {
-                    "type": "spinner",
-                    "opts": {
-                        "min": 0,
-                        "max": 7
-                    }
-                }
-            },
-            {
-                "name": "input_state",
-                "type": "num",
-                "value": "2",
-                "ui": {
-                    "type": "spinner",
-                    "opts": {
-                        "min": 2,
-                        "max": 5
-                    }
-                }
-            },
-            {
-                "name": "signal_brick_id",
-                "type": "str",
-                "value": "",
-                "ui": {
-                    "type": "input",
-                    "opts": {
-                        "types": [
-                            "str"
-                        ]
-                    }
-                }
-            },
-            {
-                "name": "signal_id",
-                "type": "num",
-                "value": "0",
-                "ui": {
-                    "type": "spinner",
-                    "opts": {
-                        "min": 0,
-                        "max": 8
-                    }
-                }
-            },
-            {
-                "name": "signal_state",
-                "type": "num",
-                "value": "0",
-                "ui": {
-                    "type": "spinner",
-                    "opts": {
-                        "min": 0,
-                        "max": 1
-                    }
-                }
-            }
-        ],
-        "meta": {},
-        "color": "#DDAA99"
-    },
-    {
         "id": "928b6cd8afe78e19",
         "type": "subflow",
         "name": "BrickServer Admin API",
@@ -145,6 +58,190 @@
             "input payload",
             "response"
         ]
+    },
+    {
+        "id": "cde3b5b7e84fb2ca",
+        "type": "subflow",
+        "name": "Latch",
+        "info": "This SubFlow is just an easy way of attaching to a Latch. Depending on the State a Latch transmitts the corresponding Output is used to pass trough the Latch information.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **latch_id**: the _id_ (_index_) of Latch this Node is listening for\n\n# Outputs:\n\n - **1**: used when Latch transmitted State 0\n - **2**: used when Latch transmitted State 1\n - **3**: used when Latch transmitted State 2\n - **4**: used when Latch transmitted State 3\n - **5**: used when Latch transmitted State 4\n - **6**: used when Latch transmitted State 5\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Latch\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The latch_id (index) for this Latch\n - **msg.latch_state**: The State transmitted by this Latch (is just copied over from payload)",
+        "category": "BrickWeb",
+        "in": [],
+        "out": [
+            {
+                "x": 440,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 440,
+                "y": 220,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 1
+                    }
+                ]
+            },
+            {
+                "x": 440,
+                "y": 280,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 2
+                    }
+                ]
+            },
+            {
+                "x": 440,
+                "y": 360,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 3
+                    }
+                ]
+            },
+            {
+                "x": 440,
+                "y": 420,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 4
+                    }
+                ]
+            },
+            {
+                "x": 440,
+                "y": 480,
+                "wires": [
+                    {
+                        "id": "b61d4372f00eea49",
+                        "port": 5
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "brick_id",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "latch_id",
+                "type": "num",
+                "value": "",
+                "ui": {
+                    "type": "spinner",
+                    "opts": {
+                        "min": 0,
+                        "max": 7
+                    }
+                }
+            }
+        ],
+        "meta": {
+            "author": "Nils Ostrowski",
+            "desc": "Capture the Latch-States you wish"
+        },
+        "color": "#DDAA99",
+        "outputLabels": [
+            "Latch transmitted State 0",
+            "Latch transmitted State 1",
+            "Latch transmitted State 2",
+            "Latch transmitted State 3",
+            "Latch transmitted State 4",
+            "Latch transmitted State 5"
+        ]
+    },
+    {
+        "id": "f508a8bc63d51d65",
+        "type": "subflow",
+        "name": "Signal",
+        "info": "",
+        "category": "BrickWeb",
+        "in": [
+            {
+                "x": 60,
+                "y": 200,
+                "wires": [
+                    {
+                        "id": "e3db8796b555ed56"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 1220,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "9e196ecf7d9d10a9",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 1220,
+                "y": 140,
+                "wires": [
+                    {
+                        "id": "9e196ecf7d9d10a9",
+                        "port": 1
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "brick_id",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "signal_id",
+                "type": "num",
+                "value": "0",
+                "ui": {
+                    "type": "spinner",
+                    "opts": {
+                        "min": 0,
+                        "max": 7
+                    }
+                }
+            },
+            {
+                "name": "send_activate",
+                "type": "bool",
+                "value": "false"
+            }
+        ],
+        "meta": {},
+        "color": "#DDAA99"
     },
     {
         "id": "70aad4cc197c0fa0",
@@ -285,116 +382,6 @@
         "color": "#DDAA99"
     },
     {
-        "id": "cde3b5b7e84fb2ca",
-        "type": "subflow",
-        "name": "Latch",
-        "info": "This SubFlow is just an easy way of attaching to a Latch. Depending on the State a Latch transmitts the corresponding Output is used to pass trough the Latch information.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **latch_id**: the _id_ (_index_) of Latch this Node is listening for\n\n# Outputs:\n\n - **1**: used when Latch transmitted State 0\n - **2**: used when Latch transmitted State 1\n - **3**: used when Latch transmitted State 2\n - **4**: used when Latch transmitted State 3\n - **5**: used when Latch transmitted State 4\n - **6**: used when Latch transmitted State 5\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Latch\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The latch_id (index) for this Latch\n - **msg.latch_state**: The State transmitted by this Latch (is just copied over from payload)",
-        "category": "BrickWeb",
-        "in": [],
-        "out": [
-            {
-                "x": 440,
-                "y": 160,
-                "wires": [
-                    {
-                        "id": "b61d4372f00eea49",
-                        "port": 0
-                    }
-                ]
-            },
-            {
-                "x": 440,
-                "y": 220,
-                "wires": [
-                    {
-                        "id": "b61d4372f00eea49",
-                        "port": 1
-                    }
-                ]
-            },
-            {
-                "x": 440,
-                "y": 280,
-                "wires": [
-                    {
-                        "id": "b61d4372f00eea49",
-                        "port": 2
-                    }
-                ]
-            },
-            {
-                "x": 440,
-                "y": 360,
-                "wires": [
-                    {
-                        "id": "b61d4372f00eea49",
-                        "port": 3
-                    }
-                ]
-            },
-            {
-                "x": 440,
-                "y": 420,
-                "wires": [
-                    {
-                        "id": "b61d4372f00eea49",
-                        "port": 4
-                    }
-                ]
-            },
-            {
-                "x": 440,
-                "y": 480,
-                "wires": [
-                    {
-                        "id": "b61d4372f00eea49",
-                        "port": 5
-                    }
-                ]
-            }
-        ],
-        "env": [
-            {
-                "name": "brick_id",
-                "type": "str",
-                "value": "",
-                "ui": {
-                    "type": "input",
-                    "opts": {
-                        "types": [
-                            "str"
-                        ]
-                    }
-                }
-            },
-            {
-                "name": "latch_id",
-                "type": "num",
-                "value": "",
-                "ui": {
-                    "type": "spinner",
-                    "opts": {
-                        "min": 0,
-                        "max": 7
-                    }
-                }
-            }
-        ],
-        "meta": {
-            "author": "Nils Ostrowski",
-            "desc": "Capture the Latch-States you wish"
-        },
-        "color": "#DDAA99",
-        "outputLabels": [
-            "Latch transmitted State 0",
-            "Latch transmitted State 1",
-            "Latch transmitted State 2",
-            "Latch transmitted State 3",
-            "Latch transmitted State 4",
-            "Latch transmitted State 5"
-        ]
-    },
-    {
         "id": "6c8bc1031ca33a4f",
         "type": "mqtt-broker",
         "name": "BrickServer",
@@ -424,15 +411,15 @@
         "type": "mqtt in",
         "z": "f508a8bc63d51d65",
         "name": "",
-        "topic": "brick/+/latch/+",
+        "topic": "brick/+/signal/+",
         "qos": "2",
         "datatype": "auto",
         "broker": "6c8bc1031ca33a4f",
         "nl": false,
         "rap": true,
         "rh": 0,
-        "x": 210,
-        "y": 220,
+        "x": 120,
+        "y": 120,
         "wires": [
             [
                 "a35c0ae67237cd4f"
@@ -444,14 +431,14 @@
         "type": "function",
         "z": "f508a8bc63d51d65",
         "name": "Extract Vars",
-        "func": "msg.brick_id = msg.topic.split(\"/\")[1];\nmsg.latch_id = msg.topic.split(\"/\")[3].split(\"_\")[1];\n\nreturn msg;",
+        "func": "msg.brick_id = msg.topic.split(\"/\")[1];\nmsg.signal_id = msg.topic.split(\"/\")[3].split(\"_\")[1];\nmsg.signal_state = msg.payload\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 430,
-        "y": 220,
+        "x": 310,
+        "y": 120,
         "wires": [
             [
                 "fdce96596e0f377c"
@@ -462,21 +449,21 @@
         "id": "fdce96596e0f377c",
         "type": "switch",
         "z": "f508a8bc63d51d65",
-        "name": "if brick_id == input_brick_id",
+        "name": "if brick_id == input:brick_id",
         "property": "brick_id",
         "propertyType": "msg",
         "rules": [
             {
                 "t": "eq",
-                "v": "input_brick_id",
+                "v": "brick_id",
                 "vt": "env"
             }
         ],
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 700,
-        "y": 220,
+        "x": 540,
+        "y": 120,
         "wires": [
             [
                 "d9998b2afdb0cbfa"
@@ -487,49 +474,24 @@
         "id": "d9998b2afdb0cbfa",
         "type": "switch",
         "z": "f508a8bc63d51d65",
-        "name": "if latch_id == input_id",
-        "property": "latch_id",
+        "name": "if signal_id == input:signal_id",
+        "property": "signal_id",
         "propertyType": "msg",
         "rules": [
             {
                 "t": "eq",
-                "v": "input_id",
+                "v": "signal_id",
                 "vt": "env"
             }
         ],
         "checkall": "false",
         "repair": false,
         "outputs": 1,
-        "x": 1000,
-        "y": 220,
+        "x": 820,
+        "y": 120,
         "wires": [
             [
-                "4a63e06dc24fd137"
-            ]
-        ]
-    },
-    {
-        "id": "4a63e06dc24fd137",
-        "type": "switch",
-        "z": "f508a8bc63d51d65",
-        "name": "if payload == input_state",
-        "property": "payload",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "input_state",
-                "vt": "env"
-            }
-        ],
-        "checkall": "false",
-        "repair": false,
-        "outputs": 1,
-        "x": 1290,
-        "y": 220,
-        "wires": [
-            [
-                "95100125f55f517d"
+                "9e196ecf7d9d10a9"
             ]
         ]
     },
@@ -538,45 +500,17 @@
         "type": "function",
         "z": "f508a8bc63d51d65",
         "name": "prepare json",
-        "func": "msg.payload = {\"command\":\"set\",\"key\":\"signal\",\"activate\":true};\nmsg.payload.signal = env.get(\"signal_brick_id\") + \"_\" + env.get(\"signal_id\");\nmsg.payload.value = env.get(\"signal_state\");\n\nreturn msg;",
+        "func": "msg.payload = {\"command\":\"set\",\"key\":\"signal\"};\nmsg.payload.activate = env.get(\"send_activate\");\nmsg.payload.signal = env.get(\"brick_id\") + \"_\" + env.get(\"signal_id\");\nmsg.payload.value = msg.signal_state;\n\nreturn msg;",
         "outputs": 1,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 430,
-        "y": 340,
+        "y": 200,
         "wires": [
             [
                 "b30d5ecfe35ec57a"
-            ]
-        ]
-    },
-    {
-        "id": "95100125f55f517d",
-        "type": "link out",
-        "z": "f508a8bc63d51d65",
-        "name": "",
-        "links": [
-            "3b602f143d2b6b1a"
-        ],
-        "x": 1475,
-        "y": 220,
-        "wires": []
-    },
-    {
-        "id": "3b602f143d2b6b1a",
-        "type": "link in",
-        "z": "f508a8bc63d51d65",
-        "name": "",
-        "links": [
-            "95100125f55f517d"
-        ],
-        "x": 295,
-        "y": 340,
-        "wires": [
-            [
-                "a05fdb8f7e50cf76"
             ]
         ]
     },
@@ -698,7 +632,7 @@
         "z": "f508a8bc63d51d65",
         "name": "",
         "x": 640,
-        "y": 340,
+        "y": 200,
         "wires": [
             [],
             []
@@ -1368,5 +1302,61 @@
         "x": 160,
         "y": 40,
         "wires": []
+    },
+    {
+        "id": "9e196ecf7d9d10a9",
+        "type": "switch",
+        "z": "f508a8bc63d51d65",
+        "name": "eval signal_state",
+        "property": "signal_state",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "0",
+                "vt": "num"
+            },
+            {
+                "t": "eq",
+                "v": "1",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 1070,
+        "y": 120,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "e3db8796b555ed56",
+        "type": "switch",
+        "z": "f508a8bc63d51d65",
+        "name": "validate signal_state",
+        "property": "signal_state",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "btwn",
+                "v": "0",
+                "vt": "num",
+                "v2": "1",
+                "v2t": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 220,
+        "y": 200,
+        "wires": [
+            [
+                "a05fdb8f7e50cf76"
+            ]
+        ]
     }
 ]
