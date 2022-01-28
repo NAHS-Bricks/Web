@@ -3,7 +3,7 @@
         "id": "39c8988d7579f7fd",
         "type": "tab",
         "label": "Flow 1",
-        "disabled": false,
+        "disabled": true,
         "info": ""
     },
     {
@@ -173,12 +173,12 @@
         "id": "f508a8bc63d51d65",
         "type": "subflow",
         "name": "Signal",
-        "info": "This SubFlow is just an easy way of attaching to a Signal. The Outputs are used listen to Signal statechanges via MQTT. The Input is capable of setting the Signal to a new State.\n\n# Variables: (TBD)\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **latch_id**: the _id_ (_index_) of Latch this Node is listening for\n\n# Input:\n\nExpects msg.signal_state to be set to 0 or 1 as the input-value that is transmitted to BrickServer.\n\n# Outputs: (TBD)\n\n - **1**: used when Signal was set to 0\n - **2**: used when Signal was set to 1\n\n# Additional Info: (TBD)\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Latch\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The latch_id (index) for this Latch\n - **msg.latch_state**: The State transmitted by this Latch (is just copied over from payload)",
+        "info": "This SubFlow is just an easy way of attaching to a Signal. The Outputs are used listen to Signal statechanges via MQTT. The Input is capable of setting the Signal to a new State.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **signal_id**: the _id_ (_index_) of Signal this Node corresponds to\n - **send_activate**: set to _true_ if BrickServer should try to actively to push new state to Brick\n\n# Input:\n\nExpects msg.signal_state to be set to 0 or 1 as the input-value that is transmitted to BrickServer.\nThe input-value is only trasmitted to BrickServer if the Signal is not allready in this state.\n\n# Outputs:\n\n - **1**: used when Signal was set to 0\n - **2**: used when Signal was set to 1\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Signal\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.signal_id**: The signal_id (index) for this Signal\n - **msg.signal_state**: The State received for this Signal (is just copied over from payload)",
         "category": "BrickWeb",
         "in": [
             {
-                "x": 60,
-                "y": 200,
+                "x": 40,
+                "y": 220,
                 "wires": [
                     {
                         "id": "e3db8796b555ed56"
@@ -188,8 +188,8 @@
         ],
         "out": [
             {
-                "x": 1220,
-                "y": 100,
+                "x": 1200,
+                "y": 80,
                 "wires": [
                     {
                         "id": "9e196ecf7d9d10a9",
@@ -198,8 +198,8 @@
                 ]
             },
             {
-                "x": 1220,
-                "y": 140,
+                "x": 1200,
+                "y": 120,
                 "wires": [
                     {
                         "id": "9e196ecf7d9d10a9",
@@ -240,7 +240,10 @@
                 "value": "false"
             }
         ],
-        "meta": {},
+        "meta": {
+            "author": "Nils Ostrowski",
+            "desc": "In- and Output of a Signal"
+        },
         "color": "#DDAA99",
         "inputLabels": [
             "Set signal_state"
@@ -392,7 +395,7 @@
         "id": "6c8bc1031ca33a4f",
         "type": "mqtt-broker",
         "name": "BrickServer",
-        "broker": "162.168.56.1",
+        "broker": "localhost",
         "port": "1883",
         "clientid": "",
         "usetls": false,
@@ -425,8 +428,8 @@
         "nl": false,
         "rap": true,
         "rh": 0,
-        "x": 120,
-        "y": 120,
+        "x": 100,
+        "y": 100,
         "wires": [
             [
                 "a35c0ae67237cd4f"
@@ -444,8 +447,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 310,
-        "y": 120,
+        "x": 290,
+        "y": 100,
         "wires": [
             [
                 "fdce96596e0f377c"
@@ -469,8 +472,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 540,
-        "y": 120,
+        "x": 520,
+        "y": 100,
         "wires": [
             [
                 "d9998b2afdb0cbfa"
@@ -494,11 +497,12 @@
         "checkall": "false",
         "repair": false,
         "outputs": 1,
-        "x": 820,
-        "y": 120,
+        "x": 800,
+        "y": 100,
         "wires": [
             [
-                "9e196ecf7d9d10a9"
+                "9e196ecf7d9d10a9",
+                "0c33d3847221f8d0"
             ]
         ]
     },
@@ -513,8 +517,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 430,
-        "y": 200,
+        "x": 590,
+        "y": 220,
         "wires": [
             [
                 "b30d5ecfe35ec57a"
@@ -529,7 +533,7 @@
         "method": "POST",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "http://192.165.56.1:8081/admin",
+        "url": "http://localhost:8081/admin",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -639,8 +643,8 @@
         "z": "f508a8bc63d51d65",
         "name": "",
         "env": [],
-        "x": 640,
-        "y": 200,
+        "x": 800,
+        "y": 220,
         "wires": [
             [],
             []
@@ -1333,8 +1337,8 @@
         "checkall": "false",
         "repair": false,
         "outputs": 2,
-        "x": 1070,
-        "y": 120,
+        "x": 1050,
+        "y": 100,
         "wires": [
             [],
             []
@@ -1364,13 +1368,115 @@
         "checkall": "false",
         "repair": false,
         "outputs": 2,
-        "x": 220,
-        "y": 200,
+        "x": 200,
+        "y": 220,
+        "wires": [
+            [],
+            [
+                "617e5313c9cdf1ec"
+            ]
+        ]
+    },
+    {
+        "id": "0c33d3847221f8d0",
+        "type": "change",
+        "z": "f508a8bc63d51d65",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "frommqtt",
+                "pt": "msg",
+                "to": "true",
+                "tot": "bool"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1050,
+        "y": 160,
+        "wires": [
+            [
+                "53de68a3f57fe5fd"
+            ]
+        ]
+    },
+    {
+        "id": "617e5313c9cdf1ec",
+        "type": "switch",
+        "z": "f508a8bc63d51d65",
+        "name": "not frommqtt",
+        "property": "frommqtt",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 410,
+        "y": 220,
         "wires": [
             [],
             [
                 "a05fdb8f7e50cf76"
             ]
         ]
+    },
+    {
+        "id": "53de68a3f57fe5fd",
+        "type": "link out",
+        "z": "f508a8bc63d51d65",
+        "name": "",
+        "links": [
+            "ec8e7c8809e20a36"
+        ],
+        "x": 1195,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "ec8e7c8809e20a36",
+        "type": "link in",
+        "z": "f508a8bc63d51d65",
+        "name": "",
+        "links": [
+            "53de68a3f57fe5fd"
+        ],
+        "x": 35,
+        "y": 180,
+        "wires": [
+            [
+                "e3db8796b555ed56"
+            ]
+        ]
+    },
+    {
+        "id": "7c307afe5cb3b1f0",
+        "type": "comment",
+        "z": "f508a8bc63d51d65",
+        "name": "frommqtt is for keeping track of last state",
+        "info": "",
+        "x": 440,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "ac1b4083c9c98d62",
+        "type": "comment",
+        "z": "f508a8bc63d51d65",
+        "name": "In- and Output of a Signal",
+        "info": "This SubFlow is just an easy way of attaching to a Signal. The Outputs are used listen to Signal statechanges via MQTT. The Input is capable of setting the Signal to a new State.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **signal_id**: the _id_ (_index_) of Signal this Node corresponds to\n - **send_activate**: set to _true_ if BrickServer should try to actively to push new state to Brick\n\n# Input:\n\nExpects msg.signal_state to be set to 0 or 1 as the input-value that is transmitted to BrickServer.\nThe input-value is only trasmitted to BrickServer if the Signal is not allready in this state.\n\n# Outputs:\n\n - **1**: used when Signal was set to 0\n - **2**: used when Signal was set to 1\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The payload (State) received for this Signal\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.signal_id**: The signal_id (index) for this Signal\n - **msg.signal_state**: The State received for this Signal (is just copied over from payload)",
+        "x": 130,
+        "y": 40,
+        "wires": []
     }
 ]
