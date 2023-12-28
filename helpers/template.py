@@ -1,5 +1,5 @@
 import json
-from helpers.brickserver import temp_sensor_get, humid_sensor_get, latch_get, serverversion_get, signal_get
+from helpers.brickserver import temp_sensor_get, humid_sensor_get, latch_get, serverversion_get, signal_get, heater_get
 from helpers.config import config
 from datetime import datetime, timedelta
 
@@ -9,7 +9,7 @@ def convert_html(json_obj):
 
 
 def list_of_temp_sensors_of_brick(brick):
-    if 'temp' in brick['features']:
+    if 'temp' in brick['features'] or 'heat' in brick['features']:
         return [temp_sensor_get(sensor) for sensor in brick['temp_sensors']]
     else:
         return list()
@@ -34,10 +34,17 @@ def list_of_signals_of_brick(brick):
         return [signal_get(brick['_id'], i) for i in range(0, brick['signal_count'])]
     else:
         return list()
+    
+
+def list_of_heaters_of_brick(brick):
+    r = list()
+    if 'heat' in brick['features']:
+        r.append(heater_get(brick['_id']))
+    return r
 
 
 def has_disabled_sensors(brick):
-    for s in list_of_temp_sensors_of_brick(brick) + list_of_humid_sensors_of_brick(brick) + list_of_latches_of_brick(brick) + list_of_signals_of_brick(brick):
+    for s in list_of_temp_sensors_of_brick(brick) + list_of_humid_sensors_of_brick(brick) + list_of_latches_of_brick(brick) + list_of_signals_of_brick(brick) + list_of_heaters_of_brick(brick):
         if 'ui' in s['disables']:
             return True
     return False
@@ -85,6 +92,15 @@ def grafana_url_signal(brick, signal):
     query += f"&var-brick_id={brick['_id']}"
     query += f"&var-signal_desc={signal['desc'] if signal['desc'] is not None else ''}"
     query += f"&var-signal_id={sid}"
+    return url + query
+
+
+def grafana_url_heater(brick, heater):
+    url = f"http://{config['grafana']['host']}:{config['grafana']['port']}/d/FKBPR0bnk/?"
+    query = f"var-brick_desc={brick['desc'] if brick['desc'] is not None else ''}"
+    query += f"&var-brick_id={brick['_id']}"
+    query += f"&var-signal_desc={heater['desc'] if heater['desc'] is not None else ''}"
+    query += f"&var-signal_id={heater['_id']}"
     return url + query
 
 

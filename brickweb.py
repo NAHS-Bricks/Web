@@ -8,6 +8,7 @@ from helpers.brickserver import temp_sensor_exists, temp_sensor_get, temp_sensor
 from helpers.brickserver import humid_sensor_exists, humid_sensor_get, humid_sensor_set_desc, humid_sensor_disable
 from helpers.brickserver import latch_exists, latch_get, latch_set_desc, latch_set_states_desc, latch_add_trigger, latch_del_trigger, latch_disable
 from helpers.brickserver import signal_exists, signal_get, signal_set_desc, signal_set_states_desc, signal_set_state, signal_disable
+from helpers.brickserver import heater_exists, heater_get, heater_set_desc, heater_set_states_desc, heater_set_state, heater_disable
 from helpers.brickserver import firmware_get, firmware_update, firmware_upload as firmware_upload_bk, firmware_delete, firmware_fetch
 from helpers.firmware import firmware_is_used
 from helpers.config import config
@@ -64,7 +65,7 @@ class BrickWeb(object):
         return serve_template('/runtime-overview.html', session=cherrypy.session)
 
     @cherrypy.expose()
-    def set_desc(self, desc, brick_id=None, sensor_id=None, humid_id=None, latch_id=None, signal_id=None):
+    def set_desc(self, desc, brick_id=None, sensor_id=None, humid_id=None, latch_id=None, signal_id=None, heater_id=None):
         if brick_id is not None:
             brick_set_desc(brick_id, desc)
         if sensor_id is not None:
@@ -75,6 +76,8 @@ class BrickWeb(object):
             latch_set_desc(latch_id, desc)
         if signal_id is not None:
             signal_set_desc(signal_id, desc)
+        if heater_id is not None:
+            heater_set_desc(heater_id, desc)
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()
@@ -176,18 +179,33 @@ class BrickWeb(object):
             raise cherrypy.HTTPRedirect('/')
         brick = brick_get(cherrypy.session['brick_id'])
         return serve_template('/signal-detail.html', signal=signal, brick=brick)
+    
+    @cherrypy.expose
+    def get_heater_detail(self, heater_id):
+        heater = None
+        if heater_exists(heater_id):
+            heater = heater_get(heater_id)
+        if heater is None:
+            raise cherrypy.HTTPRedirect('/')
+        brick = brick_get(cherrypy.session['brick_id'])
+        return serve_template('/heater-detail.html', heater=heater, brick=brick)
 
     @cherrypy.expose()
-    def set_states_desc(self, desc, state, latch_id=None, signal_id=None):
+    def set_states_desc(self, desc, state, latch_id=None, signal_id=None, heater_id=None):
         if latch_id is not None:
             latch_set_states_desc(latch_id, state, desc)
         if signal_id is not None:
             signal_set_states_desc(signal_id, state, desc)
+        if heater_id is not None:
+            heater_set_states_desc(heater_id, state, desc)
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()
-    def set_state(self, state, signal_id):
-        signal_set_state(signal_id, state)
+    def set_state(self, state, signal_id=None, heater_id=None):
+        if signal_id is not None:
+            signal_set_state(signal_id, state)
+        if heater_id is not None:
+            heater_set_state(heater_id, state)
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()
@@ -200,7 +218,7 @@ class BrickWeb(object):
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()
-    def set_disables(self, disables=list(), sensor_id=None, humid_id=None, latch_id=None, signal_id=None):
+    def set_disables(self, disables=list(), sensor_id=None, humid_id=None, latch_id=None, signal_id=None, heater_id=None):
         for d in possible_disables:
             if sensor_id is not None:
                 temp_sensor_disable(sensor_id, d, d in disables)
@@ -210,6 +228,8 @@ class BrickWeb(object):
                 latch_disable(latch_id, d, d in disables)
             if signal_id is not None:
                 signal_disable(signal_id, d, d in disables)
+            if heater_id is not None:
+                heater_disable(heater_id, d, d in disables)
         raise cherrypy.HTTPRedirect('/')
 
     @cherrypy.expose()

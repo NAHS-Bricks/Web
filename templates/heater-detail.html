@@ -1,0 +1,180 @@
+<%!
+    from helpers.template import convert_html, grafana_url_heater
+    from helpers.config import config
+    from helpers.shared import possible_disables
+    from datetime import datetime
+%>
+        <article class="message">
+            <div class="message-header">
+                <p>
+                    Heater Detail
+                    % if config['grafana']['enabled'] and 'metric' not in heater['disables']:
+                    <span class="icon is-small grafana-link-icon" id="heater-detail-grafana" title="Open corresponding Chart in Grafana">
+                        <i class="fas fa-chart-line fa-sm"></i>
+                    </span>
+                    % endif
+                </p>
+            </div>
+            <div class="message-body">
+                <div class="field">
+                    <label class="label">ID</label>
+                    <div class="box">
+                        ${heater['_id']}
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Description</label>
+                    <div class="box" id="heater-desc-display">
+                        ${(heater['desc'] if heater['desc'] is not None else '')}
+                        <span class="icon edit-pencil-icon" id="heater-desc-edit-button">
+                            <i class="fas fa-edit fa-sm"></i>
+                        </span>
+                    </div>
+                    <form method="post" action="/set_desc?heater_id=${heater['_id']}" id="heater-desc-edit" style="display: none;">
+                        <div class="field has-addons">
+                            <p class="control is-expanded">
+                                <input class="input" type="text" placeholder="Heater Description" value="${(heater['desc'] if heater['desc'] is not None else '')}" name="desc">
+                            </p>
+                            <p class="control">
+                                <button class="button is-success">Save</button>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+                <div class="field">
+                    <label class="label">Current State</label>
+                    <div class="box">
+                        ${heater['states_desc'][heater['state']]}<br />
+                        <span class="has-text-grey-light">
+                            set at ${str(datetime.fromtimestamp(int(heater['state_set_ts'])).strftime('%d.%m.%Y %H:%M:%S')) if heater['state_set_ts'] is not None else '???'}<br />
+                            transmitted at ${str(datetime.fromtimestamp(int(heater['state_transmitted_ts'])).strftime('%d.%m.%Y %H:%M:%S')) if heater['state_transmitted_ts'] is not None else '---'}
+                        </span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Set State</label>
+                    <div class="box">
+                        <div class="field is-grouped">
+                            % for i in range(0, 2):
+                            <form class="control" method="post" action="/set_state?heater_id=${heater['_id']}&state=${i}">
+                                <button class="button is-dark">${heater['states_desc'][i]}</button>
+                            </form>
+                            % endfor
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">
+                        Disables
+                        <span class="icon edit-pencil-icon" id="heater-disables-edit-button">
+                            <i class="fas fa-edit fa-sm"></i>
+                        </span>
+                    </label>
+                    <div class="box" id="heater-disables-display">
+                        ${"<br />".join(heater['disables'])}
+                    </div>
+                    <div class="box" id="heater-disables-edit" style="display: none;">
+                        <form method="post" action="/set_disables?heater_id=${heater['_id']}">
+                            <div class="field">
+                                <fieldset>
+                                    % for d in possible_disables:
+                                    <p class="control is-expanded">
+                                        <input type="checkbox" name="disables" value="${d}" ${('checked' if d in heater['disables'] else '')}>
+                                        ${d}
+                                    </p>
+                                    % endfor
+                                </fieldset>
+                                <p class="control">
+                                    <button class="button is-success">Save</button>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">States Descriptions</label>
+                    <button class="button is-dark" id="heater-states-desc-show">show</button>
+                    <button class="button is-dark" id="heater-states-desc-hide" style="display: none;">hide</button>
+                    <div id="heater-states-desc-data" style="display: none;">
+                        % for i in range(0, 2):
+                        <label class="label">State ${i}:</label>
+                        <div class="box" id="heater-states-desc-${i}-display">
+                            ${heater['states_desc'][i]}
+                            <span class="icon edit-pencil-icon" id="heater-states-desc-${i}-edit-button">
+                                <i class="fas fa-edit fa-sm"></i>
+                            </span>
+                        </div>
+                        <form method="post" action="/set_states_desc?heater_id=${heater['_id']}&state=${i}" id="heater-states-desc-${i}-edit" style="display: none;">
+                            <div class="field has-addons">
+                                <p class="control is-expanded">
+                                    <input class="input" type="text" placeholder="State Description" value="${heater['states_desc'][i]}" name="desc">
+                                </p>
+                                <p class="control">
+                                    <button class="button is-success">Save</button>
+                                </p>
+                            </div>
+                        </form>
+                        % endfor
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">RAW Data</label>
+                    <button class="button is-dark" id="heater-raw-show">show</button>
+                    <button class="button is-dark" id="heater-raw-hide" style="display: none;">hide</button>
+                    <div class="box" id="heater-raw-data" style="display: none;">
+                        <p class="is-family-monospace">
+                            ${convert_html(heater)}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <script>
+            $("#heater-raw-show").click(function() {
+                $("#heater-raw-show").hide();
+                $("#heater-raw-hide").show();
+                $("#heater-raw-data").show();
+            });
+
+            $("#heater-raw-hide").click(function() {
+                $("#heater-raw-show").show();
+                $("#heater-raw-hide").hide();
+                $("#heater-raw-data").hide();
+            });
+
+            $("#heater-desc-edit-button").click(function() {
+                $("#heater-desc-display").hide();
+                $("#heater-desc-edit").show();
+            });
+
+            $("#heater-states-desc-show").click(function() {
+                $("#heater-states-desc-show").hide();
+                $("#heater-states-desc-hide").show();
+                $("#heater-states-desc-data").show();
+            });
+
+            $("#heater-states-desc-hide").click(function() {
+                $("#heater-states-desc-show").show();
+                $("#heater-states-desc-hide").hide();
+                $("#heater-states-desc-data").hide();
+            });
+
+            $("#heater-states-desc-0-edit-button").click(function() {
+                $("#heater-states-desc-0-display").hide();
+                $("#heater-states-desc-0-edit").show();
+            });
+            $("#heater-states-desc-1-edit-button").click(function() {
+                $("#heater-states-desc-1-display").hide();
+                $("#heater-states-desc-1-edit").show();
+            });
+
+            $("#heater-disables-edit-button").click(function() {
+                $("#heater-disables-display").hide();
+                $("#heater-disables-edit").show();
+                $("#heater-disables-edit-button").hide();
+            });
+
+            $("#heater-detail-grafana").click(function() {
+                window.open("${grafana_url_heater(brick, heater)}", 'grafana');
+            });
+        </script>

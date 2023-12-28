@@ -293,6 +293,42 @@ def signal_disable(signal_id, what, enable):
 
 
 """
+heater operations
+"""
+
+
+def heater_get(brick_id):
+    return _request_cached({"command": "get_heater", "heater": brick_id})['heater']
+
+
+def heater_exists(brick_id):
+    return 0 == _request_cached({"command": "get_heater", "heater": brick_id})['s']
+
+
+def heater_set_desc(heater_id, desc):
+    _request_cached({'command': 'set', 'heater': heater_id, 'key': 'desc', 'value': desc})
+    clear_request_cache(heater_id)
+
+
+def heater_set_states_desc(heater_id, state, desc):
+    _request_cached({'command': 'set', 'heater': heater_id, 'state': int(state), 'key': 'state_desc', 'value': desc})
+    clear_request_cache(heater_id)
+
+
+def heater_set_state(heater_id, state):
+    _request_cached({'command': 'set', 'heater': heater_id, 'key': 'heater', 'value': int(state)})
+    clear_request_cache(heater_id)
+
+
+def heater_disable(heater_id, what, enable):
+    if enable:
+        _request_cached({'command': 'set', 'heater': heater_id, 'key': 'add_disable', 'value': what})
+    else:
+        _request_cached({'command': 'set', 'heater': heater_id, 'key': 'del_disable', 'value': what})
+    clear_request_cache(heater_id)
+
+
+"""
 firmware operations
 """
 

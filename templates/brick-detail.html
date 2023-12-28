@@ -1,5 +1,5 @@
 <%!
-    from helpers.template import convert_html, list_of_temp_sensors_of_brick, list_of_humid_sensors_of_brick, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str, list_of_signals_of_brick, has_disabled_sensors, server_is
+    from helpers.template import convert_html, list_of_temp_sensors_of_brick, list_of_humid_sensors_of_brick, grafana_url_bat_level, list_of_latches_of_brick, time_ago_str, list_of_signals_of_brick, has_disabled_sensors, server_is, list_of_heaters_of_brick
     from helpers.firmware import firmware_name, firmware_version, firmware_state, firmware_bin_present, firmware_is_updating
     from helpers.config import config
     from helpers.brickserver import firmware_get
@@ -473,6 +473,22 @@
                 </a>
                 % endif
                 % endfor
+
+                % for heater in list_of_heaters_of_brick(brick):
+                % if 'ui' not in heater['disables'] or cherrypy.session['show_disabled']:
+                <a class="container box heater${' has-background-grey-lighter' if 'ui' in heater['disables'] else ''}" data-target="${heater['_id']}">
+                    <p class="subtitle is-5">
+                        Heater
+                    </p>
+                    <p class="title is-2${' has-text-warning' if heater['state_transmitted_ts'] is None else ''}">
+                        ${heater['states_desc'][heater['state']]}
+                    </p>
+                    <p class="subtitle is-6">
+                        ${heater['desc']}
+                    </p>
+                </a>
+                % endif
+                % endfor
                 
 			</div>
 		</div>
@@ -523,6 +539,17 @@
                 $("#sensor-detail-modal").addClass("is-active");
                 $.ajax( {
                     url:'get_signal_detail/?signal_id=' + target,
+                    success:function(data) {
+                        $("#sensor-detail-modal > .modal-content").html(data);
+                    }
+                });
+            });
+            $(".heater").click(function() {
+                var target = $(this).data("target");
+                $("html").addClass("is-clipped");
+                $("#sensor-detail-modal").addClass("is-active");
+                $.ajax( {
+                    url:'get_heater_detail/?heater_id=' + target,
                     success:function(data) {
                         $("#sensor-detail-modal > .modal-content").html(data);
                     }
