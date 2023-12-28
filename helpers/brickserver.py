@@ -127,7 +127,8 @@ def bricks_get_sorted_by_bat_runtime_prediction():
     for brick_id in bricks_get():
         brick = brick_get(brick_id)
         brp = (brick['bat_runtime_prediction'] if 'bat_runtime_prediction' in brick else None)
-        result.append([brick_id, brick['desc'], brp])
+        if 'bat' in brick['features'] and not brick.get('bat_wall_powered', False):
+            result.append([brick_id, brick['desc'], brp])
 
     for i in range(0, len(result) - 1):
         for j in range(i + 1, len(result)):

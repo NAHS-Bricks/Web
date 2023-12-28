@@ -63,7 +63,7 @@
                 <div class="container box">
 					<p class="subtitle is-5">
                         Battery
-                        % if server_is('0.6.0'):
+                        % if server_is('0.6.0') and not brick.get('bat_wall_powered', False):
                         % if brick['bat_solar_charging']:
                         <span class="icon is-small grafana-link-icon" id="brick-detail-bat-solar-charging-disable" title="Disable Solar Charging">
                             <i class="fas fa-sun fa-sm"></i>
@@ -129,12 +129,14 @@
                         </span>
                         % endif
                     </p>
+                    % if not brick.get('bat_wall_powered', False):
                     <p class="subtitle is-5">
                         <span class="icon" title="predicted to be empty">
                             <i class="fas fa-calendar-times fa-sm"></i>
                         </span>
                         ${f"{round(brick['bat_runtime_prediction'])} days" if brick['bat_runtime_prediction'] else 'unknown'}
                     </p>
+                    % endif
 				</div>
                 <script>
                     $("#brick-detail-bat-level-grafana").click(function() {
