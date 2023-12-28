@@ -50,6 +50,17 @@
                             </div>
                         </div>
                         % endif
+                        % if server_is('0.8.0'):
+                        <div class="field">
+                            <label class="label">Firmwares count:</label>
+                            <div class="box">
+                                ${str(count_get('firmwares'))}
+                                <span class="icon is-small info-icon" id="firmware-browser-open-icon" title="Open Firmware Browser">
+                                    <i class="fas fa-info-circle"></i>
+                                </span>
+                            </div>
+                        </div>
+                        % endif
                     </div>
                     <div class="column">
                         % if server_is('0.5.0'):
@@ -66,14 +77,11 @@
                             </div>
                         </div>
                         % endif
-                        % if server_is('0.8.0'):
+                        % if server_is('0.10.0'):
                         <div class="field">
-                            <label class="label">Firmwares count:</label>
+                            <label class="label">Heaters count:</label>
                             <div class="box">
-                                ${str(count_get('firmwares'))}
-                                <span class="icon is-small info-icon" id="firmware-browser-open-icon" title="Open Firmware Browser">
-                                    <i class="fas fa-info-circle"></i>
-                                </span>
+                                ${str(count_get('heaters'))}
                             </div>
                         </div>
                         % endif
