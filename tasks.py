@@ -22,7 +22,21 @@ def config_save():
 
 
 @task(name="dev-start")
-def start_development(c):
+def start_development_locked_versions(c):
+    r = c.run("sudo docker ps -f name=dev-grafana", hide=True)
+    if 'dev-grafana' not in r.stdout:
+        print("Starting Grafana")
+        c.run("sudo docker run --name=dev-grafana --rm -p 3000:3000 -d grafana/grafana:8.2.7")
+    r = c.run("sudo docker ps -f name=dev-nodered", hide=True)
+    if 'dev-nodered' not in r.stdout:
+        print("Starting NodeRed")
+        c.run("mkdir -p /media/ramdisk/nodered")
+        c.run("chown 1000:1000 /media/ramdisk/nodered")
+        c.run("sudo docker run --name=dev-nodered --rm -p 1880:1880 -v /media/ramdisk/nodered:/data -d nodered/node-red:2.1.4")
+
+
+@task(name="dev-start-latest")
+def start_development_latest_versions(c):
     r = c.run("sudo docker ps -f name=dev-grafana", hide=True)
     if 'dev-grafana' not in r.stdout:
         print("Starting Grafana")
@@ -46,7 +60,7 @@ def stop_development(c):
     c.run('sudo rm -rf /media/ramdisk/nodered')
 
 
-@task(pre=[stop_development], post=[start_development], name="dev-clean")
+@task(pre=[stop_development], post=[start_development_latest_versions], name="dev-clean")
 def cleanup_development(c):
     pass
 

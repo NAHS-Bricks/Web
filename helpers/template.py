@@ -96,11 +96,11 @@ def grafana_url_signal(brick, signal):
 
 
 def grafana_url_heater(brick, heater):
-    url = f"http://{config['grafana']['host']}:{config['grafana']['port']}/d/FKBPR0bnk/?"
+    url = f"http://{config['grafana']['host']}:{config['grafana']['port']}/d/vSf8CudSz/?"
     query = f"var-brick_desc={brick['desc'] if brick['desc'] is not None else ''}"
     query += f"&var-brick_id={brick['_id']}"
-    query += f"&var-signal_desc={heater['desc'] if heater['desc'] is not None else ''}"
-    query += f"&var-signal_id={heater['_id']}"
+    query += f"&var-heater_desc={heater['desc'] if heater['desc'] is not None else ''}"
+    query += f"&var-heater_id={heater['_id']}"
     return url + query
 
 
