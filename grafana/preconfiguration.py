@@ -59,6 +59,7 @@ def version_greater_or_equal_than(a, b):
     version_greater_or_equal_than('1.0', '1.0.1') => False
     version_greater_or_equal_than('1.0', '1.0') => True
     version_greater_or_equal_than('1.0.1', '1.0') => True
+    version_greater_or_equal_than('10.0', '9.0') => True
     """
     a = a.split('.')
     while len(a) < 4:

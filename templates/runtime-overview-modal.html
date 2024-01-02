@@ -9,7 +9,7 @@
 				Runtime Prediction
 			</p>
             <div>
-                % for brick_id, desc, brp in bricks_get_sorted_by_bat_runtime_prediction():
+                % for brick_id, desc, brp, volt in bricks_get_sorted_by_bat_runtime_prediction():
                 <a class="panel-block" href="index?brick_id=${brick_id}">
                     % if brp is None:
                     <span class="panel-icon has-text-info">
@@ -22,12 +22,12 @@
                     % endif
                         <i class="fas fa-cube" aria-hidden="true"></i>
                     </span>
-                    ${brick_id} (${desc if desc is not None else ''}) ->
                     % if brp is not None:
                     ${int(brp)} days
                     % else:
                     unkonwn
                     % endif
+                    -> ${desc if desc is not None else brick_id} -> ${volt}
                 </a>
                 % endfor
             </div>
