@@ -96,3 +96,26 @@ def firmware_is_updating(brick):
     if brick.get('otaUpdate', 'requested') not in ['requested', 'canceled']:
         return True
     return False
+
+
+def firmware_any_outdated():
+    """
+    return true if any brick is outdated
+    """
+    for brick_id in bricks_get():
+        brick = brick_get(brick_id=brick_id)
+        if firmware_state(brick) == 'outdated':
+            return True
+    return False
+
+
+def firmware_outdated_bricks():
+    """
+    returns a list of all bricks with outdated firmware
+    """
+    result = list()
+    for brick_id in bricks_get():
+        brick = brick_get(brick_id=brick_id)
+        if firmware_state(brick) == 'outdated':
+            result.append(brick)
+    return result

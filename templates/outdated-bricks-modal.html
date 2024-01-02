@@ -1,0 +1,21 @@
+<%!
+    from helpers.firmware import firmware_outdated_bricks
+%>
+  <div class="modal" id="outdated-bricks-modal">
+	<div class="modal-background"></div>
+	<div class="modal-content">
+		<div class="panel box">
+			<p class="panel-heading">
+				Bricks with outdated Firmware
+			</p>
+            <div>
+                % for brick in firmware_outdated_bricks():
+                <a class="panel-block" href="index?brick_id=${brick['_id']}">
+                    ${brick['_id']} (${brick['desc'] if brick['desc'] is not None else ''})
+                </a>
+                % endfor
+            </div>
+		</div>
+    </div>
+	<button class="modal-close is-large" aria-label="close"></button>
+  </div>
