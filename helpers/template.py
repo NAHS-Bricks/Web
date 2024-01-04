@@ -1,5 +1,5 @@
 import json
-from helpers.brickserver import temp_sensor_get, humid_sensor_get, latch_get, serverversion_get, signal_get, heater_get
+from helpers.brickserver import temp_sensor_get, humid_sensor_get, latch_get, serverversion_get, signal_get, heater_get, bricks_get, brick_get
 from helpers.config import config
 from datetime import datetime, timedelta
 
@@ -34,7 +34,7 @@ def list_of_signals_of_brick(brick):
         return [signal_get(brick['_id'], i) for i in range(0, brick['signal_count'])]
     else:
         return list()
-    
+
 
 def list_of_heaters_of_brick(brick):
     r = list()
@@ -136,3 +136,28 @@ def server_is(version):
         if int(server[i]) < int(version[i]):
             return False
     return True
+
+
+def having_bricks_timeout():
+    """
+    returns true if at least one brick is having a timedeleta of last_ts more than 30 minutes
+    """
+    for brick_id in bricks_get():
+        brick = brick_get(brick_id)
+        if (datetime.now() - timedelta(minutes=30)) > datetime.fromtimestamp(brick['last_ts']):
+            return True
+    return False
+
+
+def list_of_bricks_timed_out():
+    """
+    returns a list of all [brick_id, desc, delta, hour_passed] of all bricks having a timedeleta of last_ts more than 30 minutes
+    """
+    result = list()
+    for brick_id in bricks_get():
+        brick = brick_get(brick_id)
+        if (datetime.now() - timedelta(minutes=30)) > datetime.fromtimestamp(brick['last_ts']):
+            hour_passed = (datetime.now() - timedelta(minutes=60)) > datetime.fromtimestamp(brick['last_ts'])
+            delta = time_ago_str(brick['last_ts'])
+            result.append([brick['_id'], brick['desc'], delta, hour_passed])
+    return result

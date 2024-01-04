@@ -1,0 +1,28 @@
+<%!
+    from helpers.template import list_of_bricks_timed_out
+%>
+  <div class="modal" id="timedout-bricks-modal">
+	<div class="modal-background"></div>
+	<div class="modal-content">
+		<div class="panel box">
+			<p class="panel-heading">
+				Bricks with Timeout
+			</p>
+            <div>
+                % for brick_id, desc, delta, hour_passed in list_of_bricks_timed_out():
+                <a class="panel-block" href="index?brick_id=${brick_id}">
+                    % if hour_passed:
+                    <span class="panel-icon has-text-danger">
+                    % else:
+                    <span class="panel-icon has-text-warning">
+                    % endif
+                        <i class="fas fa-cube" aria-hidden="true"></i>
+                    </span>
+                    ${desc if desc is not None else brick_id} -> ${delta}
+                </a>
+                % endfor
+            </div>
+		</div>
+    </div>
+	<button class="modal-close is-large" aria-label="close"></button>
+  </div>

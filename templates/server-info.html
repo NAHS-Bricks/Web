@@ -1,7 +1,7 @@
 <%!
     from helpers.brickserver import serverversion_get, count_get
     from helpers.config import config
-    from helpers.template import server_is
+    from helpers.template import server_is, having_bricks_timeout
     from helpers.firmware import firmware_any_outdated
 %>
         <article class="message">
@@ -34,6 +34,11 @@
                             <label class="label">Bricks count:</label>
                             <div class="box">
                                 ${str(count_get('bricks'))}
+                                % if having_bricks_timeout():
+                                <span class="icon is-small danger-icon" id="timedout-bricks-open-icon" title="Open List of Bricks with timeout">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </span>
+                                % endif
                             </div>
                         </div>
                         <div class="field">
@@ -59,7 +64,7 @@
                                 <span class="icon is-small info-icon" id="firmware-browser-open-icon" title="Open Firmware Browser">
                                     <i class="fas fa-info-circle"></i>
                                 </span>
-                                % if firmware_any_outdated:
+                                % if firmware_any_outdated():
                                 <span class="icon is-small danger-icon" id="outdated-bricks-open-icon" title="Open List of Outdated Bricks">
                                     <i class="fas fa-exclamation-triangle"></i>
                                 </span>
@@ -96,6 +101,13 @@
             </div>
         </article>
         <script>
+            % if server_is('0.5.0'):
+            $("#timedout-bricks-open-icon").click(function() {
+                $("html").addClass("is-clipped");
+                $("#sensor-detail-modal").removeClass("is-active");
+                $("#timedout-bricks-modal").addClass("is-active");
+            });
+            % endif
             % if server_is('0.8.0'):
             $("#firmware-browser-open-icon").click(function() {
                 $("html").addClass("is-clipped");
