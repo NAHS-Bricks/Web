@@ -173,7 +173,7 @@
         "id": "f508a8bc63d51d65",
         "type": "subflow",
         "name": "Signal",
-        "info": "This SubFlow is just an easy way of attaching to a Signal. The Outputs are used listen to Signal statechanges via MQTT. The Input is capable of setting the Signal to a new State.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Latch corresponds to\n - **signal_id**: the _id_ (_index_) of Signal this Node corresponds to\n - **send_activate**: set to _true_ if BrickServer should try to actively to push new state to Brick\n\n# Input:\n\nExpects msg.signal_state to be set to 0 or 1 as the input-value that is transmitted to BrickServer.\nThe input-value is only trasmitted to BrickServer if the Signal is not allready in this state.\n\n# Outputs:\n\n - **1**: used when Signal was set to 0\n - **2**: used when Signal was set to 1\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Signal\n - **msg.payload**: The payload (State) received for this Signal\n - **msg.brick_id**: The brick_id for this Signal\n - **msg.signal_id**: The signal_id (index) for this Signal\n - **msg.signal_state**: The State received for this Signal (is just copied over from payload)",
+        "info": "This SubFlow is just an easy way of attaching to a Signal. The Outputs are used listen to Signal statechanges via MQTT. The Input is capable of setting the Signal to a new State.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Signal corresponds to\n - **signal_id**: the _id_ (_index_) of Signal this Node corresponds to\n - **send_activate**: set to _true_ if BrickServer should try to actively to push new state to Brick\n\n# Input:\n\nExpects msg.signal_state to be set to 0 or 1 as the input-value that is transmitted to BrickServer.\nThe input-value is only trasmitted to BrickServer if the Signal is not allready in this state.\n\n# Outputs:\n\n - **1**: used when Signal was set to 0\n - **2**: used when Signal was set to 1\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Signal\n - **msg.payload**: The payload (State) received for this Signal\n - **msg.brick_id**: The brick_id for this Signal\n - **msg.signal_id**: The signal_id (index) for this Signal\n - **msg.signal_state**: The State received for this Signal (is just copied over from payload)",
         "category": "BrickWeb",
         "in": [
             {
@@ -217,7 +217,8 @@
                     "type": "input",
                     "opts": {
                         "types": [
-                            "str"
+                            "str",
+                            "env"
                         ]
                     }
                 }
@@ -227,17 +228,28 @@
                 "type": "num",
                 "value": "0",
                 "ui": {
-                    "type": "spinner",
+                    "type": "input",
                     "opts": {
-                        "min": 0,
-                        "max": 7
+                        "types": [
+                            "num",
+                            "env"
+                        ]
                     }
                 }
             },
             {
                 "name": "send_activate",
                 "type": "bool",
-                "value": "false"
+                "value": "false",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "bool",
+                            "env"
+                        ]
+                    }
+                }
             }
         ],
         "meta": {
@@ -246,7 +258,7 @@
         },
         "color": "#DDAA99",
         "inputLabels": [
-            "Set signal_state"
+            "Set msg.signal_state"
         ],
         "outputLabels": [
             "Signal was set to 0",
@@ -254,13 +266,126 @@
         ]
     },
     {
+        "id": "7e0c998b1de26534",
+        "type": "subflow",
+        "name": "Heater",
+        "info": "This SubFlow is just an easy way of attaching to a Heater. The Outputs are used listen to Heater statechanges via MQTT. The Input is capable of setting the Heater to a new State.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Heater corresponds to\n - **send_activate**: set to _true_ if BrickServer should try to actively to push new state to Brick\n\n# Input:\n\nExpects msg.heater_state to be set to 0 or 1 as the input-value that is transmitted to BrickServer.\nThe input-value is only trasmitted to BrickServer if the Heater is not allready in this state.\n\n# Outputs:\n\n - **1**: used when Heater was set to 0 (turned OFF)\n - **2**: used when Heater was set to 1 (turned ON)\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Heater\n - **msg.payload**: The payload (State) received for this Heater\n - **msg.brick_id**: The brick_id for this Heater\n - **msg.heater_state**: The State received for this Heater (is just copied over from payload)",
+        "category": "BrickWeb",
+        "in": [
+            {
+                "x": 40,
+                "y": 220,
+                "wires": [
+                    {
+                        "id": "9589213e9a290bb4"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 900,
+                "y": 80,
+                "wires": [
+                    {
+                        "id": "dcad365f4086c991",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 900,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "dcad365f4086c991",
+                        "port": 1
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "brick_id",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str",
+                            "env"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "send_activate",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "bool",
+                            "env"
+                        ]
+                    }
+                }
+            }
+        ],
+        "meta": {
+            "author": "Nils Ost",
+            "desc": "In- and Output of a Heater"
+        },
+        "color": "#DDAA99",
+        "inputLabels": [
+            "Set heater_state"
+        ],
+        "outputLabels": [
+            "Heater was set to 0",
+            "Heater was set to 1"
+        ]
+    },
+    {
         "id": "70aad4cc197c0fa0",
         "type": "subflow",
-        "name": "Trafficlight",
-        "info": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)\n\n# Variables\n\n - **input_type**: whether the input sensor is a _temp sensor_ or a _humid sensor_\n - **input_brick_id**: _id_ of brick housing the _temp_ or _humid_ sensor\n - **input_sensor_id**: _id_ of _temp_ or _humid_ sensor\n - **watermark_high**: sensor values above (not equal) this watermark are considered to high\n - **watermark_low**: sensor values below (not equal) this watermark are considered to low\n - **signal_brick_id**: _id_ of brick housing the output signals\n - **signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n - **signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n - **signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low",
+        "name": "Trafficlight auto",
+        "info": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)\n\n# Variables\n\n - **input_type**: whether the input sensor is a _temp sensor_ or a _humid sensor_\n - **input_brick_id**: _id_ of brick housing the _temp_ or _humid_ sensor\n - **input_sensor_id**: _id_ of _temp_ or _humid_ sensor\n - **watermark_high**: sensor values above (not equal) this watermark are considered to high\n - **watermark_low**: sensor values below (not equal) this watermark are considered to low\n - **signal_brick_id**: _id_ of brick housing the output signals\n - **signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n - **signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n - **signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low\n - **send_activate**: set to _true_ if BrickServer should try to actively push new state to Brick\n\n# Outputs:\n\n - **1**: used when the corresponding Signal was set as to High\n - **2**: used when the corresponding Signal was set as OK\n - **3**: used when the corresponding Signal was set as to Low\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for the sensor, that updated the Signals\n - **msg.payload**: The last value received from the sensor, that set the TrafficLight\n - **msg.sensor_brick**: The _id_ of Brick housing the sensor\n - **msg.sensor_type**: The _type_ of the input sensor\n - **msg.sensor_id**: The _id_ of the input sensor\n - **msg.level**: The sensor value (is just copied over from payload)",
         "category": "BrickWeb",
         "in": [],
-        "out": [],
+        "out": [
+            {
+                "x": 680,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "8d8a4c4d0cc1279d",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 680,
+                "y": 200,
+                "wires": [
+                    {
+                        "id": "8d8a4c4d0cc1279d",
+                        "port": 1
+                    }
+                ]
+            },
+            {
+                "x": 680,
+                "y": 240,
+                "wires": [
+                    {
+                        "id": "8d8a4c4d0cc1279d",
+                        "port": 2
+                    }
+                ]
+            }
+        ],
         "env": [
             {
                 "name": "input_type",
@@ -383,66 +508,6 @@
                         "min": 0
                     }
                 }
-            }
-        ],
-        "meta": {
-            "author": "Nils Ost",
-            "desc": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)"
-        },
-        "color": "#DDAA99"
-    },
-    {
-        "id": "7e0c998b1de26534",
-        "type": "subflow",
-        "name": "Heater",
-        "info": "This SubFlow is just an easy way of attaching to a Heater. The Outputs are used listen to Heater statechanges via MQTT. The Input is capable of setting the Heater to a new State.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Heater corresponds to\n - **send_activate**: set to _true_ if BrickServer should try to actively to push new state to Brick\n\n# Input:\n\nExpects msg.heater_state to be set to 0 or 1 as the input-value that is transmitted to BrickServer.\nThe input-value is only trasmitted to BrickServer if the Heater is not allready in this state.\n\n# Outputs:\n\n - **1**: used when Heater was set to 0 (turned OFF)\n - **2**: used when Heater was set to 1 (turned ON)\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Heater\n - **msg.payload**: The payload (State) received for this Heater\n - **msg.brick_id**: The brick_id for this Heater\n - **msg.heater_state**: The State received for this Heater (is just copied over from payload)",
-        "category": "BrickWeb",
-        "in": [
-            {
-                "x": 40,
-                "y": 220,
-                "wires": [
-                    {
-                        "id": "9589213e9a290bb4"
-                    }
-                ]
-            }
-        ],
-        "out": [
-            {
-                "x": 900,
-                "y": 80,
-                "wires": [
-                    {
-                        "id": "dcad365f4086c991",
-                        "port": 0
-                    }
-                ]
-            },
-            {
-                "x": 900,
-                "y": 120,
-                "wires": [
-                    {
-                        "id": "dcad365f4086c991",
-                        "port": 1
-                    }
-                ]
-            }
-        ],
-        "env": [
-            {
-                "name": "brick_id",
-                "type": "str",
-                "value": "",
-                "ui": {
-                    "type": "input",
-                    "opts": {
-                        "types": [
-                            "str"
-                        ]
-                    }
-                }
             },
             {
                 "name": "send_activate",
@@ -460,15 +525,337 @@
         ],
         "meta": {
             "author": "Nils Ost",
-            "desc": "In- and Output of a Heater"
+            "desc": "temp or humid sensor value sets Signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)"
+        },
+        "color": "#DDAA99"
+    },
+    {
+        "id": "e7b2bbb26678053e",
+        "type": "subflow",
+        "name": "Trafficlight manual",
+        "info": "This SubFlow provides an easy way for setting the Signals of a SignalBrick dependend on a level value as to high, to low or perfect. (just like a traffic light)\n\n# Variables:\n\n - **watermark_high**: level values above (not equal) this watermark are considered to high\n - **watermark_low**: level values below (not equal) this watermark are considered to low\n - **signal_brick_id**: _id_ of brick housing the output signals\n - **signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n - **signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n - **signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low\n - **send_activate**: set to _true_ if BrickServer should try to actively push new state to Brick\n\n# Input:\n\nExpects **msg.level** to be the current waterlevel that should be evaluated for setting the Trafficlight.\n\nWith **msg.waterlevel_high** or **msg.waterlevel_low** you can overwrite the default high and low level.\n\n# Outputs:\n\n - **1**: used when the corresponding Signal was set as to High\n - **2**: used when the corresponding Signal was set as OK\n - **3**: used when the corresponding Signal was set as to Low\n\n# Additional Info:\n\nOn all outputs the content is left untouched as it was on input.",
+        "category": "BrickWeb",
+        "in": [
+            {
+                "x": 40,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "b9368c9e055045d1"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 500,
+                "y": 320,
+                "wires": [
+                    {
+                        "id": "438433b26115870c",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 500,
+                "y": 560,
+                "wires": [
+                    {
+                        "id": "438433b26115870c",
+                        "port": 2
+                    }
+                ]
+            },
+            {
+                "x": 500,
+                "y": 440,
+                "wires": [
+                    {
+                        "id": "438433b26115870c",
+                        "port": 1
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "watermark_high",
+                "type": "num",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num",
+                            "env"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "watermark_low",
+                "type": "num",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num",
+                            "env"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "signal_brick_id",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str",
+                            "env"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "signal_to_high",
+                "type": "num",
+                "value": "0",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num",
+                            "env"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "signal_ok",
+                "type": "num",
+                "value": "1",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num",
+                            "env"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "signal_to_low",
+                "type": "num",
+                "value": "2",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num",
+                            "env"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "send_activate",
+                "type": "bool",
+                "value": "false",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "bool",
+                            "env"
+                        ]
+                    }
+                }
+            }
+        ],
+        "meta": {
+            "author": "Nils Ost",
+            "desc": "Sets Signals, dependend on level value, like a TrafficLight"
         },
         "color": "#DDAA99",
         "inputLabels": [
-            "Set heater_state"
+            "Set msg.level"
         ],
         "outputLabels": [
-            "Heater was set to 0",
-            "Heater was set to 1"
+            "Trafficlight is now set as to High",
+            "Trafficlight is now set as OK",
+            "Trafficlight is now set as to Low"
+        ]
+    },
+    {
+        "id": "f259a0f89e5c7c07",
+        "type": "subflow",
+        "name": "HeatBrick",
+        "info": "This SubFlow simplifies the usage of a HeatBrick. Just put in a reference (room) temperature and the Heater is controlled according to the given setpoint. Also the Signals of the HeatBrick are used as a TrafficLight corresponding to the given temperature and setpoint.  \nThe onboard temperature-sensors and Latches are connected to the Outputs of this SubFlow for easier access.\n\n# Variables:\n\n - **brick_id**: _id_ of HeatBrick\n - **temp_setpoint**: The target temperature this HeatBrick should reach\n - **temp_variance**: The setpoint plus and minus this value defines the lower and upper boundry for the Heater an TrafficLight\n - **latch_state_filter**: The state on which Output 4 is filtered on\n\n# Input:\n\n - **msg.temp**: for the current reading of room temperature\n - **msg.temp_setpoint**: to set a new setpoint for temperature\n - **msg.temp_variance**: to set a new variance for temperature\n\n# Outputs:\n\n - **1**: Output of radiator temperature reading\n - **2**: Output of all other temperature readings\n - **3**: All received Latch states\n - **4**: All received Latch states filtered by latch_state_filter\n\n# Additional Info:\n\n## Outputs _1_ and _2_ contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this sensor\n - **msg.payload**: The temperature received for this sensor (as String)\n - **msg.brick_id**: The brick_id for this sensor\n - **msg.sensor_id**: The id of this sensor\n - **msg.temp_reading**: The temperature received for this sensor (as Float)\n \n## Outputs _3_ and _4_ contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The state received for this Latch (as String)\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The id (index) of this Latch\n - **msg.latch_state**: The state received for this Latch (as Int)",
+        "category": "BrickWeb",
+        "in": [
+            {
+                "x": 40,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "cda1d72a2bbf66cd"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 960,
+                "y": 500,
+                "wires": [
+                    {
+                        "id": "8b33806cba9aea6c",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 720,
+                "y": 540,
+                "wires": [
+                    {
+                        "id": "e9b47f6891e535d4",
+                        "port": 1
+                    }
+                ]
+            },
+            {
+                "x": 600,
+                "y": 660,
+                "wires": [
+                    {
+                        "id": "44636806b2eede74",
+                        "port": 0
+                    }
+                ]
+            },
+            {
+                "x": 760,
+                "y": 620,
+                "wires": [
+                    {
+                        "id": "a3f25fcf7c48f91c",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "brick_id",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str",
+                            "env"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "temp_setpoint",
+                "type": "num",
+                "value": "21",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num",
+                            "env"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "temp_variance",
+                "type": "num",
+                "value": "0.5",
+                "ui": {
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "num",
+                            "env"
+                        ]
+                    }
+                }
+            },
+            {
+                "name": "latch_state_filter",
+                "type": "str",
+                "value": "2",
+                "ui": {
+                    "type": "select",
+                    "opts": {
+                        "opts": [
+                            {
+                                "l": {
+                                    "de": "Low-Level (Low)"
+                                },
+                                "v": "0"
+                            },
+                            {
+                                "l": {
+                                    "de": "High-Level (High)"
+                                },
+                                "v": "1"
+                            },
+                            {
+                                "l": {
+                                    "de": "Falling-Edge (High-Low)"
+                                },
+                                "v": "2"
+                            },
+                            {
+                                "l": {
+                                    "de": "Rising-Edge (Low-High)"
+                                },
+                                "v": "3"
+                            },
+                            {
+                                "l": {
+                                    "de": "Rising-Bump (Low-High-Low)"
+                                },
+                                "v": "4"
+                            },
+                            {
+                                "l": {
+                                    "de": "Falling-Bump (High-Low-High)"
+                                },
+                                "v": "5"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
+        "meta": {
+            "author": "Nils Ost",
+            "desc": "Handles all in and outputs of HeatBrick, with TrafficLight"
+        },
+        "color": "#DDAA99",
+        "inputLabels": [
+            "temp, temp_setpoint, temp_variance"
+        ],
+        "outputLabels": [
+            "Radiator temp_reading",
+            "Other temp_reading",
+            "Latch States",
+            "Latch States (filtered)"
         ]
     },
     {
@@ -1077,492 +1464,6 @@
         "wires": []
     },
     {
-        "id": "f4474e3c756cc949",
-        "type": "mqtt in",
-        "z": "70aad4cc197c0fa0",
-        "name": "",
-        "topic": "brick/+/+/+",
-        "qos": "2",
-        "datatype": "auto",
-        "broker": "6c8bc1031ca33a4f",
-        "nl": false,
-        "rap": true,
-        "rh": 0,
-        "inputs": 0,
-        "x": 80,
-        "y": 100,
-        "wires": [
-            [
-                "f658e7a1b1f65a8a"
-            ]
-        ]
-    },
-    {
-        "id": "f658e7a1b1f65a8a",
-        "type": "function",
-        "z": "70aad4cc197c0fa0",
-        "name": "Extract vars",
-        "func": "msg.sensor_brick = msg.topic.split(\"/\")[1];\nmsg.sensor_type = msg.topic.split(\"/\")[2];\nmsg.sensor_id = msg.topic.split(\"/\")[3];\nmsg.sensor_value = msg.payload;\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 250,
-        "y": 100,
-        "wires": [
-            [
-                "3c41bf382d95f4ce"
-            ]
-        ]
-    },
-    {
-        "id": "3c41bf382d95f4ce",
-        "type": "switch",
-        "z": "70aad4cc197c0fa0",
-        "name": "if sensor_brick == input_brick_id",
-        "property": "sensor_brick",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "input_brick_id",
-                "vt": "env"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 1,
-        "x": 500,
-        "y": 100,
-        "wires": [
-            [
-                "2b1235e47c53ac34"
-            ]
-        ]
-    },
-    {
-        "id": "2b1235e47c53ac34",
-        "type": "switch",
-        "z": "70aad4cc197c0fa0",
-        "name": "if sensor_type == input_type",
-        "property": "sensor_type",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "input_type",
-                "vt": "env"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 1,
-        "x": 800,
-        "y": 100,
-        "wires": [
-            [
-                "95492132cb450b8a"
-            ]
-        ]
-    },
-    {
-        "id": "95492132cb450b8a",
-        "type": "switch",
-        "z": "70aad4cc197c0fa0",
-        "name": "if sensor_id == input_sensor_id",
-        "property": "sensor_id",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "eq",
-                "v": "input_sensor_id",
-                "vt": "env"
-            }
-        ],
-        "checkall": "true",
-        "repair": false,
-        "outputs": 1,
-        "x": 1090,
-        "y": 100,
-        "wires": [
-            [
-                "82c8e1e95730e7a9"
-            ]
-        ]
-    },
-    {
-        "id": "82c8e1e95730e7a9",
-        "type": "link out",
-        "z": "70aad4cc197c0fa0",
-        "name": "",
-        "links": [
-            "2951f1bb3f7282e8"
-        ],
-        "x": 1275,
-        "y": 100,
-        "wires": []
-    },
-    {
-        "id": "2951f1bb3f7282e8",
-        "type": "link in",
-        "z": "70aad4cc197c0fa0",
-        "name": "",
-        "links": [
-            "82c8e1e95730e7a9"
-        ],
-        "x": 75,
-        "y": 200,
-        "wires": [
-            [
-                "51a4b8417188b58f"
-            ]
-        ]
-    },
-    {
-        "id": "51a4b8417188b58f",
-        "type": "function",
-        "z": "70aad4cc197c0fa0",
-        "name": "prepare to high",
-        "func": "msg.payload = {\"command\":\"set\",\"key\":\"signal\"};\nmsg.payload.signal = env.get(\"signal_brick_id\") + \"_\" + env.get(\"signal_to_high\");\nmsg.payload.value = 0;\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 220,
-        "y": 200,
-        "wires": [
-            [
-                "b1238ce1c0d3f057"
-            ]
-        ]
-    },
-    {
-        "id": "b1238ce1c0d3f057",
-        "type": "switch",
-        "z": "70aad4cc197c0fa0",
-        "name": "sensor value to high",
-        "property": "sensor_value",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "gt",
-                "v": "watermark_high",
-                "vt": "env"
-            },
-            {
-                "t": "lte",
-                "v": "watermark_high",
-                "vt": "env"
-            }
-        ],
-        "checkall": "false",
-        "repair": false,
-        "outputs": 2,
-        "x": 440,
-        "y": 200,
-        "wires": [
-            [
-                "e855d7b9390e9ac4"
-            ],
-            [
-                "e03b0b17ce565175"
-            ]
-        ]
-    },
-    {
-        "id": "e855d7b9390e9ac4",
-        "type": "change",
-        "z": "70aad4cc197c0fa0",
-        "name": "enable signal",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload.value",
-                "pt": "msg",
-                "to": "1",
-                "tot": "num"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 680,
-        "y": 160,
-        "wires": [
-            [
-                "e03b0b17ce565175"
-            ]
-        ]
-    },
-    {
-        "id": "e03b0b17ce565175",
-        "type": "subflow:928b6cd8afe78e19",
-        "z": "70aad4cc197c0fa0",
-        "name": "",
-        "x": 900,
-        "y": 200,
-        "wires": [
-            [
-                "0b37e2ee1e32e4ce"
-            ],
-            []
-        ]
-    },
-    {
-        "id": "0b37e2ee1e32e4ce",
-        "type": "link out",
-        "z": "70aad4cc197c0fa0",
-        "name": "",
-        "links": [
-            "dac636ac4d9db7a0"
-        ],
-        "x": 1075,
-        "y": 200,
-        "wires": []
-    },
-    {
-        "id": "dac636ac4d9db7a0",
-        "type": "link in",
-        "z": "70aad4cc197c0fa0",
-        "name": "",
-        "links": [
-            "0b37e2ee1e32e4ce"
-        ],
-        "x": 75,
-        "y": 300,
-        "wires": [
-            [
-                "4e000005a254ce1f"
-            ]
-        ]
-    },
-    {
-        "id": "4e000005a254ce1f",
-        "type": "function",
-        "z": "70aad4cc197c0fa0",
-        "name": "prepare to low",
-        "func": "msg.payload.signal = env.get(\"signal_brick_id\") + \"_\" + env.get(\"signal_to_low\");\nmsg.payload.value = 0;\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 220,
-        "y": 300,
-        "wires": [
-            [
-                "64f7ae15f6458ef3"
-            ]
-        ]
-    },
-    {
-        "id": "64f7ae15f6458ef3",
-        "type": "switch",
-        "z": "70aad4cc197c0fa0",
-        "name": "sensor value to low",
-        "property": "sensor_value",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "lt",
-                "v": "watermark_low",
-                "vt": "env"
-            },
-            {
-                "t": "gte",
-                "v": "watermark_low",
-                "vt": "env"
-            }
-        ],
-        "checkall": "false",
-        "repair": false,
-        "outputs": 2,
-        "x": 430,
-        "y": 300,
-        "wires": [
-            [
-                "0690f6a534d6f5cd"
-            ],
-            [
-                "950295310503ad63"
-            ]
-        ]
-    },
-    {
-        "id": "0690f6a534d6f5cd",
-        "type": "change",
-        "z": "70aad4cc197c0fa0",
-        "name": "enable signal",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload.value",
-                "pt": "msg",
-                "to": "1",
-                "tot": "num"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 680,
-        "y": 260,
-        "wires": [
-            [
-                "950295310503ad63"
-            ]
-        ]
-    },
-    {
-        "id": "950295310503ad63",
-        "type": "subflow:928b6cd8afe78e19",
-        "z": "70aad4cc197c0fa0",
-        "name": "",
-        "x": 900,
-        "y": 300,
-        "wires": [
-            [
-                "402716462860b45c"
-            ],
-            []
-        ]
-    },
-    {
-        "id": "4e312c8c270d57c3",
-        "type": "link in",
-        "z": "70aad4cc197c0fa0",
-        "name": "",
-        "links": [
-            "402716462860b45c"
-        ],
-        "x": 75,
-        "y": 400,
-        "wires": [
-            [
-                "bb15d4a4ad4bfecc"
-            ]
-        ]
-    },
-    {
-        "id": "402716462860b45c",
-        "type": "link out",
-        "z": "70aad4cc197c0fa0",
-        "name": "",
-        "links": [
-            "4e312c8c270d57c3"
-        ],
-        "x": 1075,
-        "y": 300,
-        "wires": []
-    },
-    {
-        "id": "bb15d4a4ad4bfecc",
-        "type": "function",
-        "z": "70aad4cc197c0fa0",
-        "name": "prepare ok",
-        "func": "msg.payload.activate = true\nmsg.payload.signal = env.get(\"signal_brick_id\") + \"_\" + env.get(\"signal_ok\");\nmsg.payload.value = 0;\n\nreturn msg;",
-        "outputs": 1,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 210,
-        "y": 400,
-        "wires": [
-            [
-                "9805e7d644228626"
-            ]
-        ]
-    },
-    {
-        "id": "9805e7d644228626",
-        "type": "switch",
-        "z": "70aad4cc197c0fa0",
-        "name": "sensor value is ok",
-        "property": "sensor_value",
-        "propertyType": "msg",
-        "rules": [
-            {
-                "t": "btwn",
-                "v": "watermark_low",
-                "vt": "env",
-                "v2": "watermark_high",
-                "v2t": "env"
-            },
-            {
-                "t": "else"
-            }
-        ],
-        "checkall": "false",
-        "repair": false,
-        "outputs": 2,
-        "x": 430,
-        "y": 400,
-        "wires": [
-            [
-                "b4ee187aca6f2639"
-            ],
-            [
-                "c2a67cfecfa485a3"
-            ]
-        ]
-    },
-    {
-        "id": "b4ee187aca6f2639",
-        "type": "change",
-        "z": "70aad4cc197c0fa0",
-        "name": "enable signal",
-        "rules": [
-            {
-                "t": "set",
-                "p": "payload.value",
-                "pt": "msg",
-                "to": "1",
-                "tot": "num"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 680,
-        "y": 360,
-        "wires": [
-            [
-                "c2a67cfecfa485a3"
-            ]
-        ]
-    },
-    {
-        "id": "c2a67cfecfa485a3",
-        "type": "subflow:928b6cd8afe78e19",
-        "z": "70aad4cc197c0fa0",
-        "name": "",
-        "x": 900,
-        "y": 400,
-        "wires": [
-            [],
-            []
-        ]
-    },
-    {
-        "id": "bc54aa231d4420d6",
-        "type": "comment",
-        "z": "70aad4cc197c0fa0",
-        "name": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)",
-        "info": "# Variables\n\n - **input_type**: whether the input sensor is a _temp sensor_ or a _humid sensor_\n - **input_brick_id**: _id_ of brick housing the _temp_ or _humid_ sensor\n - **input_sensor_id**: _id_ of _temp_ or _humid_ sensor\n - **watermark_high**: sensor values above (not equal) this watermark are considered to high\n - **watermark_low**: sensor values below (not equal) this watermark are considered to low\n - **signal_brick_id**: _id_ of brick housing the output signals\n - **signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n - **signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n - **signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low",
-        "x": 410,
-        "y": 40,
-        "wires": []
-    },
-    {
         "id": "e5478e94bb4c50cc",
         "type": "switch",
         "z": "7e0c998b1de26534",
@@ -1822,6 +1723,1609 @@
         "name": "In- and Output of a Heater",
         "info": "This SubFlow is just an easy way of attaching to a Heater. The Outputs are used listen to Heater statechanges via MQTT. The Input is capable of setting the Heater to a new State.\n\n# Variables:\n\n - **brick_id**: _id_ of Brick the Heater corresponds to\n - **send_activate**: set to _true_ if BrickServer should try to actively to push new state to Brick\n\n# Input:\n\nExpects msg.heater_state to be set to 0 or 1 as the input-value that is transmitted to BrickServer.\nThe input-value is only trasmitted to BrickServer if the Heater is not allready in this state.\n\n# Outputs:\n\n - **1**: used when Heater was set to 0 (turned OFF)\n - **2**: used when Heater was set to 1 (turned ON)\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Heater\n - **msg.payload**: The payload (State) received for this Heater\n - **msg.brick_id**: The brick_id for this Heater\n - **msg.heater_state**: The State received for this Heater (is just copied over from payload)",
         "x": 130,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "f4474e3c756cc949",
+        "type": "mqtt in",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "topic": "brick/+/+/+",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "6c8bc1031ca33a4f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 80,
+        "y": 100,
+        "wires": [
+            [
+                "f658e7a1b1f65a8a"
+            ]
+        ]
+    },
+    {
+        "id": "f658e7a1b1f65a8a",
+        "type": "function",
+        "z": "70aad4cc197c0fa0",
+        "name": "Extract vars",
+        "func": "msg.sensor_brick = msg.topic.split(\"/\")[1];\nmsg.sensor_type = msg.topic.split(\"/\")[2];\nmsg.sensor_id = msg.topic.split(\"/\")[3];\nmsg.level = msg.payload;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 100,
+        "wires": [
+            [
+                "3c41bf382d95f4ce"
+            ]
+        ]
+    },
+    {
+        "id": "3c41bf382d95f4ce",
+        "type": "switch",
+        "z": "70aad4cc197c0fa0",
+        "name": "if sensor_brick == input_brick_id",
+        "property": "sensor_brick",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "input_brick_id",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 500,
+        "y": 100,
+        "wires": [
+            [
+                "2b1235e47c53ac34"
+            ]
+        ]
+    },
+    {
+        "id": "2b1235e47c53ac34",
+        "type": "switch",
+        "z": "70aad4cc197c0fa0",
+        "name": "if sensor_type == input_type",
+        "property": "sensor_type",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "input_type",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 800,
+        "y": 100,
+        "wires": [
+            [
+                "82c8e1e95730e7a9"
+            ]
+        ]
+    },
+    {
+        "id": "95492132cb450b8a",
+        "type": "switch",
+        "z": "70aad4cc197c0fa0",
+        "name": "if sensor_id == input_sensor_id",
+        "property": "sensor_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "input_sensor_id",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 250,
+        "y": 200,
+        "wires": [
+            [
+                "8d8a4c4d0cc1279d"
+            ]
+        ]
+    },
+    {
+        "id": "82c8e1e95730e7a9",
+        "type": "link out",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "links": [
+            "2951f1bb3f7282e8"
+        ],
+        "x": 975,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "2951f1bb3f7282e8",
+        "type": "link in",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "links": [
+            "82c8e1e95730e7a9"
+        ],
+        "x": 55,
+        "y": 200,
+        "wires": [
+            [
+                "95492132cb450b8a"
+            ]
+        ]
+    },
+    {
+        "id": "bc54aa231d4420d6",
+        "type": "comment",
+        "z": "70aad4cc197c0fa0",
+        "name": "temp or humid sensor value sets Signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)",
+        "info": "temp or humid sensor value sets signals of SignalBrick whether it is to high, to low or perfekt (just like a traffic light)\n\n# Variables\n\n - **input_type**: whether the input sensor is a _temp sensor_ or a _humid sensor_\n - **input_brick_id**: _id_ of brick housing the _temp_ or _humid_ sensor\n - **input_sensor_id**: _id_ of _temp_ or _humid_ sensor\n - **watermark_high**: sensor values above (not equal) this watermark are considered to high\n - **watermark_low**: sensor values below (not equal) this watermark are considered to low\n - **signal_brick_id**: _id_ of brick housing the output signals\n - **signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n - **signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n - **signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low\n - **send_activate**: set to _true_ if BrickServer should try to actively push new state to Brick\n\n# Outputs:\n\n - **1**: used when the corresponding Signal was set as to High\n - **2**: used when the corresponding Signal was set as OK\n - **3**: used when the corresponding Signal was set as to Low\n\n# Additional Info:\n\nAll outputs contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for the sensor, that updated the Signals\n - **msg.payload**: The last value received from the sensor, that set the TrafficLight\n - **msg.sensor_brick**: The _id_ of Brick housing the sensor\n - **msg.sensor_type**: The _type_ of the input sensor\n - **msg.sensor_id**: The _id_ of the input sensor\n - **msg.level**: The sensor value (is just copied over from payload)",
+        "x": 420,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "8d8a4c4d0cc1279d",
+        "type": "subflow:e7b2bbb26678053e",
+        "z": "70aad4cc197c0fa0",
+        "name": "",
+        "env": [
+            {
+                "name": "watermark_high",
+                "value": "watermark_high",
+                "type": "env"
+            },
+            {
+                "name": "watermark_low",
+                "value": "watermark_low",
+                "type": "env"
+            },
+            {
+                "name": "signal_brick_id",
+                "value": "signal_brick_id",
+                "type": "env"
+            },
+            {
+                "name": "signal_to_high",
+                "value": "signal_to_high",
+                "type": "env"
+            },
+            {
+                "name": "signal_ok",
+                "value": "signal_ok",
+                "type": "env"
+            },
+            {
+                "name": "signal_to_low",
+                "value": "signal_to_low",
+                "type": "env"
+            },
+            {
+                "name": "send_activate",
+                "value": "send_activate",
+                "type": "env"
+            }
+        ],
+        "x": 510,
+        "y": 200,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "438433b26115870c",
+        "type": "switch",
+        "z": "e7b2bbb26678053e",
+        "name": "",
+        "property": "level",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "watermark_high",
+                "vt": "flow"
+            },
+            {
+                "t": "lt",
+                "v": "watermark_low",
+                "vt": "flow"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 3,
+        "x": 330,
+        "y": 400,
+        "wires": [
+            [
+                "4c43810cbad6adb0",
+                "ab1300535244f80b",
+                "62c55e4ce1d96ffd"
+            ],
+            [
+                "1c344b9dc8bb87b6",
+                "97810fa0e296357c",
+                "62c55e4ce1d96ffd"
+            ],
+            [
+                "772db43a1c1b5b88",
+                "97810fa0e296357c",
+                "ab1300535244f80b"
+            ]
+        ]
+    },
+    {
+        "id": "b839a37a98840881",
+        "type": "subflow:f508a8bc63d51d65",
+        "z": "e7b2bbb26678053e",
+        "name": "Signal: High",
+        "env": [
+            {
+                "name": "brick_id",
+                "value": "signal_brick_id",
+                "type": "env"
+            },
+            {
+                "name": "signal_id",
+                "value": "signal_to_high",
+                "type": "env"
+            }
+        ],
+        "x": 730,
+        "y": 260,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "530ef1e3f3e8229e",
+        "type": "subflow:f508a8bc63d51d65",
+        "z": "e7b2bbb26678053e",
+        "name": "Signal: Low",
+        "env": [
+            {
+                "name": "brick_id",
+                "value": "signal_brick_id",
+                "type": "env"
+            },
+            {
+                "name": "signal_id",
+                "value": "signal_to_low",
+                "type": "env"
+            }
+        ],
+        "x": 730,
+        "y": 380,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "8c14ec85f174d1a3",
+        "type": "subflow:f508a8bc63d51d65",
+        "z": "e7b2bbb26678053e",
+        "name": "Signal: OK",
+        "env": [
+            {
+                "name": "brick_id",
+                "value": "signal_brick_id",
+                "type": "env"
+            },
+            {
+                "name": "signal_id",
+                "value": "signal_ok",
+                "type": "env"
+            },
+            {
+                "name": "send_activate",
+                "value": "send_activate",
+                "type": "env"
+            }
+        ],
+        "x": 930,
+        "y": 500,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "97810fa0e296357c",
+        "type": "change",
+        "z": "e7b2bbb26678053e",
+        "name": "High: OFF",
+        "rules": [
+            {
+                "t": "set",
+                "p": "signal_state",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 240,
+        "wires": [
+            [
+                "b839a37a98840881"
+            ]
+        ]
+    },
+    {
+        "id": "4c43810cbad6adb0",
+        "type": "change",
+        "z": "e7b2bbb26678053e",
+        "name": "High: ON",
+        "rules": [
+            {
+                "t": "set",
+                "p": "signal_state",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 540,
+        "y": 280,
+        "wires": [
+            [
+                "b839a37a98840881"
+            ]
+        ]
+    },
+    {
+        "id": "ab1300535244f80b",
+        "type": "change",
+        "z": "e7b2bbb26678053e",
+        "name": "Low: OFF",
+        "rules": [
+            {
+                "t": "set",
+                "p": "signal_state",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 540,
+        "y": 360,
+        "wires": [
+            [
+                "530ef1e3f3e8229e"
+            ]
+        ]
+    },
+    {
+        "id": "1c344b9dc8bb87b6",
+        "type": "change",
+        "z": "e7b2bbb26678053e",
+        "name": "Low: ON",
+        "rules": [
+            {
+                "t": "set",
+                "p": "signal_state",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 540,
+        "y": 400,
+        "wires": [
+            [
+                "530ef1e3f3e8229e"
+            ]
+        ]
+    },
+    {
+        "id": "62c55e4ce1d96ffd",
+        "type": "change",
+        "z": "e7b2bbb26678053e",
+        "name": "OK: OFF",
+        "rules": [
+            {
+                "t": "set",
+                "p": "signal_state",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 540,
+        "y": 480,
+        "wires": [
+            [
+                "0530e6333bc0273f"
+            ]
+        ]
+    },
+    {
+        "id": "772db43a1c1b5b88",
+        "type": "change",
+        "z": "e7b2bbb26678053e",
+        "name": "OK: ON",
+        "rules": [
+            {
+                "t": "set",
+                "p": "signal_state",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 540,
+        "y": 520,
+        "wires": [
+            [
+                "0530e6333bc0273f"
+            ]
+        ]
+    },
+    {
+        "id": "0530e6333bc0273f",
+        "type": "delay",
+        "z": "e7b2bbb26678053e",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 740,
+        "y": 500,
+        "wires": [
+            [
+                "8c14ec85f174d1a3"
+            ]
+        ]
+    },
+    {
+        "id": "ee82449c7c472305",
+        "type": "comment",
+        "z": "e7b2bbb26678053e",
+        "name": "Sets Signals, dependend on level value, like a TrafficLight",
+        "info": "This SubFlow provides an easy way for setting the Signals of a SignalBrick dependend on a level value as to high, to low or perfect. (just like a traffic light)\n\n# Variables:\n\n - **watermark_high**: level values above (not equal) this watermark are considered to high\n - **watermark_low**: level values below (not equal) this watermark are considered to low\n - **signal_brick_id**: _id_ of brick housing the output signals\n - **signal_to_high**: _id_ of signal that is triggered when sensor value is considered as to high\n - **signal_ok**: _id_ of signal that is triggered when sensor value is not considered to high nor to low\n - **signal_to_low**: _id_ of signal that is triggered when sensor value is considered as to low\n - **send_activate**: set to _true_ if BrickServer should try to actively push new state to Brick\n\n# Input:\n\nExpects **msg.level** to be the current waterlevel that should be evaluated for setting the Trafficlight.\n\nWith **msg.waterlevel_high** or **msg.waterlevel_low** you can overwrite the default high and low level.\n\n# Outputs:\n\n - **1**: used when the corresponding Signal was set as to High\n - **2**: used when the corresponding Signal was set as OK\n - **3**: used when the corresponding Signal was set as to Low\n\n# Additional Info:\n\nOn all outputs the content is left untouched as it was on input.",
+        "x": 230,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "b9368c9e055045d1",
+        "type": "switch",
+        "z": "e7b2bbb26678053e",
+        "name": "new high",
+        "property": "watermark_high",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "number",
+                "vt": "number"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 160,
+        "y": 120,
+        "wires": [
+            [
+                "f2781da38e84a99c"
+            ],
+            [
+                "f1d75aaa037e4645"
+            ]
+        ]
+    },
+    {
+        "id": "f2781da38e84a99c",
+        "type": "change",
+        "z": "e7b2bbb26678053e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "watermark_high",
+                "pt": "flow",
+                "to": "watermark_high",
+                "tot": "msg",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 380,
+        "y": 100,
+        "wires": [
+            [
+                "120644719ceb3796"
+            ]
+        ]
+    },
+    {
+        "id": "120644719ceb3796",
+        "type": "switch",
+        "z": "e7b2bbb26678053e",
+        "name": "new low",
+        "property": "watermark_low",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "number",
+                "vt": "number"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 640,
+        "y": 120,
+        "wires": [
+            [
+                "06feb98b1fc4245b"
+            ],
+            [
+                "98b013beaf7619b0"
+            ]
+        ]
+    },
+    {
+        "id": "f1d75aaa037e4645",
+        "type": "switch",
+        "z": "e7b2bbb26678053e",
+        "name": "def high",
+        "property": "watermark_high",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "number",
+                "vt": "number"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 320,
+        "y": 140,
+        "wires": [
+            [
+                "120644719ceb3796"
+            ],
+            [
+                "d02f65553cebd07d"
+            ]
+        ]
+    },
+    {
+        "id": "d02f65553cebd07d",
+        "type": "change",
+        "z": "e7b2bbb26678053e",
+        "name": "use def high",
+        "rules": [
+            {
+                "t": "set",
+                "p": "watermark_high",
+                "pt": "flow",
+                "to": "watermark_high",
+                "tot": "env",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 470,
+        "y": 160,
+        "wires": [
+            [
+                "120644719ceb3796"
+            ]
+        ]
+    },
+    {
+        "id": "06feb98b1fc4245b",
+        "type": "change",
+        "z": "e7b2bbb26678053e",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "watermark_low",
+                "pt": "flow",
+                "to": "watermark_low",
+                "tot": "msg",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 850,
+        "y": 100,
+        "wires": [
+            [
+                "28c81a648808711b"
+            ]
+        ]
+    },
+    {
+        "id": "98b013beaf7619b0",
+        "type": "switch",
+        "z": "e7b2bbb26678053e",
+        "name": "def low",
+        "property": "watermark_low",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "number",
+                "vt": "number"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 800,
+        "y": 140,
+        "wires": [
+            [
+                "28c81a648808711b"
+            ],
+            [
+                "b00835151dcb47e9"
+            ]
+        ]
+    },
+    {
+        "id": "b00835151dcb47e9",
+        "type": "change",
+        "z": "e7b2bbb26678053e",
+        "name": "use def low",
+        "rules": [
+            {
+                "t": "set",
+                "p": "watermark_low",
+                "pt": "flow",
+                "to": "watermark_low",
+                "tot": "env",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 950,
+        "y": 160,
+        "wires": [
+            [
+                "28c81a648808711b"
+            ]
+        ]
+    },
+    {
+        "id": "b7ec5d77e40c8038",
+        "type": "link in",
+        "z": "e7b2bbb26678053e",
+        "name": "",
+        "links": [
+            "28c81a648808711b"
+        ],
+        "x": 75,
+        "y": 400,
+        "wires": [
+            [
+                "419dc068d46dd39d"
+            ]
+        ]
+    },
+    {
+        "id": "28c81a648808711b",
+        "type": "link out",
+        "z": "e7b2bbb26678053e",
+        "name": "",
+        "mode": "link",
+        "links": [
+            "b7ec5d77e40c8038"
+        ],
+        "x": 1075,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "419dc068d46dd39d",
+        "type": "switch",
+        "z": "e7b2bbb26678053e",
+        "name": "new level",
+        "property": "level",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "number",
+                "vt": "number"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 180,
+        "y": 400,
+        "wires": [
+            [
+                "438433b26115870c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "f1e18e33aba86535",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "def setpoint",
+        "property": "setpoint",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "number",
+                "vt": "number"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 330,
+        "y": 140,
+        "wires": [
+            [
+                "e0565de8b1d66b72"
+            ],
+            [
+                "cd802d807fe1e000"
+            ]
+        ]
+    },
+    {
+        "id": "cd802d807fe1e000",
+        "type": "change",
+        "z": "f259a0f89e5c7c07",
+        "name": "use def setpoint",
+        "rules": [
+            {
+                "t": "set",
+                "p": "setpoint",
+                "pt": "flow",
+                "to": "temp_setpoint",
+                "tot": "env"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 500,
+        "y": 160,
+        "wires": [
+            [
+                "e0565de8b1d66b72"
+            ]
+        ]
+    },
+    {
+        "id": "cda1d72a2bbf66cd",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "new setpoint",
+        "property": "temp_setpoint",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "number",
+                "vt": "number"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 170,
+        "y": 120,
+        "wires": [
+            [
+                "f9ebec73136eefa4"
+            ],
+            [
+                "f1e18e33aba86535"
+            ]
+        ]
+    },
+    {
+        "id": "f9ebec73136eefa4",
+        "type": "change",
+        "z": "f259a0f89e5c7c07",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "setpoint",
+                "pt": "flow",
+                "to": "temp_setpoint",
+                "tot": "msg",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 350,
+        "y": 100,
+        "wires": [
+            [
+                "e0565de8b1d66b72"
+            ]
+        ]
+    },
+    {
+        "id": "dc0b4457d570bd3d",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "temp received",
+        "property": "temp",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "number",
+                "vt": "number"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 1,
+        "x": 180,
+        "y": 300,
+        "wires": [
+            [
+                "f7262cc7ce6ded1f"
+            ]
+        ]
+    },
+    {
+        "id": "1e19777949185b34",
+        "type": "link in",
+        "z": "f259a0f89e5c7c07",
+        "name": "link in 1",
+        "links": [
+            "588f5c7cf456c1f8"
+        ],
+        "x": 55,
+        "y": 300,
+        "wires": [
+            [
+                "dc0b4457d570bd3d"
+            ]
+        ]
+    },
+    {
+        "id": "588f5c7cf456c1f8",
+        "type": "link out",
+        "z": "f259a0f89e5c7c07",
+        "name": "link out 1",
+        "mode": "link",
+        "links": [
+            "1e19777949185b34"
+        ],
+        "x": 1515,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "3f3b0a83b625f1e6",
+        "type": "subflow:e7b2bbb26678053e",
+        "z": "f259a0f89e5c7c07",
+        "name": "",
+        "env": [
+            {
+                "name": "watermark_high",
+                "value": "temp_setpoint",
+                "type": "env"
+            },
+            {
+                "name": "watermark_low",
+                "value": "temp_setpoint",
+                "type": "env"
+            },
+            {
+                "name": "signal_brick_id",
+                "value": "brick_id",
+                "type": "env"
+            }
+        ],
+        "x": 790,
+        "y": 300,
+        "wires": [
+            [
+                "3d64b154be853920"
+            ],
+            [
+                "3d64b154be853920"
+            ],
+            [
+                "3d64b154be853920"
+            ]
+        ]
+    },
+    {
+        "id": "5114f0581579fb47",
+        "type": "change",
+        "z": "f259a0f89e5c7c07",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "level",
+                "pt": "msg",
+                "to": "temp",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 580,
+        "y": 300,
+        "wires": [
+            [
+                "3f3b0a83b625f1e6"
+            ]
+        ]
+    },
+    {
+        "id": "f7262cc7ce6ded1f",
+        "type": "function",
+        "z": "f259a0f89e5c7c07",
+        "name": "calc watermarks",
+        "func": "msg.watermark_high = flow.get(\"setpoint\") + flow.get(\"variance\");\nmsg.watermark_low = flow.get(\"setpoint\") - flow.get(\"variance\");\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 300,
+        "wires": [
+            [
+                "5114f0581579fb47"
+            ]
+        ]
+    },
+    {
+        "id": "e0565de8b1d66b72",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "new variance",
+        "property": "temp_variance",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "number",
+                "vt": "number"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 690,
+        "y": 120,
+        "wires": [
+            [
+                "168838e7c167918c"
+            ],
+            [
+                "093aa6be08d73c45"
+            ]
+        ]
+    },
+    {
+        "id": "168838e7c167918c",
+        "type": "change",
+        "z": "f259a0f89e5c7c07",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variance",
+                "pt": "flow",
+                "to": "temp_variance",
+                "tot": "msg",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 870,
+        "y": 100,
+        "wires": [
+            [
+                "424e6edd691b8531"
+            ]
+        ]
+    },
+    {
+        "id": "093aa6be08d73c45",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "def variance",
+        "property": "variance",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "number",
+                "vt": "number"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 850,
+        "y": 140,
+        "wires": [
+            [
+                "424e6edd691b8531"
+            ],
+            [
+                "bc4cb794fdae4fcf"
+            ]
+        ]
+    },
+    {
+        "id": "bc4cb794fdae4fcf",
+        "type": "change",
+        "z": "f259a0f89e5c7c07",
+        "name": "use def variance",
+        "rules": [
+            {
+                "t": "set",
+                "p": "variance",
+                "pt": "flow",
+                "to": "temp_variance",
+                "tot": "env"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1020,
+        "y": 160,
+        "wires": [
+            [
+                "424e6edd691b8531"
+            ]
+        ]
+    },
+    {
+        "id": "d68b6b4606467302",
+        "type": "subflow:7e0c998b1de26534",
+        "z": "f259a0f89e5c7c07",
+        "name": "",
+        "env": [
+            {
+                "name": "brick_id",
+                "value": "brick_id",
+                "type": "env"
+            },
+            {
+                "name": "send_activate",
+                "value": "true",
+                "type": "bool"
+            }
+        ],
+        "x": 1470,
+        "y": 300,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "3d64b154be853920",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "eval temp",
+        "property": "temp",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "lt",
+                "v": "watermark_low",
+                "vt": "msg"
+            },
+            {
+                "t": "gt",
+                "v": "watermark_high",
+                "vt": "msg"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 3,
+        "x": 980,
+        "y": 300,
+        "wires": [
+            [
+                "0003f38dbdfa3072"
+            ],
+            [
+                "303d075ac8592067"
+            ],
+            [
+                "7db199f934ecf742"
+            ]
+        ]
+    },
+    {
+        "id": "0003f38dbdfa3072",
+        "type": "change",
+        "z": "f259a0f89e5c7c07",
+        "name": "heater ON",
+        "rules": [
+            {
+                "t": "set",
+                "p": "heater_state",
+                "pt": "msg",
+                "to": "1",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1310,
+        "y": 280,
+        "wires": [
+            [
+                "d68b6b4606467302"
+            ]
+        ]
+    },
+    {
+        "id": "303d075ac8592067",
+        "type": "change",
+        "z": "f259a0f89e5c7c07",
+        "name": "heater OFF",
+        "rules": [
+            {
+                "t": "set",
+                "p": "heater_state",
+                "pt": "msg",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1310,
+        "y": 320,
+        "wires": [
+            [
+                "d68b6b4606467302"
+            ]
+        ]
+    },
+    {
+        "id": "c0dd09de78288138",
+        "type": "function",
+        "z": "f259a0f89e5c7c07",
+        "name": "Extract Vars",
+        "func": "msg.brick_id = msg.topic.split(\"/\")[1];\nmsg.sensor_id = msg.topic.split(\"/\")[3];\nmsg.temp_reading = parseFloat(msg.payload);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 520,
+        "wires": [
+            [
+                "383f228ad05279e4"
+            ]
+        ]
+    },
+    {
+        "id": "4b52283310a2b1cb",
+        "type": "mqtt in",
+        "z": "f259a0f89e5c7c07",
+        "name": "",
+        "topic": "brick/+/temp/+",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "6c8bc1031ca33a4f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 520,
+        "wires": [
+            [
+                "c0dd09de78288138"
+            ]
+        ]
+    },
+    {
+        "id": "383f228ad05279e4",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "if brick_id",
+        "property": "brick_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "brick_id",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 460,
+        "y": 520,
+        "wires": [
+            [
+                "e9b47f6891e535d4"
+            ]
+        ]
+    },
+    {
+        "id": "e9b47f6891e535d4",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "is rad",
+        "property": "sensor_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "cont",
+                "v": "_rad",
+                "vt": "str"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 610,
+        "y": 520,
+        "wires": [
+            [
+                "8b33806cba9aea6c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "8b33806cba9aea6c",
+        "type": "change",
+        "z": "f259a0f89e5c7c07",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "rad_temp",
+                "pt": "flow",
+                "to": "temp_reading",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 800,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "424e6edd691b8531",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "def rad_temp",
+        "property": "rad_temp",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "number",
+                "vt": "number"
+            },
+            {
+                "t": "else"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1210,
+        "y": 120,
+        "wires": [
+            [
+                "588f5c7cf456c1f8"
+            ],
+            [
+                "cfa8eb1232de5753"
+            ]
+        ]
+    },
+    {
+        "id": "cfa8eb1232de5753",
+        "type": "change",
+        "z": "f259a0f89e5c7c07",
+        "name": "use def rad_temp",
+        "rules": [
+            {
+                "t": "set",
+                "p": "rad_temp",
+                "pt": "flow",
+                "to": "0",
+                "tot": "num"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1390,
+        "y": 140,
+        "wires": [
+            [
+                "588f5c7cf456c1f8"
+            ]
+        ]
+    },
+    {
+        "id": "7db199f934ecf742",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "rad hot",
+        "property": "rad_temp",
+        "propertyType": "flow",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "watermark_high",
+                "vt": "msg"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 1,
+        "x": 1140,
+        "y": 340,
+        "wires": [
+            [
+                "303d075ac8592067"
+            ]
+        ]
+    },
+    {
+        "id": "084a82cfa8fcb29d",
+        "type": "function",
+        "z": "f259a0f89e5c7c07",
+        "name": "Extract Vars",
+        "func": "msg.brick_id = msg.topic.split(\"/\")[1];\nmsg.latch_id = msg.topic.split(\"/\")[3].split(\"_\")[1];\nmsg.latch_state = parseInt(msg.payload);\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 640,
+        "wires": [
+            [
+                "44636806b2eede74"
+            ]
+        ]
+    },
+    {
+        "id": "836583e5ab240f3d",
+        "type": "mqtt in",
+        "z": "f259a0f89e5c7c07",
+        "name": "",
+        "topic": "brick/+/latch/+",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "6c8bc1031ca33a4f",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 640,
+        "wires": [
+            [
+                "084a82cfa8fcb29d"
+            ]
+        ]
+    },
+    {
+        "id": "44636806b2eede74",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "if brick_id",
+        "property": "brick_id",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "brick_id",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 460,
+        "y": 640,
+        "wires": [
+            [
+                "a3f25fcf7c48f91c"
+            ]
+        ]
+    },
+    {
+        "id": "a3f25fcf7c48f91c",
+        "type": "switch",
+        "z": "f259a0f89e5c7c07",
+        "name": "state filter",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "latch_state_filter",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 640,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "331f40eb1054097e",
+        "type": "comment",
+        "z": "f259a0f89e5c7c07",
+        "name": "Handles all in and outputs of HeatBrick, with TrafficLight",
+        "info": "This SubFlow simplifies the usage of a HeatBrick. Just put in a reference (room) temperature and the Heater is controlled according to the given setpoint. Also the Signals of the HeatBrick are used as a TrafficLight corresponding to the given temperature and setpoint.  \nThe onboard temperature-sensors and Latches are connected to the Outputs of this SubFlow for easier access.\n\n# Variables:\n\n - **brick_id**: _id_ of HeatBrick\n - **temp_setpoint**: The target temperature this HeatBrick should reach\n - **temp_variance**: The setpoint plus and minus this value defines the lower and upper boundry for the Heater an TrafficLight\n - **latch_state_filter**: The state on which Output 4 is filtered on\n\n# Input:\n\n - **msg.temp**: for the current reading of room temperature\n - **msg.temp_setpoint**: to set a new setpoint for temperature\n - **msg.temp_variance**: to set a new variance for temperature\n\n# Outputs:\n\n - **1**: Output of radiator temperature reading\n - **2**: Output of all other temperature readings\n - **3**: All received Latch states\n - **4**: All received Latch states filtered by latch_state_filter\n\n# Additional Info:\n\n## Outputs _1_ and _2_ contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this sensor\n - **msg.payload**: The temperature received for this sensor (as String)\n - **msg.brick_id**: The brick_id for this sensor\n - **msg.sensor_id**: The id of this sensor\n - **msg.temp_reading**: The temperature received for this sensor (as Float)\n \n## Outputs _3_ and _4_ contain the following information:\n\n - **msg.topic**: The full mqtt-topic received for this Latch\n - **msg.payload**: The state received for this Latch (as String)\n - **msg.brick_id**: The brick_id for this Latch\n - **msg.latch_id**: The id (index) of this Latch\n - **msg.latch_state**: The state received for this Latch (as Int)",
+        "x": 220,
         "y": 40,
         "wires": []
     }
