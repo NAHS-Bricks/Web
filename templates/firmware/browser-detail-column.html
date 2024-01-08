@@ -19,7 +19,7 @@
                                         <span class="icon ${'has-text-success danger-icon' if firmware_bin_present(fw=fw) else 'has-text-danger success-icon'}" id="${'delete' if firmware_bin_present(fw=fw) else 'fetch'}_firmware_bin" title="${'Delete Firmware BIN from BrickServer' if firmware_bin_present(fw=fw) else 'Fetch Firmware BIN from Downstrem as it is not available on BrickServer'}">
                                             <i class="fas fa-download" aria-hidden="true"></i>
                                         </span>
-                                        <span class="icon ${'danger-icon' if not firmware_is_used(fw=fw) else ''}" ${'id="delete_firmware"' if not firmware_is_used(fw=fw) else ''} title="${'Delete Firmware' if not firmware_is_used(fw=fw) else "Firmware can't be deleted as it is used"}">
+                                        <span class="icon danger-icon" id="delete_firmware" title="Delete Firmware">
                                             <i class="fas fa-times" aria-hidden="true"></i>
                                         </span>
                                     </div>

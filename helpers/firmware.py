@@ -70,11 +70,11 @@ def firmware_state(brick):
         return 'outdated'
     elif 'otaUpdate' in brick and not brick['otaUpdate'] == 'canceled':
         return brick['otaUpdate']
-    elif brick['sketchMD5'] is None:
+    elif brick.get('sketchMD5') is None:
         return 'pending'
     elif firmware_get(latest=brick['type']) is None:
         return 'outdated'
-    elif brick['sketchMD5'] == firmware_get(latest=brick['type'])['sketchMD5']:
+    elif brick.get('sketchMD5') == firmware_get(latest=brick['type'])['sketchMD5']:
         return 'up to date'
     else:
         return 'outdated'
@@ -83,9 +83,9 @@ def firmware_state(brick):
 def firmware_version(brick):
     if brick['features']['os'] < 1.01:
         return 'unknown'
-    if brick['sketchMD5'] is None:
+    if brick.get('sketchMD5') is None:
         return 'unknown'
-    fw = firmware_get(brick_type=brick['type'], sketchMD5=brick['sketchMD5'])
+    fw = firmware_get(brick_type=brick['type'], sketchMD5=brick.get('sketchMD5'))
     if fw is None:
         return 'unknown'
     else:
